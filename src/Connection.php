@@ -35,7 +35,7 @@ class Connection {
     public function connect() {
         $this->host = "localhost";
         $this->port = 4222;
-        $this->fp = fsockopen("localhost", 4222, $errno, $errstr, 30);
+        $this->fp = fsockopen($this->host, $this->port, $errno, $errstr, 30);
         $msg = "CONNECT {}\r\n";
         fwrite($this->fp, $msg);
         $res = fgets($this->fp);
