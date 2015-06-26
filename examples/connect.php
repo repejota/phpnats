@@ -13,3 +13,7 @@ var_dump($c);
 $c->connect();
 
 var_dump($c);
+
+$c->close();
+
+var_dump($c);
