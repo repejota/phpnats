@@ -6,4 +6,5 @@ php:
   - hhvm
   - nightly
 install:
+  - composer update
   - make lint
