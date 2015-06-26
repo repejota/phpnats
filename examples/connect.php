@@ -5,7 +5,8 @@ const HOST = "localhost";
 const PORT = 4222;
 
 echo "Server: nats://" . HOST . ":" . PORT . PHP_EOL;
-echo "Connecting ..." . PHP_EOL;
 $c = new Nats\Connection();
+echo "Connecting ..." . PHP_EOL;
 $c->connect();
+echo "Disconnecting ..." . PHP_EOL;
 $c->close();
