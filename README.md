@@ -22,10 +22,10 @@ Usage
 
 ```php
 $client = new \Nats\Connection(verbose=True);
-$client.connect();
+$client->connect();
 
 # Simple Publisher
-$client.publish('foo', 'Hello World!');
+$client->publish('foo', 'Hello World!');
 ```
 
 
