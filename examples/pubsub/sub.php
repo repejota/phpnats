@@ -11,10 +11,6 @@ $callback = function ($payload) {
     printf("Data: %s\r\n", $payload);
 };
 
-$c->subscribe("hola", $callback);
+$c->subscribe("foo", $callback);
 
-$c->subscribe("msg", function ($msg) {
-    echo $msg . PHP_EOL;
-});
-
-$c->wait(10);
+$c->wait();

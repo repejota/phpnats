@@ -9,5 +9,3 @@ $c = new Nats\Connection();
 $c->connect();
 
 $c->ping();
-
-$c->wait(3);

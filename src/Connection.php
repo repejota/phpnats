@@ -13,25 +13,67 @@ class Connection
     private $subscriptions = [];
 
     /**
-     * @var $host string Host name or ip of the server
+     * @var string Host name or ip of the server
      */
     private $host;
 
     /**
-     * @var $port integer Post number
+     * @var integer Post number
      */
     private $port;
 
     /**
-     * @var $fp mixed Socket file pointer
+     * @var mixed Socket file pointer
      */
     private $fp;
 
     /**
+     * @var string Server address
+     */
+    private $address = "nats://";
+
+    /**
+     * @var mixed Server information
+     */
+    private $server;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($host="localhost", $port=4222)
     {
+        $this->host = $host;
+        $this->port = $port;
+        $this->address = "tcp://" . $this->host . ":" . $this->port;
+    }
+
+    /**
+     * Sends a message
+     *
+     * @param $payload
+     */
+    private function _send($payload) {
+        $msg = $payload . "\r\n";
+        fwrite($this->fp, $msg, strlen($msg));
+    }
+
+    /**
+     * Receives a message
+     *
+     * @param $len
+     * @return string
+     */
+    private function _recv($len=null) {
+        if ($len) {
+            return trim(fgets($this->fp, $len + 1));
+        } else {
+            return trim(fgets($this->fp));
+        }
+    }
+
+    private function parseINFO($str) {
+        $obj = json_decode($str);
+        $this->server_id = $obj->server_id;
 
     }
 
@@ -41,13 +83,13 @@ class Connection
      */
     public function connect()
     {
-        $this->host = "localhost";
-        $this->port = 4222;
-        $address = "tcp://" . $this->host . ":" . $this->port;
-        $this->fp = stream_socket_client($address, $errno, $errstr, 30);
-        stream_set_blocking($this->fp, 1);
-        $msg = 'CONNECT {}' . "\r\n";
-        fwrite($this->fp, $msg, strlen($msg));
+        $this->fp = stream_socket_client($this->address, $errno, $errstr, STREAM_CLIENT_CONNECT);
+        if (!$this->fp) {
+            echo $errstr . ":" . $errno;
+        }
+        stream_set_blocking($this->fp, 0);
+        $msg = 'CONNECT {}';
+        $this->_send($msg);
     }
 
     /**
@@ -55,8 +97,8 @@ class Connection
      */
     public function ping()
     {
-        $msg = "PING" . "\r\n";
-        fwrite($this->fp, $msg, strlen($msg));
+        $msg = "PING";
+        $this->_send($msg);
     }
 
     /**
@@ -68,11 +110,9 @@ class Connection
      */
     public function publish($subject, $payload)
     {
-
-        $msg = "PUB " . $subject . " " . strlen($payload) . "\r\n";
-        fwrite($this->fp, $msg, strlen($msg));
-        $msg = $payload . "\r\n";
-        fwrite($this->fp, $msg, strlen($msg));
+        $msg = "PUB " . $subject . " " . strlen($payload);
+        $this->_send($msg);
+        $this->_send($payload);
     }
 
     /**
@@ -80,46 +120,73 @@ class Connection
      *
      * @param $subject
      * @param $callback
-     * @return string
      */
     public function subscribe($subject, $callback)
     {
         $id = uniqid();
-        $msg = "SUB " . $subject . " " . $id . "\r\n";
-        fwrite($this->fp, $msg, strlen($msg));
+        $msg = "SUB " . $subject . " " . $id;
+        $this->_send($msg);
         $key = $id . $subject;
         $this->subscriptions[$key] = $callback;
     }
 
     /**
      * Waits for messages
+     *
+     * @param int $quantity Number of messages to wait for
+     * @return \Exception|void
      */
     public function wait($quantity = 0)
     {
         $count = 0;
         while (!feof($this->fp)) {
-            $line = trim(fgets($this->fp));
+            $line = $this->_recv();
 
+            // Debug
+            if ($line) {
+                echo ">>>>>>>>> " . $line . PHP_EOL;
+            }
+
+            // INFO
+            if (strpos($line, 'INFO') === 0) {
+                $parts = explode(" ", $line);
+                $info = json_decode($parts[1]);
+                $this->server = $info;
+            }
+
+            // MSG
             if (strpos($line, 'MSG') === 0) {
                 $count = $count + 1;
 
                 $parts = explode(" ", $line);
-
                 $subject = $parts[1];
                 $length = $parts[3];
                 $sid = $parts[2];
 
-                $payload = fgets($this->fp, $length + 1);
+                $payload = $this->_recv($length);
 
                 $key = $sid . $subject;
-                $f = $this->subscriptions[$key];
-                $f($payload);
+                $func = $this->subscriptions[$key];
+                if (is_callable($func)) {
+                    $func($payload);
+                } else {
+                    return new \Exception("not callable");
+                }
 
                 if (($quantity != 0) && ($count >= $quantity)) {
                     return;
                 }
             }
         }
+        $this->close();
+    }
+
+    /**
+     * Reconnects to the server
+     */
+    public function reconnect() {
+        $this->close();
+        $this->connect();
     }
 
     /**
@@ -127,7 +194,6 @@ class Connection
      */
     public function close()
     {
-        fgets($this->fp);
         fclose($this->fp);
     }
 
