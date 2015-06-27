@@ -10,5 +10,7 @@ $c->connect();
 $c->reconnect();
 
 $c->publish("foo", "bar");
-
-$c->close();
+$c->publish("foo", "bar");
+$c->publish("foo", "bar");
+$c->publish("foo", "bar");
+$c->publish("foo", "bar");

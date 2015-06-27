@@ -120,14 +120,21 @@ class Connection
      *
      * @param $subject
      * @param $callback
+     * @return string
      */
     public function subscribe($subject, $callback)
     {
-        $id = uniqid();
-        $msg = "SUB " . $subject . " " . $id;
+        $sid = uniqid();
+        $msg = "SUB " . $subject . " " . $sid;
         $this->_send($msg);
-        $key = $id . $subject;
-        $this->subscriptions[$key] = $callback;
+        $this->subscriptions[$sid] = $callback;
+        return $sid;
+    }
+
+    public function unsubscribe($sid)
+    {
+        $msg = "UNSUB " . $sid;
+        $this->_send($msg);
     }
 
     /**
@@ -145,6 +152,11 @@ class Connection
             // Debug
             if ($line) {
                 echo ">>>>>>>>> " . $line . PHP_EOL;
+            }
+
+            // PING
+            if (strpos($line, 'PING') === 0) {
+                $this->_send("PONG");
             }
 
             // INFO
@@ -165,8 +177,7 @@ class Connection
 
                 $payload = $this->_recv($length);
 
-                $key = $sid . $subject;
-                $func = $this->subscriptions[$key];
+                $func = $this->subscriptions[$sid];
                 if (is_callable($func)) {
                     $func($payload);
                 } else {
