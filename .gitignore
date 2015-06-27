@@ -1,5 +1,5 @@
+.contrib
 vendor
-gnatsd
 cover
 composer.phar
 composer.lock

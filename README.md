@@ -32,7 +32,17 @@ $client = new \Nats\Connection(verbose=True);
 $client->connect();
 
 # Simple Publisher
-$client->publish('foo', 'Hello World!');
+$client->publish("foo", "foo bar");
+
+# Simple Subscriber
+$callback = function($payload)
+{
+    printf("Data: %s\r\n", $payload);
+};
+$client->subscribe("foo", $callback);
+
+# Wait for 1 message
+$client->wait(1);
 ```
 
 
