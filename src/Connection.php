@@ -6,6 +6,10 @@ namespace Nats;
  */
 class Connection
 {
+    /**
+     * @var int Number of reconnects
+     */
+    private $reconnects = 0;
 
     /**
      * @var array List of subscriptions
@@ -116,7 +120,7 @@ class Connection
     }
 
     /**
-     * Subscribe subscribes to an specific event given a subject.
+     * Subscribes to an specific event given a subject.
      *
      * @param $subject
      * @param $callback
@@ -131,6 +135,11 @@ class Connection
         return $sid;
     }
 
+    /**
+     * Unsubscribe from a event given a subject.
+     *
+     * @param $sid
+     */
     public function unsubscribe($sid)
     {
         $msg = "UNSUB " . $sid;
@@ -196,6 +205,7 @@ class Connection
      * Reconnects to the server
      */
     public function reconnect() {
+        $this->reconnects += 1;
         $this->close();
         $this->connect();
     }

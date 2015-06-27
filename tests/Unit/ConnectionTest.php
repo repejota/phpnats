@@ -44,5 +44,4 @@ class TestConnection extends \PHPUnit_Framework_TestCase {
         $c->publish("foo", "bar");
         $c->close();
     }
-
 }
