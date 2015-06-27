@@ -4,7 +4,8 @@ namespace Nats;
 /**
  * A Connection represents a bare connection to a nats-server
  */
-class Connection {
+class Connection
+{
 
     /**
      * @var array List of subscriptions
@@ -29,7 +30,8 @@ class Connection {
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
 
     }
 
@@ -37,12 +39,13 @@ class Connection {
      * Connect will attempt to connect to the NATS server.
      * The url can contain username/password semantics.
      */
-    public function connect() {
+    public function connect()
+    {
         $this->host = "localhost";
         $this->port = 4222;
         $address = "tcp://" . $this->host . ":" . $this->port;
-        $this->fp	= stream_socket_client( $address, $errno, $errstr, 30 );
-        stream_set_blocking( $this->fp, 1 );
+        $this->fp = stream_socket_client($address, $errno, $errstr, 30);
+        stream_set_blocking($this->fp, 1);
         $msg = 'CONNECT {}' . "\r\n";
         fwrite($this->fp, $msg, strlen($msg));
     }
@@ -50,7 +53,8 @@ class Connection {
     /**
      * Sends PING message
      */
-    public function ping() {
+    public function ping()
+    {
         $msg = "PING" . "\r\n";
         fwrite($this->fp, $msg, strlen($msg));
     }
@@ -62,7 +66,8 @@ class Connection {
      * @param $payload (string): payload string
      * @return string
      */
-    public function publish($subject, $payload) {
+    public function publish($subject, $payload)
+    {
 
         $msg = "PUB " . $subject . " " . strlen($payload) . "\r\n";
         fwrite($this->fp, $msg, strlen($msg));
@@ -77,24 +82,26 @@ class Connection {
      * @param $callback
      * @return string
      */
-    public function subscribe($subject, $callback) {
+    public function subscribe($subject, $callback)
+    {
         $id = uniqid();
         $msg = "SUB " . $subject . " " . $id . "\r\n";
         fwrite($this->fp, $msg, strlen($msg));
-        $key = $id .$subject;
+        $key = $id . $subject;
         $this->subscriptions[$key] = $callback;
     }
 
     /**
      * Waits for messages
      */
-    public function wait($quantity=0) {
+    public function wait($quantity = 0)
+    {
         $count = 0;
         while (!feof($this->fp)) {
             $line = trim(fgets($this->fp));
 
             if (strpos($line, 'MSG') === 0) {
-                $count = $count+1;
+                $count = $count + 1;
 
                 $parts = explode(" ", $line);
 
@@ -102,13 +109,13 @@ class Connection {
                 $length = $parts[3];
                 $sid = $parts[2];
 
-                $payload = fgets($this->fp, $length+1);
+                $payload = fgets($this->fp, $length + 1);
 
-                $key = $sid .$subject;
+                $key = $sid . $subject;
                 $f = $this->subscriptions[$key];
                 $f($payload);
 
-                if (($quantity !=0) && ($count >= $quantity)) {
+                if (($quantity != 0) && ($count >= $quantity)) {
                     return;
                 }
             }
@@ -118,7 +125,8 @@ class Connection {
     /**
      * Close will close the connection to the server.
      */
-    public function close() {
+    public function close()
+    {
         fgets($this->fp);
         fclose($this->fp);
     }
