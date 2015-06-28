@@ -120,7 +120,7 @@ class Connection
      *
      * @var mixed Socket file pointer
      */
-    private $_fp;
+    private $_streamSocket;
 
     /**
      * Server address
@@ -157,7 +157,7 @@ class Connection
     private function _send($payload)
     {
         $msg = $payload . "\r\n";
-        fwrite($this->_fp, $msg, strlen($msg));
+        fwrite($this->_streamSocket, $msg, strlen($msg));
     }
 
     /**
@@ -170,9 +170,9 @@ class Connection
     private function _receive($len = null)
     {
         if ($len) {
-            return trim(fgets($this->_fp, $len + 1));
+            return trim(fgets($this->_streamSocket, $len + 1));
         } else {
-            return trim(fgets($this->_fp));
+            return trim(fgets($this->_streamSocket));
         }
     }
 
@@ -194,6 +194,15 @@ class Connection
     }
 
     /**
+     * Checks if the client is connected to a server
+     *
+     * @return bool
+     */
+    public function isConnected() {
+        return isset($this->_streamSocket);
+    }
+
+    /**
      * Connect to server.
      *
      * Connect will attempt to connect to the NATS server specified by address.
@@ -210,7 +219,7 @@ class Connection
      */
     public function connect()
     {
-        $this->_fp = $this->_getStream($this->_address);
+        $this->_streamSocket = $this->_getStream($this->_address);
         $msg = 'CONNECT {}';
         $this->_send($msg);
     }
@@ -283,7 +292,7 @@ class Connection
     public function wait($quantity = 0)
     {
         $count = 0;
-        while (!feof($this->_fp)) {
+        while (!feof($this->_streamSocket)) {
             $line = $this->_receive();
 
             // PING
@@ -336,7 +345,8 @@ class Connection
      */
     public function close()
     {
-        fclose($this->_fp);
+        fclose($this->_streamSocket);
+        $this->_streamSocket = null;
     }
 
 }

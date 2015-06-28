@@ -12,6 +12,8 @@
  */
 namespace Nats\Tests\Unit;
 
+use Prophecy\PhpUnit\ProphecyTestCase as TestCase;
+
 use Nats;
 
 /**
@@ -23,9 +25,11 @@ use Nats;
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
  * @link     https://github.com/repejota/phpnats
  */
-class TestConnection extends \PHPUnit_Framework_TestCase
+class TestConnection extends TestCase
 {
     private $_c;
+
+    private $_server;
 
     /**
      * Setup tests
@@ -36,33 +40,6 @@ class TestConnection extends \PHPUnit_Framework_TestCase
     {
         $this->_c = new Nats\Connection();
         $this->_c->connect();
-        /*
-        $this->_c = $this->getMockBuilder('Nats\Connection')->getMock();
-
-        $this->_c->expects($this->any())
-            ->method("connect")
-            ->willReturn(null);
-
-        $this->_c->expects($this->any())
-            ->method("pingsCount")
-            ->willReturn(1);
-
-        $this->_c->expects($this->any())
-            ->method("pubsCount")
-            ->willReturn(1);
-
-        $this->_c->expects($this->any())
-            ->method("reconnectsCount")
-            ->willReturn(1);
-
-        $this->_c->expects($this->any())
-            ->method("subscriptionsCount")
-            ->willReturn(1);
-
-        $this->_c->expects($this->any())
-            ->method("getSubscriptions")
-            ->willReturn(["foo", "bar"]);
-        */
     }
 
     /**
@@ -82,8 +59,13 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      */
     public function testConnection()
     {
+        // Connect
         $this->_c->connect();
+        $this->assertTrue($this->_c->isConnected());
+
+        // Disconnect
         $this->_c->close();
+        $this->assertFalse($this->_c->isConnected());
     }
 
     /**
@@ -146,4 +128,5 @@ class TestConnection extends \PHPUnit_Framework_TestCase
         $this->_c->publish("foo", "bar");
         $this->_c->wait(1);
     }
+
 }
