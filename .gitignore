@@ -1,0 +1,5 @@
+.contrib
+vendor
+cover
+*.phar
+composer.lock

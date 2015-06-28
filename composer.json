@@ -1,0 +1,26 @@
+{
+    "name": "repejota/nats",
+    "description": "A nats.io client in PHP",
+    "type": "library",
+    "minimum-stability": "dev",
+    "license": "MIT",
+    "authors": [{
+        "name": "Raül Pérez",
+        "email": "repejota@gmail.com",
+        "homepage": "http://repejota.com"
+    }],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "4.7.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nats\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Nats\\": "tests/Unit"
+        }
+    }
+}
