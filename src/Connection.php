@@ -24,6 +24,11 @@ namespace Nats;
 class Connection
 {
     /**
+     * Version number
+     */
+    const VERSION = "0.0.3";
+
+    /**
      * Number of PINGS
      *
      * @var int number of pings
@@ -198,7 +203,8 @@ class Connection
      *
      * @return bool
      */
-    public function isConnected() {
+    public function isConnected() 
+    {
         return isset($this->_streamSocket);
     }
 

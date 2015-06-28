@@ -119,9 +119,11 @@ class TestConnection extends TestCase
     {
         $callback = function ($message) {
             $this->assertNotNull($message);
+            $this->assertEquals($message, "bar");
         };
         $this->_c->subscribe("foo", $callback);
         $this->assertGreaterThan(0, $this->_c->subscriptionsCount());
+
         $subscriptions = $this->_c->getSubscriptions();
         $this->assertInternalType("array", $subscriptions);
 
