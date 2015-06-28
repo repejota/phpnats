@@ -2,6 +2,8 @@
 /**
  * Connection Class
  *
+ * PHP version 5
+ *
  * @category Class
  * @package  Nats
  * @author   Raül Përez <repejota@gmail.com>
@@ -11,49 +13,61 @@
 namespace Nats;
 
 /**
- * A Connection represents a bare connection to a nats-server
+ * Connection Class
+ * 
+ * @category Class
+ * @package  Nats\Tests\Unit
+ * @author   Raül Përez <repejota@gmail.com>
+ * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ * @link     https://github.com/repejota/phpnats
  */
 class Connection
 {
     /**
-     * @var int Number of pings published
+     * Number of PINGS
+     *
+     * @var int number of pings
      */
-    private $pings = 0;
+    private $_pings = 0;
 
     /**
-     * Return the number of pings published
+     * Return the number of pings
      *
-     * @return int Number of pings published
+     * @return int Number of pings
      */
     public function getNPings()
     {
-        return $this->pings;
+        return $this->_pings;
     }
 
     /**
-     * @var int Number of messages published
+     * Number of messages published
+     *
+     * @var int number of messages
      */
-    private $pubs = 0;
+    private $_pubs = 0;
 
     /**
      * Return the number of messages published
      *
-     * @return int Number of messages published
+     * @return int number of messages published
      */
-    public function getNPubs()
+    public function pubsCount()
     {
-        return $this->pubs;
+        return $this->_pubs;
     }
 
     /**
+     * Number of reconnects to the server
+     *
      * @var int Number of reconnects
      */
     private $reconnects = 0;
 
     /**
-     * Get number of reconnects
+     * Return the number of reconnects to the server
      *
-     * @return int Number of reconnects
+     * @return int number of reconnects
      */
     public function getNReconnects()
     {
@@ -61,14 +75,16 @@ class Connection
     }
 
     /**
-     * @var array List of subscriptions
+     * List of available subscriptions
+     *
+     * @var array list of subscriptions
      */
     private $subscriptions = [];
 
     /**
-     * Get number of subscription
+     * Return the number of subscriptions available
      *
-     * @return int Number of subscription
+     * @return int number of subscription
      */
     public function getNSubscription()
     {
@@ -76,9 +92,9 @@ class Connection
     }
 
     /**
-     * Get subscriptions ids
+     * Return subscriptions list
      *
-     * @return array List of subscriptions ids
+     * @return array list of subscription ids
      */
     public function getSubscriptions()
     {
@@ -86,29 +102,37 @@ class Connection
     }
 
     /**
-     * @var string Host name or ip of the server
+     * Hostname of the server
+     * @var string hostname
      */
     private $host;
 
     /**
-     * @var integer Post number
+     * Por number of the server
+     *
+     * @var integer port number
      */
     private $port;
 
     /**
+     * Stream File Pointer
+     *
      * @var mixed Socket file pointer
      */
     private $fp;
 
     /**
+     * Server address
+     *
      * @var string Server address
      */
     private $address = "nats://";
 
     /**
      * Constructor
-     * @param string $host
-     * @param int    $port
+     *
+     * @param string $host name, by default "localhost"
+     * @param int    $port number, by default 4222
      */
     public function __construct($host = "localhost", $port = 4222)
     {
@@ -118,9 +142,10 @@ class Connection
     }
 
     /**
-     * Sends a message
+     * Sends data thought the stream
      *
-     * @param $payload
+     * @param  string $payload Message data
+     * @return null
      */
     private function send($payload)
     {
@@ -129,9 +154,9 @@ class Connection
     }
 
     /**
-     * Receives a message
+     * Receives a message thought the stream
      *
-     * @param  $len
+     * @param  int $len Number of bytes to receive
      * @return string
      */
     private function receive($len = null)
@@ -144,16 +169,39 @@ class Connection
     }
 
     /**
-     * Connect will attempt to connect to the NATS server.
+     * Returns an stream socket to the desired server.
+     *
+     * @param  string $address Server url string
+     * @return resource
+     */
+    private function getStream($address) 
+    {
+        $fp = stream_socket_client($address, $errno, $errstr, STREAM_CLIENT_CONNECT);
+        if (!$fp) {
+            echo "!!!!!!! " . $errstr . " - " . $errno;
+        }
+        stream_set_blocking($fp, 0);
+        return $fp;
+    }
+
+    /**
+     * Connect to server.
+     *
+     * Connect will attempt to connect to the NATS server specified by address.
+     *
+     * Example:
+     *   nats://localhost:4222
+     *
      * The url can contain username/password semantics.
+     *
+     * Example:
+     *   nats://user:pass@localhost:4222
+     *
+     * @return null
      */
     public function connect()
     {
-        $this->fp = stream_socket_client($this->address, $errno, $errstr, STREAM_CLIENT_CONNECT);
-        if (!$this->fp) {
-            echo $errstr . ":" . $errno;
-        }
-        stream_set_blocking($this->fp, 0);
+        $this->fp = $this->getStream($this->address);
         $msg = 'CONNECT {}';
         $this->send($msg);
     }
@@ -165,7 +213,7 @@ class Connection
     {
         $msg = "PING";
         $this->send($msg);
-        $this->pings += 1;
+        $this->_pings += 1;
     }
 
     /**
@@ -180,7 +228,7 @@ class Connection
         $msg = "PUB " . $subject . " " . strlen($payload);
         $this->send($msg);
         $this->send($payload);
-        $this->pubs += 1;
+        $this->_pubs += 1;
     }
 
     /**
