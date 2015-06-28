@@ -58,7 +58,9 @@ class TestConnection extends \PHPUnit_Framework_TestCase
         $c->connect();
         $c->ping();
         $c->ping();
-        $this->assertGreaterThan(0, $c->pingsCount());
+        $count = $c->pingsCount();
+        $this->assertInternalType("int", $count);
+        $this->assertGreaterThan(0, $count);
         $c->close();
     }
 
@@ -72,7 +74,47 @@ class TestConnection extends \PHPUnit_Framework_TestCase
         $c = new Nats\Connection();
         $c->connect();
         $c->publish("foo", "bar");
-        $this->assertGreaterThan(0, $c->pubsCount());
+        $count = $c->pubsCount();
+        $this->assertInternalType("int", $count);
+        $this->assertGreaterThan(0, $count);
         $c->close();
+    }
+
+    /**
+     * Test Server reconnection
+     *
+     * @return null
+     */
+    public function testReconnect()
+    {
+        $c = new Nats\Connection();
+        $c->connect();
+        $c->reconnect();
+        $count = $c->reconnectsCount();
+        $this->assertInternalType("int", $count);
+        $this->assertGreaterThan(0, $count);
+        $c->close();
+    }
+
+    /**
+     * Test Server subscription
+     *
+     * @return null
+     */
+    public function testSubscription()
+    {
+        $c = new Nats\Connection();
+        $c->connect();
+        $c->subscribe(
+            "foo", function ($message) {
+                $this->assertNotNull($message);
+            }
+        );
+        $this->assertGreaterThan(0, $c->subscriptionsCount());
+        $subscriptions = $c->getSubscriptions();
+        $this->assertInternalType("array", $subscriptions);
+
+        $c->publish("foo", "bar");
+        $c->wait(1);
     }
 }

@@ -282,11 +282,6 @@ class Connection
         while (!feof($this->_fp)) {
             $line = $this->_receive();
 
-            // Debug
-            if ($line) {
-                echo ">>>>>>>>> " . $line . PHP_EOL;
-            }
-
             // PING
             if (strpos($line, 'PING') === 0) {
                 $this->_send("PONG");
