@@ -1,4 +1,4 @@
-phpnats 
+phpnats
 =======
 
 **Travis**
@@ -18,7 +18,7 @@ A PHP client for the [NATS messaging system](https://nats.io).
 Requirements
 ------------
 
-* php ~5.3
+* php ~5.4
 * [nats](https://github.com/derekcollison/nats) or [gnatsd](https://github.com/apcera/gnatsd)
 
 
