@@ -1,5 +1,5 @@
 .contrib
 vendor
 cover
-composer.phar
+*.phar
 composer.lock

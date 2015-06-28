@@ -1,4 +1,13 @@
 <?php
+/**
+ * Connection Class
+ *
+ * @category Class
+ * @package  Nats
+ * @author   Raül Përez <repejota@gmail.com>
+ * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ * @link     https://github.com/repejota/phpnats
+ */
 namespace Nats;
 
 /**
@@ -27,7 +36,7 @@ class Connection
     private $pubs = 0;
 
     /**
-     * Return the number of mensages published
+     * Return the number of messages published
      *
      * @return int Number of messages published
      */
@@ -46,7 +55,8 @@ class Connection
      *
      * @return int Number of reconnects
      */
-    public function getNReconnects() {
+    public function getNReconnects()
+    {
         return $this->reconnects;
     }
 
@@ -60,7 +70,8 @@ class Connection
      *
      * @return int Number of subscription
      */
-    public function getNSubscription() {
+    public function getNSubscription()
+    {
         return count($this->subscriptions);
     }
 
@@ -69,7 +80,8 @@ class Connection
      *
      * @return array List of subscriptions ids
      */
-    public function getSubscriptions() {
+    public function getSubscriptions()
+    {
         return array_keys($this->subscriptions);
     }
 
@@ -94,16 +106,11 @@ class Connection
     private $address = "nats://";
 
     /**
-     * @var mixed Server information
-     */
-    private $server;
-
-    /**
      * Constructor
      * @param string $host
-     * @param int $port
+     * @param int    $port
      */
-    public function __construct($host="localhost", $port=4222)
+    public function __construct($host = "localhost", $port = 4222)
     {
         $this->host = $host;
         $this->port = $port;
@@ -115,7 +122,8 @@ class Connection
      *
      * @param $payload
      */
-    private function _send($payload) {
+    private function _send($payload)
+    {
         $msg = $payload . "\r\n";
         fwrite($this->fp, $msg, strlen($msg));
     }
@@ -123,10 +131,11 @@ class Connection
     /**
      * Receives a message
      *
-     * @param $len
+     * @param  $len
      * @return string
      */
-    private function _recv($len=null) {
+    private function _receive($len = null)
+    {
         if ($len) {
             return trim(fgets($this->fp, $len + 1));
         } else {
@@ -162,8 +171,8 @@ class Connection
     /**
      * Publish publishes the data argument to the given subject.
      *
-     * @param $subject (string): a string with the subject
-     * @param $payload (string): payload string
+     * @param  $subject (string): a string with the subject
+     * @param  $payload (string): payload string
      * @return string
      */
     public function publish($subject, $payload)
@@ -177,8 +186,8 @@ class Connection
     /**
      * Subscribes to an specific event given a subject.
      *
-     * @param $subject
-     * @param $callback
+     * @param  $subject
+     * @param  $callback
      * @return string
      */
     public function subscribe($subject, $callback)
@@ -204,14 +213,14 @@ class Connection
     /**
      * Waits for messages
      *
-     * @param int $quantity Number of messages to wait for
+     * @param  int $quantity Number of messages to wait for
      * @return \Exception|void
      */
     public function wait($quantity = 0)
     {
         $count = 0;
         while (!feof($this->fp)) {
-            $line = $this->_recv();
+            $line = $this->_receive();
 
             // Debug
             if ($line) {
@@ -235,11 +244,11 @@ class Connection
                 $count = $count + 1;
 
                 $parts = explode(" ", $line);
-                $subject = $parts[1];
+                //$subject = $parts[1];
                 $length = $parts[3];
                 $sid = $parts[2];
 
-                $payload = $this->_recv($length);
+                $payload = $this->_receive($length);
 
                 $func = $this->subscriptions[$sid];
                 if (is_callable($func)) {
@@ -249,17 +258,19 @@ class Connection
                 }
 
                 if (($quantity != 0) && ($count >= $quantity)) {
-                    return;
+                    return null;
                 }
             }
         }
         $this->close();
+        return $this;
     }
 
     /**
      * Reconnects to the server
      */
-    public function reconnect() {
+    public function reconnect()
+    {
         $this->reconnects += 1;
         $this->close();
         $this->connect();
