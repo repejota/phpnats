@@ -34,6 +34,9 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->_c = new Nats\Connection();
+        $this->_c->connect();
+        /*
         $this->_c = $this->getMockBuilder('Nats\Connection')->getMock();
 
         $this->_c->expects($this->any())
@@ -59,6 +62,7 @@ class TestConnection extends \PHPUnit_Framework_TestCase
         $this->_c->expects($this->any())
             ->method("getSubscriptions")
             ->willReturn(["foo", "bar"]);
+        */
     }
 
     /**
@@ -89,6 +93,7 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      */
     public function testPing()
     {
+        $this->_c->ping();
         $count = $this->_c->pingsCount();
         $this->assertInternalType("int", $count);
         $this->assertGreaterThan(0, $count);
@@ -103,9 +108,9 @@ class TestConnection extends \PHPUnit_Framework_TestCase
     public function testPublish()
     {
         $this->_c->publish("foo", "bar");
-        $this->count = $this->_c->pubsCount();
-        $this->assertInternalType("int", $this->count);
-        $this->assertGreaterThan(0, $this->count);
+        $count = $this->_c->pubsCount();
+        $this->assertInternalType("int", $count);
+        $this->assertGreaterThan(0, $count);
         $this->_c->close();
     }
 
@@ -117,9 +122,9 @@ class TestConnection extends \PHPUnit_Framework_TestCase
     public function testReconnect()
     {
         $this->_c->reconnect();
-        $this->count = $this->_c->reconnectsCount();
-        $this->assertInternalType("int", $this->count);
-        $this->assertGreaterThan(0, $this->count);
+        $count = $this->_c->reconnectsCount();
+        $this->assertInternalType("int", $count);
+        $this->assertGreaterThan(0, $count);
         $this->_c->close();
     }
 

@@ -140,6 +140,7 @@ class Connection
         $this->_pings = 0;
         $this->_pubs = 0;
         $this->_subscriptions = 0;
+        $this->_subscriptions = [];
 
         $this->_host = $host;
         $this->_port = $port;
@@ -155,7 +156,6 @@ class Connection
      */
     private function _send($payload)
     {
-
         $msg = $payload . "\r\n";
         fwrite($this->_fp, $msg, strlen($msg));
     }
