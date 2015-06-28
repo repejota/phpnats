@@ -14,7 +14,7 @@ namespace Nats;
 
 /**
  * Connection Class
- * 
+ *
  * @category Class
  * @package  Nats\Tests\Unit
  * @author   Raül Përez <repejota@gmail.com>
@@ -23,6 +23,11 @@ namespace Nats;
  */
 class Connection
 {
+    /**
+     * Version number
+     */
+    public $VERSION = "0.0.0";
+
     /**
      * Number of PINGS
      *
@@ -120,7 +125,7 @@ class Connection
      *
      * @var mixed Socket file pointer
      */
-    private $_fp;
+    private $_streamSocket;
 
     /**
      * Server address
@@ -137,9 +142,12 @@ class Connection
      */
     public function __construct($host = "localhost", $port = 4222)
     {
+        $this->VERSION = file_get_contents("./VERSION");
+
         $this->_pings = 0;
         $this->_pubs = 0;
         $this->_subscriptions = 0;
+        $this->_subscriptions = [];
 
         $this->_host = $host;
         $this->_port = $port;
@@ -155,9 +163,8 @@ class Connection
      */
     private function _send($payload)
     {
-
         $msg = $payload . "\r\n";
-        fwrite($this->_fp, $msg, strlen($msg));
+        fwrite($this->_streamSocket, $msg, strlen($msg));
     }
 
     /**
@@ -170,9 +177,9 @@ class Connection
     private function _receive($len = null)
     {
         if ($len) {
-            return trim(fgets($this->_fp, $len + 1));
+            return trim(fgets($this->_streamSocket, $len + 1));
         } else {
-            return trim(fgets($this->_fp));
+            return trim(fgets($this->_streamSocket));
         }
     }
 
@@ -180,7 +187,7 @@ class Connection
      * Returns an stream socket to the desired server.
      *
      * @param string $address Server url string
-     * 
+     *
      * @return resource
      */
     private function _getStream($address)
@@ -191,6 +198,16 @@ class Connection
         }
         stream_set_blocking($fp, 0);
         return $fp;
+    }
+
+    /**
+     * Checks if the client is connected to a server
+     *
+     * @return bool
+     */
+    public function isConnected()
+    {
+        return isset($this->_streamSocket);
     }
 
     /**
@@ -206,12 +223,40 @@ class Connection
      * Example:
      *   nats://user:pass@localhost:4222
      *
+     * @param null $host      host name to connect
+     * @param null $port      host port to connect
+     * @param bool $verbose   if verbose mode is enabled
+     * @param bool $pedantic  if pedantic mode is enabled
+     * @param bool $reconnect if reconnect mode is enabled
+     *
      * @return void
      */
-    public function connect()
-    {
-        $this->_fp = $this->_getStream($this->_address);
-        $msg = 'CONNECT {}';
+    public function connect($host = null,
+        $port = null,
+        $verbose = false,
+        $pedantic = false,
+        $reconnect = true
+    ) {
+        if (isset($host)) {
+            $this->_host = $host;
+            $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
+        }
+        if (isset($port)) {
+            $this->_port = $port;
+            $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
+        }
+        $verbose = ($verbose) ? 'true' : 'false';
+        $pedantic = ($pedantic) ? 'true' : 'false';
+        $reconnect = ($reconnect) ? 'true' : 'false';
+
+        $options = '{ ';
+        $options .= ' "verbose": ' . $verbose . ', ';
+        $options .= ' "pedantic": ' . $pedantic . ', ';
+        $options .= ' "reconnect": ' . $reconnect;
+        $options .= ' }';
+
+        $this->_streamSocket = $this->_getStream($this->_address);
+        $msg = 'CONNECT ' . $options;
         $this->_send($msg);
     }
 
@@ -274,40 +319,60 @@ class Connection
     }
 
     /**
+     * Handles PING command
+     *
+     * @return void
+     */
+    private function _handlePING()
+    {
+        $this->_send("PONG");
+    }
+
+    /**
+     * Handles MSG command
+     *
+     * @param string $line Message command from NATS
+     *
+     * @return \Exception|void
+     */
+    private function _handleMSG($line)
+    {
+        $parts = explode(" ", $line);
+        $length = $parts[3];
+        $sid = $parts[2];
+
+        $payload = $this->_receive($length);
+
+        $func = $this->_subscriptions[$sid];
+        if (is_callable($func)) {
+            $func($payload);
+        } else {
+            return new \Exception("not callable");
+        }
+    }
+
+    /**
      * Waits for messages
      *
      * @param int $quantity Number of messages to wait for
-     * 
+     *
      * @return \Exception|void
      */
     public function wait($quantity = 0)
     {
         $count = 0;
-        while (!feof($this->_fp)) {
+        while (!feof($this->_streamSocket)) {
             $line = $this->_receive();
 
             // PING
             if (strpos($line, 'PING') === 0) {
-                $this->_send("PONG");
+                $this->_handlePing();
             }
 
             // MSG
             if (strpos($line, 'MSG') === 0) {
                 $count = $count + 1;
-
-                $parts = explode(" ", $line);
-                $length = $parts[3];
-                $sid = $parts[2];
-
-                $payload = $this->_receive($length);
-
-                $func = $this->_subscriptions[$sid];
-                if (is_callable($func)) {
-                    $func($payload);
-                } else {
-                    return new \Exception("not callable");
-                }
-
+                $this->_handleMSG($line);
                 if (($quantity != 0) && ($count >= $quantity)) {
                     return null;
                 }
@@ -336,7 +401,8 @@ class Connection
      */
     public function close()
     {
-        fclose($this->_fp);
+        fclose($this->_streamSocket);
+        $this->_streamSocket = null;
     }
 
 }
