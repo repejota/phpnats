@@ -137,6 +137,10 @@ class Connection
      */
     public function __construct($host = "localhost", $port = 4222)
     {
+        $this->_pings = 0;
+        $this->_pubs = 0;
+        $this->_subscriptions = 0;
+
         $this->_host = $host;
         $this->_port = $port;
         $this->_address = "tcp://" . $this->_host . ":" . $this->_port;

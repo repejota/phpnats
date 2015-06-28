@@ -13,6 +13,6 @@ cs:
 	./phpcbf.phar src
 	./phpcbf.phar tests
 	./phpcbf.phar examples
-	./phpcs.phar src tests examples
+	./vendor/bin/phpcs src tests examples
 
 .PHONY: lint test cs cover
