@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1435534592">
+  <project timestamp="1435534592">
+    <package name="Nats">
+      <file name="/Users/raul/Projects/phpnats/src/Connection.php">
+        <class name="Connection" namespace="Nats" fullPackage="Nats" category="Class" package="Nats">
+          <metrics methods="20" coveredmethods="14" conditionals="0" coveredconditionals="0" statements="94" coveredstatements="75" elements="114" coveredelements="89"/>
+        </class>
+        <line num="43" type="method" name="pingsCount" crap="1" count="1"/>
+        <line num="45" type="stmt" count="1"/>
+        <line num="60" type="method" name="pubsCount" crap="1" count="1"/>
+        <line num="62" type="stmt" count="1"/>
+        <line num="77" type="method" name="reconnectsCount" crap="1" count="1"/>
+        <line num="79" type="stmt" count="1"/>
+        <line num="94" type="method" name="subscriptionsCount" crap="1" count="1"/>
+        <line num="96" type="stmt" count="1"/>
+        <line num="104" type="method" name="getSubscriptions" crap="1" count="1"/>
+        <line num="106" type="stmt" count="1"/>
+        <line num="143" type="method" name="__construct" crap="1" count="6"/>
+        <line num="145" type="stmt" count="6"/>
+        <line num="147" type="stmt" count="6"/>
+        <line num="148" type="stmt" count="6"/>
+        <line num="149" type="stmt" count="6"/>
+        <line num="150" type="stmt" count="6"/>
+        <line num="152" type="stmt" count="6"/>
+        <line num="153" type="stmt" count="6"/>
+        <line num="154" type="stmt" count="6"/>
+        <line num="155" type="stmt" count="6"/>
+        <line num="164" type="method" name="_send" crap="1" count="6"/>
+        <line num="166" type="stmt" count="6"/>
+        <line num="167" type="stmt" count="6"/>
+        <line num="168" type="stmt" count="6"/>
+        <line num="177" type="method" name="_receive" crap="2" count="1"/>
+        <line num="179" type="stmt" count="1"/>
+        <line num="180" type="stmt" count="1"/>
+        <line num="182" type="stmt" count="1"/>
+        <line num="193" type="method" name="_getStream" crap="2.15" count="6"/>
+        <line num="195" type="stmt" count="6"/>
+        <line num="196" type="stmt" count="6"/>
+        <line num="197" type="stmt" count="0"/>
+        <line num="198" type="stmt" count="0"/>
+        <line num="199" type="stmt" count="6"/>
+        <line num="200" type="stmt" count="6"/>
+        <line num="208" type="method" name="isConnected" crap="1" count="1"/>
+        <line num="210" type="stmt" count="1"/>
+        <line num="234" type="method" name="connect" crap="3.47" count="6"/>
+        <line num="240" type="stmt" count="6"/>
+        <line num="241" type="stmt" count="0"/>
+        <line num="242" type="stmt" count="0"/>
+        <line num="243" type="stmt" count="0"/>
+        <line num="244" type="stmt" count="6"/>
+        <line num="245" type="stmt" count="0"/>
+        <line num="246" type="stmt" count="0"/>
+        <line num="247" type="stmt" count="0"/>
+        <line num="248" type="stmt" count="6"/>
+        <line num="249" type="stmt" count="6"/>
+        <line num="250" type="stmt" count="6"/>
+        <line num="251" type="stmt" count="6"/>
+        <line num="253" type="stmt" count="6"/>
+        <line num="254" type="stmt" count="6"/>
+        <line num="255" type="stmt" count="6"/>
+        <line num="256" type="stmt" count="6"/>
+        <line num="263" type="method" name="ping" crap="1" count="1"/>
+        <line num="265" type="stmt" count="1"/>
+        <line num="266" type="stmt" count="1"/>
+        <line num="267" type="stmt" count="1"/>
+        <line num="268" type="stmt" count="1"/>
+        <line num="278" type="method" name="publish" crap="1" count="2"/>
+        <line num="280" type="stmt" count="2"/>
+        <line num="281" type="stmt" count="2"/>
+        <line num="282" type="stmt" count="2"/>
+        <line num="283" type="stmt" count="2"/>
+        <line num="284" type="stmt" count="2"/>
+        <line num="294" type="method" name="subscribe" crap="1" count="1"/>
+        <line num="296" type="stmt" count="1"/>
+        <line num="297" type="stmt" count="1"/>
+        <line num="298" type="stmt" count="1"/>
+        <line num="299" type="stmt" count="1"/>
+        <line num="300" type="stmt" count="1"/>
+        <line num="310" type="method" name="unsubscribe" crap="2" count="0"/>
+        <line num="312" type="stmt" count="0"/>
+        <line num="313" type="stmt" count="0"/>
+        <line num="314" type="stmt" count="0"/>
+        <line num="321" type="method" name="_handlePING" crap="2" count="0"/>
+        <line num="323" type="stmt" count="0"/>
+        <line num="324" type="stmt" count="0"/>
+        <line num="333" type="method" name="_handleMSG" crap="2.00" count="1"/>
+        <line num="335" type="stmt" count="1"/>
+        <line num="336" type="stmt" count="1"/>
+        <line num="337" type="stmt" count="1"/>
+        <line num="339" type="stmt" count="1"/>
+        <line num="341" type="stmt" count="1"/>
+        <line num="342" type="stmt" count="1"/>
+        <line num="343" type="stmt" count="1"/>
+        <line num="344" type="stmt" count="1"/>
+        <line num="345" type="stmt" count="0"/>
+        <line num="347" type="stmt" count="1"/>
+        <line num="356" type="method" name="wait" crap="7.33" count="1"/>
+        <line num="358" type="stmt" count="1"/>
+        <line num="359" type="stmt" count="1"/>
+        <line num="360" type="stmt" count="1"/>
+        <line num="363" type="stmt" count="1"/>
+        <line num="364" type="stmt" count="0"/>
+        <line num="365" type="stmt" count="0"/>
+        <line num="368" type="stmt" count="1"/>
+        <line num="369" type="stmt" count="1"/>
+        <line num="370" type="stmt" count="1"/>
+        <line num="371" type="stmt" count="1"/>
+        <line num="372" type="stmt" count="1"/>
+        <line num="374" type="stmt" count="0"/>
+        <line num="375" type="stmt" count="1"/>
+        <line num="376" type="stmt" count="0"/>
+        <line num="377" type="stmt" count="0"/>
+        <line num="385" type="method" name="reconnect" crap="1" count="1"/>
+        <line num="387" type="stmt" count="1"/>
+        <line num="388" type="stmt" count="1"/>
+        <line num="389" type="stmt" count="1"/>
+        <line num="390" type="stmt" count="1"/>
+        <line num="397" type="method" name="close" crap="1" count="4"/>
+        <line num="399" type="stmt" count="4"/>
+        <line num="400" type="stmt" count="4"/>
+        <line num="401" type="stmt" count="4"/>
+        <metrics loc="403" ncloc="201" classes="1" methods="20" coveredmethods="14" conditionals="0" coveredconditionals="0" statements="94" coveredstatements="75" elements="114" coveredelements="89"/>
+      </file>
+      <file name="/Users/raul/Projects/phpnats/src/ConnectionOptions.php">
+        <class name="ConnectionOptions" namespace="Nats" fullPackage="Nats" category="Class" package="Nats">
+          <metrics methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="2" elements="3" coveredelements="3"/>
+        </class>
+        <line num="65" type="method" name="__construct" crap="1" count="6"/>
+        <line num="66" type="stmt" count="6"/>
+        <line num="67" type="stmt" count="6"/>
+        <metrics loc="67" ncloc="19" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="2" elements="3" coveredelements="3"/>
+      </file>
+    </package>
+    <metrics files="2" loc="470" ncloc="220" classes="2" methods="21" coveredmethods="15" conditionals="0" coveredconditionals="0" statements="96" coveredstatements="77" elements="117" coveredelements="92"/>
+  </project>
+</coverage>

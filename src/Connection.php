@@ -245,19 +245,13 @@ class Connection
             $this->_port = $port;
             $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
         }
-        $verbose = ($verbose) ? 'true' : 'false';
-        $pedantic = ($pedantic) ? 'true' : 'false';
-        $reconnect = ($reconnect) ? 'true' : 'false';
-
-        $options = '{ ';
-        $options .= ' "lang": "php", ';
-        $options .= ' "verbose": ' . $verbose . ', ';
-        $options .= ' "pedantic": ' . $pedantic . ', ';
-        $options .= ' "reconnect": ' . $reconnect;
-        $options .= ' }';
+        $options = new ConnectionOptions();
+        $options->verbose = $verbose;
+        $options->pedantic = $pedantic;
+        $options->reconnect = $reconnect;
 
         $this->_streamSocket = $this->_getStream($this->_address);
-        $msg = 'CONNECT ' . $options;
+        $msg = 'CONNECT ' . json_encode($options);
         $this->_send($msg);
     }
 
