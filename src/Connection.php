@@ -122,7 +122,7 @@ class Connection
      *
      * @param $payload
      */
-    private function _Send($payload)
+    private function send($payload)
     {
         $msg = $payload . "\r\n";
         fwrite($this->fp, $msg, strlen($msg));
@@ -134,7 +134,7 @@ class Connection
      * @param  $len
      * @return string
      */
-    private function _Receive($len = null)
+    private function receive($len = null)
     {
         if ($len) {
             return trim(fgets($this->fp, $len + 1));
@@ -155,7 +155,7 @@ class Connection
         }
         stream_set_blocking($this->fp, 0);
         $msg = 'CONNECT {}';
-        $this->_Send($msg);
+        $this->send($msg);
     }
 
     /**
@@ -164,7 +164,7 @@ class Connection
     public function ping()
     {
         $msg = "PING";
-        $this->_Send($msg);
+        $this->send($msg);
         $this->pings += 1;
     }
 
@@ -178,8 +178,8 @@ class Connection
     public function publish($subject, $payload)
     {
         $msg = "PUB " . $subject . " " . strlen($payload);
-        $this->_Send($msg);
-        $this->_Send($payload);
+        $this->send($msg);
+        $this->send($payload);
         $this->pubs += 1;
     }
 
@@ -194,7 +194,7 @@ class Connection
     {
         $sid = uniqid();
         $msg = "SUB " . $subject . " " . $sid;
-        $this->_Send($msg);
+        $this->send($msg);
         $this->subscriptions[$sid] = $callback;
         return $sid;
     }
@@ -207,7 +207,7 @@ class Connection
     public function unsubscribe($sid)
     {
         $msg = "UNSUB " . $sid;
-        $this->_Send($msg);
+        $this->send($msg);
     }
 
     /**
@@ -220,7 +220,7 @@ class Connection
     {
         $count = 0;
         while (!feof($this->fp)) {
-            $line = $this->_Receive();
+            $line = $this->receive();
 
             // Debug
             if ($line) {
@@ -229,14 +229,7 @@ class Connection
 
             // PING
             if (strpos($line, 'PING') === 0) {
-                $this->_Send("PONG");
-            }
-
-            // INFO
-            if (strpos($line, 'INFO') === 0) {
-                $parts = explode(" ", $line);
-                $info = json_decode($parts[1]);
-                $this->server = $info;
+                $this->send("PONG");
             }
 
             // MSG
@@ -247,7 +240,7 @@ class Connection
                 $length = $parts[3];
                 $sid = $parts[2];
 
-                $payload = $this->_Receive($length);
+                $payload = $this->receive($length);
 
                 $func = $this->subscriptions[$sid];
                 if (is_callable($func)) {
