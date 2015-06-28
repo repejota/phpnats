@@ -14,7 +14,7 @@ namespace Nats;
 
 /**
  * Connection Class
- * 
+ *
  * @category Class
  * @package  Nats\Tests\Unit
  * @author   Raül Përez <repejota@gmail.com>
@@ -26,7 +26,7 @@ class Connection
     /**
      * Version number
      */
-    const VERSION = "0.0.3";
+    public $VERSION = "0.0.0";
 
     /**
      * Number of PINGS
@@ -142,6 +142,8 @@ class Connection
      */
     public function __construct($host = "localhost", $port = 4222)
     {
+        $this->VERSION = file_get_contents("./VERSION");
+
         $this->_pings = 0;
         $this->_pubs = 0;
         $this->_subscriptions = 0;
@@ -185,7 +187,7 @@ class Connection
      * Returns an stream socket to the desired server.
      *
      * @param string $address Server url string
-     * 
+     *
      * @return resource
      */
     private function _getStream($address)
@@ -203,7 +205,7 @@ class Connection
      *
      * @return bool
      */
-    public function isConnected() 
+    public function isConnected()
     {
         return isset($this->_streamSocket);
     }
@@ -221,14 +223,40 @@ class Connection
      * Example:
      *   nats://user:pass@localhost:4222
      *
+     * @param null $host      host name to connect
+     * @param null $port      host port to connect
+     * @param bool $verbose   if verbose mode is enabled
+     * @param bool $pedantic  if pedantic mode is enabled
+     * @param bool $reconnect if reconnect mode is enabled
+     *
      * @return void
      */
-    public function connect()
-    {
-        $options = '{ "verbose": false, "pedantic": false, "reconnect": true }';
+    public function connect($host = null,
+        $port = null,
+        $verbose = false,
+        $pedantic = false,
+        $reconnect = true
+    ) {
+        if (isset($host)) {
+            $this->_host = $host;
+            $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
+        }
+        if (isset($port)) {
+            $this->_port = $port;
+            $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
+        }
+        $verbose = ($verbose) ? 'true' : 'false';
+        $pedantic = ($pedantic) ? 'true' : 'false';
+        $reconnect = ($reconnect) ? 'true' : 'false';
+
+        $options = '{ ';
+        $options .= ' "verbose": ' . $verbose . ', ';
+        $options .= ' "pedantic": ' . $pedantic . ', ';
+        $options .= ' "reconnect": ' . $reconnect;
+        $options .= ' }';
 
         $this->_streamSocket = $this->_getStream($this->_address);
-        $msg = 'CONNECT '. $options;
+        $msg = 'CONNECT ' . $options;
         $this->_send($msg);
     }
 
@@ -295,7 +323,8 @@ class Connection
      *
      * @return void
      */
-    private function _handlePING() {
+    private function _handlePING()
+    {
         $this->_send("PONG");
     }
 
@@ -306,7 +335,8 @@ class Connection
      *
      * @return \Exception|void
      */
-    private function _handleMSG($line) {
+    private function _handleMSG($line)
+    {
         $parts = explode(" ", $line);
         $length = $parts[3];
         $sid = $parts[2];
@@ -325,7 +355,7 @@ class Connection
      * Waits for messages
      *
      * @param int $quantity Number of messages to wait for
-     * 
+     *
      * @return \Exception|void
      */
     public function wait($quantity = 0)
