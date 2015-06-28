@@ -35,7 +35,7 @@ class Connection
      *
      * @return int Number of pings
      */
-    public function getNPings()
+    public function pingsCount()
     {
         return $this->_pings;
     }
@@ -62,16 +62,16 @@ class Connection
      *
      * @var int Number of reconnects
      */
-    private $reconnects = 0;
+    private $_reconnects = 0;
 
     /**
      * Return the number of reconnects to the server
      *
      * @return int number of reconnects
      */
-    public function getNReconnects()
+    public function reconnectsCount()
     {
-        return $this->reconnects;
+        return $this->_reconnects;
     }
 
     /**
@@ -79,16 +79,16 @@ class Connection
      *
      * @var array list of subscriptions
      */
-    private $subscriptions = [];
+    private $_subscriptions = [];
 
     /**
      * Return the number of subscriptions available
      *
      * @return int number of subscription
      */
-    public function getNSubscription()
+    public function subscriptionsCount()
     {
-        return count($this->subscriptions);
+        return count($this->_subscriptions);
     }
 
     /**
@@ -98,35 +98,36 @@ class Connection
      */
     public function getSubscriptions()
     {
-        return array_keys($this->subscriptions);
+        return array_keys($this->_subscriptions);
     }
 
     /**
      * Hostname of the server
+     *
      * @var string hostname
      */
-    private $host;
+    private $_host;
 
     /**
      * Por number of the server
      *
      * @var integer port number
      */
-    private $port;
+    private $_port;
 
     /**
      * Stream File Pointer
      *
      * @var mixed Socket file pointer
      */
-    private $fp;
+    private $_fp;
 
     /**
      * Server address
      *
      * @var string Server address
      */
-    private $address = "nats://";
+    private $_address = "nats://";
 
     /**
      * Constructor
@@ -136,45 +137,49 @@ class Connection
      */
     public function __construct($host = "localhost", $port = 4222)
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->address = "tcp://" . $this->host . ":" . $this->port;
+        $this->_host = $host;
+        $this->_port = $port;
+        $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
     }
 
     /**
      * Sends data thought the stream
      *
-     * @param  string $payload Message data
-     * @return null
+     * @param string $payload message data
+     *
+     * @return void
      */
-    private function send($payload)
+    private function _send($payload)
     {
+
         $msg = $payload . "\r\n";
-        fwrite($this->fp, $msg, strlen($msg));
+        fwrite($this->_fp, $msg, strlen($msg));
     }
 
     /**
      * Receives a message thought the stream
      *
-     * @param  int $len Number of bytes to receive
+     * @param int $len Number of bytes to receive
+     *
      * @return string
      */
-    private function receive($len = null)
+    private function _receive($len = null)
     {
         if ($len) {
-            return trim(fgets($this->fp, $len + 1));
+            return trim(fgets($this->_fp, $len + 1));
         } else {
-            return trim(fgets($this->fp));
+            return trim(fgets($this->_fp));
         }
     }
 
     /**
      * Returns an stream socket to the desired server.
      *
-     * @param  string $address Server url string
+     * @param string $address Server url string
+     * 
      * @return resource
      */
-    private function getStream($address) 
+    private function _getStream($address)
     {
         $fp = stream_socket_client($address, $errno, $errstr, STREAM_CLIENT_CONNECT);
         if (!$fp) {
@@ -197,78 +202,85 @@ class Connection
      * Example:
      *   nats://user:pass@localhost:4222
      *
-     * @return null
+     * @return void
      */
     public function connect()
     {
-        $this->fp = $this->getStream($this->address);
+        $this->_fp = $this->_getStream($this->_address);
         $msg = 'CONNECT {}';
-        $this->send($msg);
+        $this->_send($msg);
     }
 
     /**
      * Sends PING message
+     *
+     * @return void
      */
     public function ping()
     {
         $msg = "PING";
-        $this->send($msg);
+        $this->_send($msg);
         $this->_pings += 1;
     }
 
     /**
      * Publish publishes the data argument to the given subject.
      *
-     * @param  $subject (string): a string with the subject
-     * @param  $payload (string): payload string
+     * @param string $subject message topic
+     * @param string $payload message data
+     *
      * @return string
      */
     public function publish($subject, $payload)
     {
         $msg = "PUB " . $subject . " " . strlen($payload);
-        $this->send($msg);
-        $this->send($payload);
+        $this->_send($msg);
+        $this->_send($payload);
         $this->_pubs += 1;
     }
 
     /**
      * Subscribes to an specific event given a subject.
      *
-     * @param  $subject
-     * @param  $callback
+     * @param string $subject  message topic
+     * @param mixed  $callback closure to be executed as callback
+     *
      * @return string
      */
     public function subscribe($subject, $callback)
     {
         $sid = uniqid();
         $msg = "SUB " . $subject . " " . $sid;
-        $this->send($msg);
-        $this->subscriptions[$sid] = $callback;
+        $this->_send($msg);
+        $this->_subscriptions[$sid] = $callback;
         return $sid;
     }
 
     /**
      * Unsubscribe from a event given a subject.
      *
-     * @param $sid
+     * @param string $sid Subscription ID
+     *
+     * @return void
      */
     public function unsubscribe($sid)
     {
         $msg = "UNSUB " . $sid;
-        $this->send($msg);
+        $this->_send($msg);
     }
 
     /**
      * Waits for messages
      *
-     * @param  int $quantity Number of messages to wait for
+     * @param int $quantity Number of messages to wait for
+     * 
      * @return \Exception|void
      */
     public function wait($quantity = 0)
     {
         $count = 0;
-        while (!feof($this->fp)) {
-            $line = $this->receive();
+        while (!feof($this->_fp)) {
+            $line = $this->_receive();
 
             // Debug
             if ($line) {
@@ -277,7 +289,7 @@ class Connection
 
             // PING
             if (strpos($line, 'PING') === 0) {
-                $this->send("PONG");
+                $this->_send("PONG");
             }
 
             // MSG
@@ -288,9 +300,9 @@ class Connection
                 $length = $parts[3];
                 $sid = $parts[2];
 
-                $payload = $this->receive($length);
+                $payload = $this->_receive($length);
 
-                $func = $this->subscriptions[$sid];
+                $func = $this->_subscriptions[$sid];
                 if (is_callable($func)) {
                     $func($payload);
                 } else {
@@ -308,20 +320,24 @@ class Connection
 
     /**
      * Reconnects to the server
+     *
+     * @return void
      */
     public function reconnect()
     {
-        $this->reconnects += 1;
+        $this->_reconnects += 1;
         $this->close();
         $this->connect();
     }
 
     /**
      * Close will close the connection to the server.
+     *
+     * @return void
      */
     public function close()
     {
-        fclose($this->fp);
+        fclose($this->_fp);
     }
 
 }
