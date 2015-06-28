@@ -32,6 +32,8 @@ class TestConnection extends \PHPUnit_Framework_TestCase {
         $c = new Nats\Connection();
         $c->connect();
         $c->ping();
+        $c->ping();
+        $this->assertGreaterThan(0, $c->getNPings());
         $c->close();
     }
 
@@ -42,6 +44,7 @@ class TestConnection extends \PHPUnit_Framework_TestCase {
         $c = new Nats\Connection();
         $c->connect();
         $c->publish("foo", "bar");
+        $this->assertGreaterThan(0, $c->getNPubs());
         $c->close();
     }
 }

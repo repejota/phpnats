@@ -7,14 +7,71 @@ namespace Nats;
 class Connection
 {
     /**
+     * @var int Number of pings published
+     */
+    private $pings = 0;
+
+    /**
+     * Return the number of pings published
+     *
+     * @return int Number of pings published
+     */
+    public function getNPings()
+    {
+        return $this->pings;
+    }
+
+    /**
+     * @var int Number of messages published
+     */
+    private $pubs = 0;
+
+    /**
+     * Return the number of mensages published
+     *
+     * @return int Number of messages published
+     */
+    public function getNPubs()
+    {
+        return $this->pubs;
+    }
+
+    /**
      * @var int Number of reconnects
      */
     private $reconnects = 0;
 
     /**
+     * Get number of reconnects
+     *
+     * @return int Number of reconnects
+     */
+    public function getNReconnects() {
+        return $this->reconnects;
+    }
+
+    /**
      * @var array List of subscriptions
      */
     private $subscriptions = [];
+
+    /**
+     * Get number of subscription
+     *
+     * @return int Number of subscription
+     */
+    public function getNSubscription() {
+        return count($this->subscriptions);
+    }
+
+    /**
+     * Get subscriptions ids
+     *
+     * @return array List of subscriptions ids
+     */
+    public function getSubscriptions() {
+        return array_keys($this->subscriptions);
+    }
 
     /**
      * @var string Host name or ip of the server
@@ -43,6 +100,8 @@ class Connection
 
     /**
      * Constructor
+     * @param string $host
+     * @param int $port
      */
     public function __construct($host="localhost", $port=4222)
     {
@@ -75,12 +134,6 @@ class Connection
         }
     }
 
-    private function parseINFO($str) {
-        $obj = json_decode($str);
-        $this->server_id = $obj->server_id;
-
-    }
-
     /**
      * Connect will attempt to connect to the NATS server.
      * The url can contain username/password semantics.
@@ -103,6 +156,7 @@ class Connection
     {
         $msg = "PING";
         $this->_send($msg);
+        $this->pings += 1;
     }
 
     /**
@@ -117,6 +171,7 @@ class Connection
         $msg = "PUB " . $subject . " " . strlen($payload);
         $this->_send($msg);
         $this->_send($payload);
+        $this->pubs += 1;
     }
 
     /**
