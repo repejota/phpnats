@@ -10,10 +10,10 @@
         "homepage": "http://repejota.com"
     }],
     "require": {
-        "zerkalica/phpcs": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.7.*"
+        "phpunit/phpunit": "4.7.*",
+        "zerkalica/phpcs": "dev-master"
     },
     "autoload": {
         "psr-4": {
