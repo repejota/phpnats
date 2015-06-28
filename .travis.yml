@@ -5,6 +5,14 @@ php:
   - 5.6
   - hhvm
   - nightly
-install:
-  - composer update
+before_script:
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install --dev --no-interaction
+script:
   - make lint
+  - mkdir -p build/logs
+  - php vendor/bin/phpunit -c phpunit.xml.dist
+after_script:
+  - php vendor/bin/coveralls
+    # or enable logging
+  - php vendor/bin/coveralls -v
