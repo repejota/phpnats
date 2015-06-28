@@ -250,6 +250,7 @@ class Connection
         $reconnect = ($reconnect) ? 'true' : 'false';
 
         $options = '{ ';
+        $options .= ' "lang": "php", ';
         $options .= ' "verbose": ' . $verbose . ', ';
         $options .= ' "pedantic": ' . $pedantic . ', ';
         $options .= ' "reconnect": ' . $reconnect;
