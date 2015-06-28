@@ -25,20 +25,40 @@ use Nats;
  */
 class TestConnection extends \PHPUnit_Framework_TestCase
 {
-    private $c;
+    private $_c;
 
     /**
      * Setup tests
+     *
+     * @return null
      */
-    public function setUp() 
+    public function setUp()
     {
-        $this->c = $this->getMockBuilder('Nats\Connection')->getMock();
-        $this->c->expects($this->any())->method("connect")->willReturn(null);
-        $this->c->expects($this->any())->method("pingsCount")->willReturn(1);
-        $this->c->expects($this->any())->method("pubsCount")->willReturn(1);
-        $this->c->expects($this->any())->method("reconnectsCount")->willReturn(1);
-        $this->c->expects($this->any())->method("subscriptionsCount")->willReturn(1);
-        $this->c->expects($this->any())->method("getSubscriptions")->willReturn(["foo", "bar"]);
+        $this->_c = $this->getMockBuilder('Nats\Connection')->getMock();
+
+        $this->_c->expects($this->any())
+            ->method("connect")
+            ->willReturn(null);
+
+        $this->_c->expects($this->any())
+            ->method("pingsCount")
+            ->willReturn(1);
+
+        $this->_c->expects($this->any())
+            ->method("pubsCount")
+            ->willReturn(1);
+
+        $this->_c->expects($this->any())
+            ->method("reconnectsCount")
+            ->willReturn(1);
+
+        $this->_c->expects($this->any())
+            ->method("subscriptionsCount")
+            ->willReturn(1);
+
+        $this->_c->expects($this->any())
+            ->method("getSubscriptions")
+            ->willReturn(["foo", "bar"]);
     }
 
     /**
@@ -46,7 +66,7 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      *
      * @return null
      */
-    public function testDummy() 
+    public function testDummy()
     {
         $this->assertTrue(true);
     }
@@ -56,10 +76,10 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      *
      * @return null
      */
-    public function testConnection() 
+    public function testConnection()
     {
-        $this->c->connect();
-        $this->c->close();
+        $this->_c->connect();
+        $this->_c->close();
     }
 
     /**
@@ -67,12 +87,12 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      *
      * @return null
      */
-    public function testPing() 
+    public function testPing()
     {
-        $count = $this->c->pingsCount();
+        $count = $this->_c->pingsCount();
         $this->assertInternalType("int", $count);
         $this->assertGreaterThan(0, $count);
-        $this->c->close();
+        $this->_c->close();
     }
 
     /**
@@ -80,13 +100,13 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      *
      * @return null
      */
-    public function testPublish() 
+    public function testPublish()
     {
-        $this->c->publish("foo", "bar");
-        $this->count = $this->c->pubsCount();
+        $this->_c->publish("foo", "bar");
+        $this->count = $this->_c->pubsCount();
         $this->assertInternalType("int", $this->count);
         $this->assertGreaterThan(0, $this->count);
-        $this->c->close();
+        $this->_c->close();
     }
 
     /**
@@ -96,11 +116,11 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      */
     public function testReconnect()
     {
-        $this->c->reconnect();
-        $this->count = $this->c->reconnectsCount();
+        $this->_c->reconnect();
+        $this->count = $this->_c->reconnectsCount();
         $this->assertInternalType("int", $this->count);
         $this->assertGreaterThan(0, $this->count);
-        $this->c->close();
+        $this->_c->close();
     }
 
     /**
@@ -110,16 +130,15 @@ class TestConnection extends \PHPUnit_Framework_TestCase
      */
     public function testSubscription()
     {
-        $this->c->subscribe(
-            "foo", function ($message) {
-                $this->assertNotNull($message);
-            }
-        );
-        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
-        $subscriptions = $this->c->getSubscriptions();
+        $callback = function ($message) {
+            $this->assertNotNull($message);
+        };
+        $this->_c->subscribe("foo", $callback);
+        $this->assertGreaterThan(0, $this->_c->subscriptionsCount());
+        $subscriptions = $this->_c->getSubscriptions();
         $this->assertInternalType("array", $subscriptions);
 
-        $this->c->publish("foo", "bar");
-        $this->c->wait(1);
+        $this->_c->publish("foo", "bar");
+        $this->_c->wait(1);
     }
 }
