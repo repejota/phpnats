@@ -225,8 +225,10 @@ class Connection
      */
     public function connect()
     {
+        $options = '{ "verbose": false, "pedantic": false, "reconnect": true }';
+
         $this->_streamSocket = $this->_getStream($this->_address);
-        $msg = 'CONNECT {}';
+        $msg = 'CONNECT '. $options;
         $this->_send($msg);
     }
 
@@ -289,6 +291,37 @@ class Connection
     }
 
     /**
+     * Handles PING command
+     *
+     * @return void
+     */
+    private function _handlePING() {
+        $this->_send("PONG");
+    }
+
+    /**
+     * Handles MSG command
+     *
+     * @param string $line Message command from NATS
+     *
+     * @return \Exception|void
+     */
+    private function _handleMSG($line) {
+        $parts = explode(" ", $line);
+        $length = $parts[3];
+        $sid = $parts[2];
+
+        $payload = $this->_receive($length);
+
+        $func = $this->_subscriptions[$sid];
+        if (is_callable($func)) {
+            $func($payload);
+        } else {
+            return new \Exception("not callable");
+        }
+    }
+
+    /**
      * Waits for messages
      *
      * @param int $quantity Number of messages to wait for
@@ -303,26 +336,13 @@ class Connection
 
             // PING
             if (strpos($line, 'PING') === 0) {
-                $this->_send("PONG");
+                $this->_handlePing();
             }
 
             // MSG
             if (strpos($line, 'MSG') === 0) {
                 $count = $count + 1;
-
-                $parts = explode(" ", $line);
-                $length = $parts[3];
-                $sid = $parts[2];
-
-                $payload = $this->_receive($length);
-
-                $func = $this->_subscriptions[$sid];
-                if (is_callable($func)) {
-                    $func($payload);
-                } else {
-                    return new \Exception("not callable");
-                }
-
+                $this->_handleMSG($line);
                 if (($quantity != 0) && ($count >= $quantity)) {
                     return null;
                 }

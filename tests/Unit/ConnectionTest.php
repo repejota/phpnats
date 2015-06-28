@@ -29,8 +29,6 @@ class TestConnection extends TestCase
 {
     private $_c;
 
-    private $_server;
-
     /**
      * Setup tests
      *
