@@ -17,6 +17,20 @@
         "zerkalica/phpcs": "dev-master",
         "satooshi/php-coveralls": "dev-master"
     },
+    "authors": [
+        {
+            "name": "Raül Pérez",
+            "email": "repejota@gmail.com",
+            "homepage": "http://www.repejota.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Adrià Cidre",
+            "email": "adria.cidre@gmail.com",
+            "homepage": "http://oridoki.com",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Nats\\": "src"

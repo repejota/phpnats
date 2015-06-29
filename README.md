@@ -53,6 +53,20 @@ Tests are in the `tests` folder.
 To run them, you need `PHPUnit` and execute `make test`.
 
 
+## Creators
+-----------
+
+**Raül Pérez**
+
+- <https://twitter.com/repejota>
+- <https://github.com/repejota>
+
+**Adrià Cidre**
+
+- <https://twitter.com/adriacidre>
+- <https://github.com/adriacidre>
+
+
 License
 -------
 
