@@ -14,7 +14,6 @@
     "require-dev": {
         "phpunit/phpunit": "4.7.*",
         "phpspec/prophecy-phpunit": "^1.0@dev",
-        "zerkalica/phpcs": "dev-master",
         "satooshi/php-coveralls": "dev-master"
     },
     "authors": [

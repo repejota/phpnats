@@ -48,22 +48,32 @@ $client->subscribe("foo", $callback);
 $client->wait(1);
 ```
 
-Tests
------
+Developer's Information
+-----------------------
+
+### Tests
 
 Tests are in the `tests` folder.
 To run them, you need `PHPUnit` and execute `make test`.
 
-Code Quality
-------------
+### Code Quality
 
 We are using [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer/docs)
-to ensure our code follow an high quality standard. If you want to perform
-an analysis of the code just execute `make cs`.
+to ensure our code follow an high quality standard.
+
+To install this tools:
+
+```bash
+$ curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+$ curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar
+``` 
+
+Then you have everything you need to perform an analysis of the code just 
+executing `make cs`.
 
 
-## Creators
------------
+Creators
+--------
 
 **Raül Pérez**
 
