@@ -13,8 +13,7 @@ before_script:
   - go get -u github.com/nats-io/gnatsd
   - gnats="$GOPATH/bin/gnatsd"
   - $gnats &
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --no-interaction
+  - composer install
 script:
   - make lint
   - mkdir -p build/logs
