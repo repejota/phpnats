@@ -14,7 +14,7 @@ before_script:
   - gnats="$GOPATH/bin/gnatsd"
   - $gnats &
   - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --dev --no-interaction
+  - php composer.phar install --no-interaction
 script:
   - make lint
   - mkdir -p build/logs
