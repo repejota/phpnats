@@ -12,8 +12,6 @@
  */
 namespace Nats\Tests\Unit;
 
-use Prophecy\PhpUnit\ProphecyTestCase as TestCase;
-
 use Nats;
 
 /**
@@ -25,7 +23,7 @@ use Nats;
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
  * @link     https://github.com/repejota/phpnats
  */
-class TestConnection extends TestCase
+class TestConnection extends \PHPUnit_Framework_TestCase
 {
     private $_c;
 
