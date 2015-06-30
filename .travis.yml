@@ -5,6 +5,14 @@ php:
   - 5.6
   - nightly
 before_script:
+  - sudo apt-get install python-software-properties  # 12.04
+  - sudo add-apt-repository -y ppa:duh/golang
+  - sudo apt-get update
+  - sudo apt-get install golang
+  - export GOROOT=`go env GOROOT` && export GOPATH=$HOME/go
+  - go get -u github.com/nats-io/gnatsd
+  - gnats="$GOPATH/bin/gnatsd"
+  - $gnats &
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --dev --no-interaction
 script:
@@ -13,5 +21,4 @@ script:
   - php vendor/bin/phpunit -c phpunit.xml.dist
 after_script:
   - php vendor/bin/coveralls
-    # or enable logging
   - php vendor/bin/coveralls -v
