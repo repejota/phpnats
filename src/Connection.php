@@ -26,7 +26,7 @@ class Connection
     /**
      * Version number
      */
-    public $VERSION = "0.0.0";
+    public $VERSION = "0.0.4";
 
     /**
      * Number of PINGS
@@ -142,8 +142,6 @@ class Connection
      */
     public function __construct($host = "localhost", $port = 4222)
     {
-        $this->VERSION = file_get_contents("./VERSION");
-
         $this->_pings = 0;
         $this->_pubs = 0;
         $this->_subscriptions = 0;

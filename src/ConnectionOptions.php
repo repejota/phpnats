@@ -36,7 +36,7 @@ class ConnectionOptions
      *
      * @var string
      */
-    public $version = "0.0.0";
+    public $version = "0.0.4";
 
     /**
      * If verbose mode is enabled
@@ -59,12 +59,4 @@ class ConnectionOptions
      */
     public $reconnect = true;
 
-
-    /**
-     * Constructor
-     */
-    public function __construct() 
-    {
-        $this->version = trim(file_get_contents("./VERSION"));
-    }
 }
