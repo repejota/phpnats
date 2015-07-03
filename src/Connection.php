@@ -24,11 +24,6 @@ namespace Nats;
 class Connection
 {
     /**
-     * Version number
-     */
-    public $VERSION = "0.0.4";
-
-    /**
      * Number of PINGS
      *
      * @var int number of pings
@@ -106,19 +101,7 @@ class Connection
         return array_keys($this->_subscriptions);
     }
 
-    /**
-     * Hostname of the server
-     *
-     * @var string hostname
-     */
-    private $_host;
-
-    /**
-     * Por number of the server
-     *
-     * @var integer port number
-     */
-    private $_port;
+    private $_options = null;
 
     /**
      * Stream File Pointer
@@ -128,28 +111,19 @@ class Connection
     private $_streamSocket;
 
     /**
-     * Server address
-     *
-     * @var string Server address
-     */
-    private $_address = "nats://";
-
-    /**
      * Constructor
      *
      * @param string $host name, by default "localhost"
      * @param int    $port number, by default 4222
      */
-    public function __construct($host = "localhost", $port = 4222)
+    public function __construct()
     {
         $this->_pings = 0;
         $this->_pubs = 0;
         $this->_subscriptions = 0;
         $this->_subscriptions = [];
 
-        $this->_host = $host;
-        $this->_port = $port;
-        $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
+        $this->_options = new ConnectionOptions();
     }
 
     /**
@@ -211,51 +185,11 @@ class Connection
     /**
      * Connect to server.
      *
-     * Connect will attempt to connect to the NATS server specified by address.
-     *
-     * Example:
-     *   nats://localhost:4222
-     *
-     * The url can contain username/password semantics.
-     *
-     * Example:
-     *   nats://user:pass@localhost:4222
-     *
-     * @param null $host      host name to connect
-     * @param null $port      host port to connect
-     * @param bool $verbose   if verbose mode is enabled
-     * @param bool $pedantic  if pedantic mode is enabled
-     * @param bool $reconnect if reconnect mode is enabled
-     *
      * @return void
      */
-    public function connect($host = null,
-        $port = null,
-        $user = null,
-        $pass = null,
-        $verbose = false,
-        $pedantic = false,
-        $reconnect = true
-    ) {
-        if (isset($host)) {
-            $this->_host = $host;
-            $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
-        }
-        if (isset($port)) {
-            $this->_port = $port;
-            $this->_address = "tcp://" . $this->_host . ":" . $this->_port;
-        }
-        $options = new ConnectionOptions();
-        $options->verbose = $verbose;
-        $options->pedantic = $pedantic;
-        $options->reconnect = $reconnect;
-        echo $user;
-        echo $pass;
-        $options->user = $user;
-        $options->pass = $pass;
-
-        $this->_streamSocket = $this->_getStream($this->_address);
-        $msg = 'CONNECT ' . json_encode($options);
+    public function connect() {
+        $this->_streamSocket = $this->_getStream($this->_options->getAddress());
+        $msg = 'CONNECT ' . $this->_options->toJSON();
         $this->_send($msg);
     }
 
@@ -348,6 +282,8 @@ class Connection
         } else {
             return new \Exception("not callable");
         }
+
+        return null;
     }
 
     /**
