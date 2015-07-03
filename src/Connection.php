@@ -168,7 +168,7 @@ class Connection
         if (!$fp) {
             echo "!!!!!!! " . $errstr . " - " . $errno;
         }
-        stream_set_blocking($fp, 0);
+        //stream_set_blocking($fp, 0);
         return $fp;
     }
 
@@ -187,7 +187,8 @@ class Connection
      *
      * @return void
      */
-    public function connect() {
+    public function connect() 
+    {
         $this->_streamSocket = $this->_getStream($this->_options->getAddress());
         $msg = 'CONNECT ' . $this->_options->toJSON();
         $this->_send($msg);

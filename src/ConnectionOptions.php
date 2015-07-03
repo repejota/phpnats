@@ -92,7 +92,8 @@ class ConnectionOptions
      *
      * @return string
      */
-    public function getAddress() {
+    public function getAddress() 
+    {
         return "tcp://" . $this->host . ":" . $this->port;
     }
 
@@ -101,15 +102,18 @@ class ConnectionOptions
      *
      * @return string
      */
-    public function toJSON() {
+    public function toJSON() 
+    {
         $a = [
             "lang" => $this->lang,
             "version" => $this->version,
             "verbose" => $this->verbose,
             "pedantic" => $this->pedantic
         ];
-        if (!is_null($this->user)) $a["user"] = $this->user;
-        if (!is_null($this->pass)) $a["pass"] = $this->pass;
+        if (!is_null($this->user)) { $a["user"] = $this->user; 
+        }
+        if (!is_null($this->pass)) { $a["pass"] = $this->pass; 
+        }
         return json_encode($a);
     }
 
