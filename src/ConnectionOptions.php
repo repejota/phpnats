@@ -59,4 +59,8 @@ class ConnectionOptions
      */
     public $reconnect = true;
 
+    public $user = null;
+
+    public $pass = null;
+
 }

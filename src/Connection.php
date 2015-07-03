@@ -231,6 +231,8 @@ class Connection
      */
     public function connect($host = null,
         $port = null,
+        $user = null,
+        $pass = null,
         $verbose = false,
         $pedantic = false,
         $reconnect = true
@@ -247,6 +249,10 @@ class Connection
         $options->verbose = $verbose;
         $options->pedantic = $pedantic;
         $options->reconnect = $reconnect;
+        echo $user;
+        echo $pass;
+        $options->user = $user;
+        $options->pass = $pass;
 
         $this->_streamSocket = $this->_getStream($this->_address);
         $msg = 'CONNECT ' . json_encode($options);
