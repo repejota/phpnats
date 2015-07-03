@@ -57,10 +57,8 @@ class ClientServerStub
 }
 
 $client = new ClientServerStub();
-sleep(1);
+time_nanosleep(0, 100000000);
+
 $client->write();
 
-// echo $client->read(100);
-
 $client->close();
-

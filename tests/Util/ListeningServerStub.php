@@ -26,7 +26,6 @@ class ListeningServerStub
                 echo "Socket created\n";
             }
             socket_getsockname($this->sock, $this->addr, $this->port);
-            time_nanosleep(0, 100);
         
         } catch (\Exception $e) {
             echo $e->getMessage();
@@ -72,32 +71,21 @@ class ListeningServerStub
 }
 
 $server = new ListeningServerStub();
-$time=8;
-
-/*
-$client = new ClientServerStub();
-*/
-
+$time=2;
 
 while ($time>0) {
-    time_nanosleep(1, 100);
+    time_nanosleep(1, 100000);
     $clientSocket = socket_accept($server->getSock());
-var_dump($clientSocket);
 
 
-file_put_contents("/tmp/a.txt", "aaaa\n", FILE_APPEND);
     if(!is_null($clientSocket)) {
         $lll = socket_read($clientSocket, 100000);
         $line = "MSG OK 55966a4463383 10";
         $line = "PING";
         socket_write($clientSocket, $line);
     } else {
-        $client->write();
         $line = "PING";
-echo $line;
-file_put_contents("/tmp/a.txt", $line."\n", FILE_APPEND);
         socket_write($server->getSock(), $line);
-//        echo $client->write(100);
         time_nanosleep(0, 20000);
         continue;
     
@@ -105,5 +93,4 @@ file_put_contents("/tmp/a.txt", $line."\n", FILE_APPEND);
     $time--;
 }
 
-$client->close();
 $server->close();
