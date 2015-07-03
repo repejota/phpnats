@@ -47,7 +47,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        sleep(1);
+        sleep(2);
         $this->_c = new Nats\Connection('localhost', 55555);
         $this->_c->connect();
     }
