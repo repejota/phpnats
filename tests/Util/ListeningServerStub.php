@@ -71,7 +71,7 @@ class ListeningServerStub
 }
 
 $server = new ListeningServerStub();
-$time=2;
+$time=8;
 
 while ($time>0) {
     time_nanosleep(1, 100000);
