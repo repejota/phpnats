@@ -1,47 +1,65 @@
 <?php
+
 /**
- * TestConnection Class
+ * TestConnection Class.
  *
  * PHP version 5
  *
  * @category Class
- * @package  Nats\Tests\Unit
+ *
  * @author   Raül Përez <repejota@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ *
  * @link     https://github.com/repejota/phpnats
  */
-namespace Nats\Tests\Unit;
+
+namespace Nats\tests\Unit;
 
 use Nats;
+use Cocur\BackgroundProcess\BackgroundProcess;
+
+
 
 /**
- * Class TestConnection
+ * Class TestConnection.
  *
  * @category Class
- * @package  Nats\Tests\Unit
+ *
  * @author   Raül Përez <repejota@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ *
  * @link     https://github.com/repejota/phpnats
  */
-class TestConnection extends \PHPUnit_Framework_TestCase
+class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     private $_c;
 
-    /**
-     * Setup tests
-     *
-     * @return null
-     */
+    private static $_process;
+
+    private static $_port;
+
+    public static function setUpBeforeClass()
+    {
+
+        self::$_process = new BackgroundProcess('/usr/bin/php tests/Unit/ListeningServerStub.php &');
+        self::$_process->run();
+
+    }
+
+    public static function tearDownAfterClass()
+    {
+        self::$_process->stop();
+        //socket_close(self::$_server);
+    }
+
     public function setUp()
     {
-        $this->_c = new Nats\Connection();
+        $this->_c = new Nats\Connection('localhost', 55555);
         $this->_c->connect();
     }
 
     /**
-     * Test Dummy
-     *
-     * @return null
+     * Test Dummy.
      */
     public function testDummy()
     {
@@ -49,9 +67,7 @@ class TestConnection extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Connection
-     *
-     * @return null
+     * Test Connection.
      */
     public function testConnection()
     {
@@ -65,66 +81,61 @@ class TestConnection extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Ping command
-     *
-     * @return null
+     * Test Ping command.
      */
     public function testPing()
     {
         $this->_c->ping();
         $count = $this->_c->pingsCount();
-        $this->assertInternalType("int", $count);
+        $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
         $this->_c->close();
     }
 
     /**
-     * Test Publish command
-     *
-     * @return null
+     * Test Publish command.
      */
     public function testPublish()
     {
-        $this->_c->publish("foo", "bar");
+        $this->_c->publish('foo', 'bar');
         $count = $this->_c->pubsCount();
-        $this->assertInternalType("int", $count);
+        $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
         $this->_c->close();
     }
 
     /**
-     * Test Server reconnection
-     *
-     * @return null
+     * Test Reconnect command.
      */
     public function testReconnect()
     {
         $this->_c->reconnect();
         $count = $this->_c->reconnectsCount();
-        $this->assertInternalType("int", $count);
+        $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
         $this->_c->close();
     }
 
     /**
-     * Test Server subscription
-     *
-     * @return null
+     * Test Subscription command.
      */
     public function testSubscription()
     {
         $callback = function ($message) {
             $this->assertNotNull($message);
-            $this->assertEquals($message, "bar");
+            $this->assertEquals($message, 'bar');
         };
-        $this->_c->subscribe("foo", $callback);
+        $this->_c->subscribe('foo', $callback);
         $this->assertGreaterThan(0, $this->_c->subscriptionsCount());
-
         $subscriptions = $this->_c->getSubscriptions();
-        $this->assertInternalType("array", $subscriptions);
+        $this->assertInternalType('array', $subscriptions);
 
-        $this->_c->publish("foo", "bar");
-        $this->_c->wait(1);
+        $this->_c->publish('foo', 'bar');
+        $this->assertEquals(1, $this->_c->pubsCount());
+        // $this->_c->wait(1);
     }
 
+    public function testWait()
+    {
+    }
 }
