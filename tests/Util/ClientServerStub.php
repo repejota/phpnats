@@ -1,9 +1,8 @@
 <?php
 
-namespace Nats\tests\Unit;
+namespace Nats\tests\Util;
 
 require 'vendor/autoload.php';
-use Cocur\BackgroundProcess\BackgroundProcess;
 
 
 class ClientServerStub
@@ -24,7 +23,7 @@ class ClientServerStub
 
     public function write()
     {
-        socket_write($this->sock, "PUBLISH");
+        socket_write($this->sock, "PING");
 
     }
 
@@ -36,7 +35,7 @@ class ClientServerStub
     public function read()
     {
         // Read the input from the client &#8211; 1024 bytes
-        $input = socket_read($client, 1024);
+        $input = socket_read($this->sock, 1024);
 
         return $input;
     }
@@ -58,6 +57,10 @@ class ClientServerStub
 }
 
 $client = new ClientServerStub();
+sleep(1);
 $client->write();
 
+// echo $client->read(100);
+
 $client->close();
+

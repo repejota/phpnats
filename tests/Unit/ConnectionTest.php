@@ -18,10 +18,8 @@ namespace Nats\tests\Unit;
 use Nats;
 use Cocur\BackgroundProcess\BackgroundProcess;
 
-
-
 /**
- * Class TestConnection.
+ * Class ConnectionTest.
  *
  * @category Class
  *
@@ -36,35 +34,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     private static $_process;
 
-    private static $_port;
-
     public static function setUpBeforeClass()
     {
-
-        self::$_process = new BackgroundProcess('/usr/bin/php tests/Unit/ListeningServerStub.php &');
+        self::$_process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
         self::$_process->run();
-
     }
 
     public static function tearDownAfterClass()
     {
         self::$_process->stop();
-        //socket_close(self::$_server);
     }
 
     public function setUp()
     {
+        time_nanosleep(0, 100000000);
         $this->_c = new Nats\Connection('localhost', 55555);
         $this->_c->connect();
     }
 
-    /**
-     * Test Dummy.
-     */
-    public function testDummy()
-    {
-        $this->assertTrue(true);
-    }
 
     /**
      * Test Connection.
@@ -97,6 +84,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPublish()
     {
+        $this->_c->ping();
         $this->_c->publish('foo', 'bar');
         $count = $this->_c->pubsCount();
         $this->assertInternalType('int', $count);
@@ -132,10 +120,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->_c->publish('foo', 'bar');
         $this->assertEquals(1, $this->_c->pubsCount());
-        // $this->_c->wait(1);
-    }
+        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
+        $process->run();
 
-    public function testWait()
-    {
+        $this->_c->wait(1);
     }
 }

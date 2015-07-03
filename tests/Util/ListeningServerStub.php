@@ -1,9 +1,11 @@
 <?php
 
-namespace Nats\tests\Unit;
+namespace Nats\tests\Util;
 
 require 'vendor/autoload.php';
 
+
+use Nats\tests\Util\ClientServerStub;
 
 class ListeningServerStub
 {
@@ -23,8 +25,9 @@ class ListeningServerStub
             } else {
                 echo "Socket created\n";
             }
-
             socket_getsockname($this->sock, $this->addr, $this->port);
+            time_nanosleep(0, 100);
+        
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -32,9 +35,6 @@ class ListeningServerStub
 
     public function listen()
     {
-
-        // Bind the socket to an address/port
-
         // Start listening for connections
         socket_listen($this->sock);
 
@@ -72,15 +72,38 @@ class ListeningServerStub
 }
 
 $server = new ListeningServerStub();
+$time=8;
 
-while (true) {
+/*
+$client = new ClientServerStub();
+*/
+
+
+while ($time>0) {
+    time_nanosleep(1, 100);
     $clientSocket = socket_accept($server->getSock());
-    if (false == $clientSocket) {
+var_dump($clientSocket);
+
+
+file_put_contents("/tmp/a.txt", "aaaa\n", FILE_APPEND);
+    if(!is_null($clientSocket)) {
+        $lll = socket_read($clientSocket, 100000);
+        $line = "MSG OK 55966a4463383 10";
+        $line = "PING";
+        socket_write($clientSocket, $line);
+    } else {
+        $client->write();
+        $line = "PING";
+echo $line;
+file_put_contents("/tmp/a.txt", $line."\n", FILE_APPEND);
+        socket_write($server->getSock(), $line);
+//        echo $client->write(100);
+        time_nanosleep(0, 20000);
         continue;
+    
     }
-    var_dump($clientSocket);
+    $time--;
 }
 
+$client->close();
 $server->close();
-// echo "Start listening...";
-// $server->listen();
