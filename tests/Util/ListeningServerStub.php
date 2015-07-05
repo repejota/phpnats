@@ -4,7 +4,6 @@ namespace Nats\tests\Util;
 
 require 'vendor/autoload.php';
 
-
 use Nats\tests\Util\ClientServerStub;
 
 class ListeningServerStub
@@ -28,40 +27,13 @@ class ListeningServerStub
             socket_getsockname($this->sock, $this->addr, $this->port);
         
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            throw $e; 
         }
-    }
-
-    public function listen()
-    {
-        // Start listening for connections
-        socket_listen($this->sock);
-
-        // Accept incoming requests and handle them as child processes.
-        $this->client = socket_accept($this->sock);
     }
 
     public function close()
     {
         socket_close($this->sock);
-    }
-
-    public function read()
-    {
-        // Read the input from the client &#8211; 1024 bytes
-        $input = socket_read($client, 1024);
-
-        return $input;
-    }
-
-    public function getAddr()
-    {
-        return $this->addr;
-    }
-
-    public function getPort()
-    {
-        return $this->port;
     }
 
     public function getSock()
@@ -71,7 +43,7 @@ class ListeningServerStub
 }
 
 $server = new ListeningServerStub();
-$time=8;
+$time=20;
 
 while ($time>0) {
     time_nanosleep(1, 100000);

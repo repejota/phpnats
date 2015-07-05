@@ -1,37 +1,41 @@
 <?php
+
 /**
- * Connection Class
+ * Connection Class.
  *
  * PHP version 5
  *
  * @category Class
- * @package  Nats
+ *
  * @author   Raül Përez <repejota@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ *
  * @link     https://github.com/repejota/phpnats
  */
+
 namespace Nats;
 
 /**
- * Connection Class
+ * Connection Class.
  *
  * @category Class
- * @package  Nats\Tests\Unit
+ *
  * @author   Raül Përez <repejota@gmail.com>
  * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ *
  * @link     https://github.com/repejota/phpnats
  */
 class Connection
 {
     /**
-     * Number of PINGS
+     * Number of PINGS.
      *
      * @var int number of pings
      */
     private $_pings = 0;
 
     /**
-     * Return the number of pings
+     * Return the number of pings.
      *
      * @return int Number of pings
      */
@@ -41,14 +45,14 @@ class Connection
     }
 
     /**
-     * Number of messages published
+     * Number of messages published.
      *
      * @var int number of messages
      */
     private $_pubs = 0;
 
     /**
-     * Return the number of messages published
+     * Return the number of messages published.
      *
      * @return int number of messages published
      */
@@ -58,14 +62,14 @@ class Connection
     }
 
     /**
-     * Number of reconnects to the server
+     * Number of reconnects to the server.
      *
      * @var int Number of reconnects
      */
     private $_reconnects = 0;
 
     /**
-     * Return the number of reconnects to the server
+     * Return the number of reconnects to the server.
      *
      * @return int number of reconnects
      */
@@ -75,14 +79,14 @@ class Connection
     }
 
     /**
-     * List of available subscriptions
+     * List of available subscriptions.
      *
      * @var array list of subscriptions
      */
     private $_subscriptions = [];
 
     /**
-     * Return the number of subscriptions available
+     * Return the number of subscriptions available.
      *
      * @return int number of subscription
      */
@@ -92,7 +96,7 @@ class Connection
     }
 
     /**
-     * Return subscriptions list
+     * Return subscriptions list.
      *
      * @return array list of subscription ids
      */
@@ -104,43 +108,43 @@ class Connection
     private $_options = null;
 
     /**
-     * Stream File Pointer
+     * Stream File Pointer.
      *
      * @var mixed Socket file pointer
      */
     private $_streamSocket;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $host name, by default "localhost"
      * @param int    $port number, by default 4222
      */
-    public function __construct()
+    public function __construct(ConnectionOptions $options = null)
     {
         $this->_pings = 0;
         $this->_pubs = 0;
         $this->_subscriptions = 0;
         $this->_subscriptions = [];
-
-        $this->_options = new ConnectionOptions();
+        $this->_options = $options;
+        if (is_null($options)) {
+            $this->_options = new ConnectionOptions();
+        }
     }
 
     /**
-     * Sends data thought the stream
+     * Sends data thought the stream.
      *
      * @param string $payload message data
-     *
-     * @return void
      */
     private function _send($payload)
     {
-        $msg = $payload . "\r\n";
+        $msg = $payload."\r\n";
         fwrite($this->_streamSocket, $msg, strlen($msg));
     }
 
     /**
-     * Receives a message thought the stream
+     * Receives a message thought the stream.
      *
      * @param int $len Number of bytes to receive
      *
@@ -166,14 +170,14 @@ class Connection
     {
         $fp = stream_socket_client($address, $errno, $errstr, STREAM_CLIENT_CONNECT);
         if (!$fp) {
-            echo "!!!!!!! " . $errstr . " - " . $errno;
+            echo '!!!!!!! '.$errstr.' - '.$errno;
         }
         //stream_set_blocking($fp, 0);
         return $fp;
     }
 
     /**
-     * Checks if the client is connected to a server
+     * Checks if the client is connected to a server.
      *
      * @return bool
      */
@@ -184,24 +188,20 @@ class Connection
 
     /**
      * Connect to server.
-     *
-     * @return void
      */
-    public function connect() 
+    public function connect()
     {
         $this->_streamSocket = $this->_getStream($this->_options->getAddress());
-        $msg = 'CONNECT ' . $this->_options->toJSON();
+        $msg = 'CONNECT '.$this->_options->toJSON();
         $this->_send($msg);
     }
 
     /**
-     * Sends PING message
-     *
-     * @return void
+     * Sends PING message.
      */
     public function ping()
     {
-        $msg = "PING";
+        $msg = 'PING';
         $this->_send($msg);
         $this->_pings += 1;
     }
@@ -216,7 +216,7 @@ class Connection
      */
     public function publish($subject, $payload)
     {
-        $msg = "PUB " . $subject . " " . strlen($payload);
+        $msg = 'PUB '.$subject.' '.strlen($payload);
         $this->_send($msg);
         $this->_send($payload);
         $this->_pubs += 1;
@@ -233,9 +233,10 @@ class Connection
     public function subscribe($subject, $callback)
     {
         $sid = uniqid();
-        $msg = "SUB " . $subject . " " . $sid;
+        $msg = 'SUB '.$subject.' '.$sid;
         $this->_send($msg);
         $this->_subscriptions[$sid] = $callback;
+
         return $sid;
     }
 
@@ -243,27 +244,23 @@ class Connection
      * Unsubscribe from a event given a subject.
      *
      * @param string $sid Subscription ID
-     *
-     * @return void
      */
     public function unsubscribe($sid)
     {
-        $msg = "UNSUB " . $sid;
+        $msg = 'UNSUB '.$sid;
         $this->_send($msg);
     }
 
     /**
-     * Handles PING command
-     *
-     * @return void
+     * Handles PING command.
      */
     private function _handlePING()
     {
-        $this->_send("PONG");
+        $this->_send('PONG');
     }
 
     /**
-     * Handles MSG command
+     * Handles MSG command.
      *
      * @param string $line Message command from NATS
      *
@@ -271,7 +268,7 @@ class Connection
      */
     private function _handleMSG($line)
     {
-        $parts = explode(" ", $line);
+        $parts = explode(' ', $line);
         $length = $parts[3];
         $sid = $parts[2];
 
@@ -281,14 +278,14 @@ class Connection
         if (is_callable($func)) {
             $func($payload);
         } else {
-            return new \Exception("not callable");
+            return new \Exception('not callable');
         }
 
-        return null;
+        return;
     }
 
     /**
-     * Waits for messages
+     * Waits for messages.
      *
      * @param int $quantity Number of messages to wait for
      *
@@ -310,18 +307,17 @@ class Connection
                 $count = $count + 1;
                 $this->_handleMSG($line);
                 if (($quantity != 0) && ($count >= $quantity)) {
-                    return null;
+                    return;
                 }
             }
         }
         $this->close();
+
         return $this;
     }
 
     /**
-     * Reconnects to the server
-     *
-     * @return void
+     * Reconnects to the server.
      */
     public function reconnect()
     {
@@ -332,13 +328,10 @@ class Connection
 
     /**
      * Close will close the connection to the server.
-     *
-     * @return void
      */
     public function close()
     {
         fclose($this->_streamSocket);
         $this->_streamSocket = null;
     }
-
 }
