@@ -24,6 +24,17 @@
             "email": "adria.cidre@gmail.com",
             "homepage": "http://oridoki.com",
             "role": "Developer"
+        },
+        {
+            "name": "José Gil",
+            "email": "josgilmo@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Gorka López de Torre",
+            "email": "glopezdetorre@gmail.com",
+            "homepage": "http://gorka.io",
+            "role": "Developer"
         }
     ],
     "autoload": {
