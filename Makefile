@@ -10,9 +10,7 @@ cover:
 	./vendor/bin/phpunit --coverage-html ./cover
 
 cs:
-	./phpcbf.phar src
-	./phpcbf.phar tests
-	./phpcbf.phar examples
+	./vendor/bin/phpcbf src tests examples
 	./vendor/bin/phpcs src tests examples
 
 .PHONY: lint test cs cover
