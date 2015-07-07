@@ -4,17 +4,13 @@
     "type": "library",
     "minimum-stability": "dev",
     "license": "MIT",
-    "authors": [{
-        "name": "Raül Pérez",
-        "email": "repejota@gmail.com",
-        "homepage": "http://repejota.com"
-    }],
     "require": {
     },
     "require-dev": {
         "phpunit/phpunit": "4.7.*",
         "satooshi/php-coveralls": "dev-master",
-        "cocur/background-process": "dev-master"
+        "cocur/background-process": "dev-master",
+        "squizlabs/php_codesniffer": "~2.0"
     },
     "authors": [
         {

@@ -61,15 +61,7 @@ To run them, you need `PHPUnit` and execute `make test`.
 We are using [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer/docs)
 to ensure our code follow an high quality standard.
 
-To install this tools:
-
-```bash
-$ curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
-$ curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar
-``` 
-
-Then you have everything you need to perform an analysis of the code just 
-executing `make cs`.
+To perform an analysis of the code execute `make cs`.
 
 
 Creators
