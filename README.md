@@ -77,6 +77,17 @@ Creators
 - <https://twitter.com/adriacidre>
 - <https://github.com/adriacidre>
 
+**José Gil**
+
+- <https://twitter.com/josgilmo>
+- <https://github.com/josgilmo>
+
+**Gorka López de Torre**
+
+- <https://twitter.com/glopezdetorre>
+- <https://github.com/glopezdetorre>
+
+
 
 License
 -------
