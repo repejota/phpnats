@@ -4,7 +4,6 @@ namespace Nats\tests\Util;
 
 require 'vendor/autoload.php';
 
-
 class ClientServerStub
 {
     protected $client;
@@ -31,33 +30,10 @@ class ClientServerStub
     {
         socket_close($this->sock);
     }
-
-    public function read()
-    {
-        // Read the input from the client &#8211; 1024 bytes
-        $input = socket_read($this->sock, 1024);
-
-        return $input;
-    }
-
-    public function getAddr()
-    {
-        return $this->addr;
-    }
-
-    public function getPort()
-    {
-        return $this->port;
-    }
-
-    public function getSock()
-    {
-        return $this->sock;
-    }
 }
 
 $client = new ClientServerStub();
-time_nanosleep(0, 100000000);
+time_nanosleep(0, 200000000);
 
 $client->write();
 

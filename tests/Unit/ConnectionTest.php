@@ -16,6 +16,7 @@
 namespace Nats\tests\Unit;
 
 use Nats;
+use Nats\ConnectionOptions;
 use Cocur\BackgroundProcess\BackgroundProcess;
 
 /**
@@ -34,21 +35,33 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     private static $_process;
 
+    private static $_isGnatsd = false;
+
     public static function setUpBeforeClass()
     {
-        self::$_process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
-        self::$_process->run();
+        if(($socket = @fsockopen("localhost" , 4222, $err))!==false) {
+             self::$_isGnatsd = true;
+        } else {
+            self::$_process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
+            self::$_process->run();
+        }
     }
 
     public static function tearDownAfterClass()
     {
-        self::$_process->stop();
+        if (!self::$_isGnatsd) {
+            self::$_process->stop();
+        }
     }
 
     public function setUp()
     {
-        sleep(2);
-        $this->_c = new Nats\Connection('localhost', 55555);
+        $options = new ConnectionOptions();
+        if (!self::$_isGnatsd) {
+            time_nanosleep(1,5000000);
+            $options->port = 55555; 
+        }
+        $this->_c = new Nats\Connection($options);
         $this->_c->connect();
     }
 
