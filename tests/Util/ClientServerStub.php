@@ -33,7 +33,7 @@ class ClientServerStub
 }
 
 $client = new ClientServerStub();
-time_nanosleep(0, 200000000);
+time_nanosleep(1, 0);
 
 $client->write();
 
