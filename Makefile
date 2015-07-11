@@ -1,7 +1,6 @@
-lint:
-	find src -name *.php -exec php -l {} \;
-	find tests -name *.php -exec php -l {} \;
-	find examples -name *.php -exec php -l {} \;
+cs: lint
+	./vendor/bin/phpcbf src tests examples
+	./vendor/bin/phpcs src tests examples
 
 test:
 	./vendor/bin/phpunit
@@ -9,8 +8,19 @@ test:
 cover:
 	./vendor/bin/phpunit --coverage-html ./cover
 
-cs:
-	./vendor/bin/phpcbf src tests examples
-	./vendor/bin/phpcs src tests examples
+lint:
+	find src -name *.php -exec php -l {} \;
+	find tests -name *.php -exec php -l {} \;
+	find examples -name *.php -exec php -l {} \;
 
-.PHONY: lint test cs cover
+deps:
+	wget -q https://getcomposer.org/composer.phar -O ./composer.phar
+	chmod +x composer.phar
+	php composer.phar install
+
+dist-clean:
+	rm -rf vendor
+	rm -f composer.phar
+	rm -f composer.lock
+
+.PHONY: lint test cs cover deps dist-clean
