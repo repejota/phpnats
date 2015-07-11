@@ -4,8 +4,6 @@ namespace Nats\tests\Util;
 
 require 'vendor/autoload.php';
 
-use Nats\tests\Util\ClientServerStub;
-
 class ListeningServerStub
 {
     protected $client;
@@ -58,7 +56,7 @@ while ($time>0) {
     } else {
         $line = "PING";
         socket_write($server->getSock(), $line);
-        time_nanosleep(0, 20000);
+        time_nanosleep(1, 20000);
         continue;
     
     }
