@@ -31,38 +31,38 @@ use Cocur\BackgroundProcess\BackgroundProcess;
  */
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
-    private $_c;
+    private $c;
 
-    private static $_process;
+    private static $process;
 
-    private static $_isGnatsd = false;
+    private static $isGnatsd = false;
 
     public static function setUpBeforeClass()
     {
         if (($socket = @fsockopen("localhost", 4222, $err))!==false) {
-             self::$_isGnatsd = true;
+             self::$isGnatsd = true;
         } else {
-            self::$_process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
-            self::$_process->run();
+            self::$process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
+            self::$process->run();
         }
     }
 
     public static function tearDownAfterClass()
     {
-        if (!self::$_isGnatsd) {
-            self::$_process->stop();
+        if (!self::$isGnatsd) {
+            self::$process->stop();
         }
     }
 
     public function setUp()
     {
         $options = new ConnectionOptions();
-        if (!self::$_isGnatsd) {
+        if (!self::$isGnatsd) {
             time_nanosleep(1, 5000000);
             $options->port = 55555;
         }
-        $this->_c = new Nats\Connection($options);
-        $this->_c->connect();
+        $this->c = new Nats\Connection($options);
+        $this->c->connect();
     }
 
 
@@ -72,12 +72,12 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testConnection()
     {
         // Connect
-        $this->_c->connect();
-        $this->assertTrue($this->_c->isConnected());
+        $this->c->connect();
+        $this->assertTrue($this->c->isConnected());
 
         // Disconnect
-        $this->_c->close();
-        $this->assertFalse($this->_c->isConnected());
+        $this->c->close();
+        $this->assertFalse($this->c->isConnected());
     }
 
     /**
@@ -85,11 +85,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPing()
     {
-        $this->_c->ping();
-        $count = $this->_c->pingsCount();
+        $this->c->ping();
+        $count = $this->c->pingsCount();
         $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
-        $this->_c->close();
+        $this->c->close();
     }
 
     /**
@@ -97,12 +97,12 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPublish()
     {
-        $this->_c->ping();
-        $this->_c->publish('foo', 'bar');
-        $count = $this->_c->pubsCount();
+        $this->c->ping();
+        $this->c->publish('foo', 'bar');
+        $count = $this->c->pubsCount();
         $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
-        $this->_c->close();
+        $this->c->close();
     }
 
     /**
@@ -110,11 +110,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testReconnect()
     {
-        $this->_c->reconnect();
-        $count = $this->_c->reconnectsCount();
+        $this->c->reconnect();
+        $count = $this->c->reconnectsCount();
         $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
-        $this->_c->close();
+        $this->c->close();
     }
 
     /**
@@ -126,16 +126,16 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $this->assertNotNull($message);
             $this->assertEquals($message, 'bar');
         };
-        $this->_c->subscribe('foo', $callback);
-        $this->assertGreaterThan(0, $this->_c->subscriptionsCount());
-        $subscriptions = $this->_c->getSubscriptions();
+        $this->c->subscribe('foo', $callback);
+        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
+        $subscriptions = $this->c->getSubscriptions();
         $this->assertInternalType('array', $subscriptions);
 
-        $this->_c->publish('foo', 'bar');
-        $this->assertEquals(1, $this->_c->pubsCount());
+        $this->c->publish('foo', 'bar');
+        $this->assertEquals(1, $this->c->pubsCount());
         $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
         $process->run();
 
-        $this->_c->wait(1);
+        $this->c->wait(1);
     }
 }

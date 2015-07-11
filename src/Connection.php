@@ -32,7 +32,7 @@ class Connection
      *
      * @var int number of pings
      */
-    private $_pings = 0;
+    private $pings = 0;
 
     /**
      * Return the number of pings.
@@ -41,7 +41,7 @@ class Connection
      */
     public function pingsCount()
     {
-        return $this->_pings;
+        return $this->pings;
     }
 
     /**
@@ -49,7 +49,7 @@ class Connection
      *
      * @var int number of messages
      */
-    private $_pubs = 0;
+    private $pubs = 0;
 
     /**
      * Return the number of messages published.
@@ -58,7 +58,7 @@ class Connection
      */
     public function pubsCount()
     {
-        return $this->_pubs;
+        return $this->pubs;
     }
 
     /**
@@ -66,7 +66,7 @@ class Connection
      *
      * @var int Number of reconnects
      */
-    private $_reconnects = 0;
+    private $reconnects = 0;
 
     /**
      * Return the number of reconnects to the server.
@@ -75,7 +75,7 @@ class Connection
      */
     public function reconnectsCount()
     {
-        return $this->_reconnects;
+        return $this->reconnects;
     }
 
     /**
@@ -83,7 +83,7 @@ class Connection
      *
      * @var array list of subscriptions
      */
-    private $_subscriptions = [];
+    private $subscriptions = [];
 
     /**
      * Return the number of subscriptions available.
@@ -92,7 +92,7 @@ class Connection
      */
     public function subscriptionsCount()
     {
-        return count($this->_subscriptions);
+        return count($this->subscriptions);
     }
 
     /**
@@ -102,17 +102,17 @@ class Connection
      */
     public function getSubscriptions()
     {
-        return array_keys($this->_subscriptions);
+        return array_keys($this->subscriptions);
     }
 
-    private $_options = null;
+    private $options = null;
 
     /**
      * Stream File Pointer.
      *
      * @var mixed Socket file pointer
      */
-    private $_streamSocket;
+    private $streamSocket;
 
     /**
      * Constructor.
@@ -122,13 +122,13 @@ class Connection
      */
     public function __construct(ConnectionOptions $options = null)
     {
-        $this->_pings = 0;
-        $this->_pubs = 0;
-        $this->_subscriptions = 0;
-        $this->_subscriptions = [];
-        $this->_options = $options;
+        $this->pings = 0;
+        $this->pubs = 0;
+        $this->subscriptions = 0;
+        $this->subscriptions = [];
+        $this->options = $options;
         if (is_null($options)) {
-            $this->_options = new ConnectionOptions();
+            $this->options = new ConnectionOptions();
         }
     }
 
@@ -137,10 +137,10 @@ class Connection
      *
      * @param string $payload message data
      */
-    private function _send($payload)
+    private function send($payload)
     {
         $msg = $payload."\r\n";
-        fwrite($this->_streamSocket, $msg, strlen($msg));
+        fwrite($this->streamSocket, $msg, strlen($msg));
     }
 
     /**
@@ -150,12 +150,12 @@ class Connection
      *
      * @return string
      */
-    private function _receive($len = null)
+    private function receive($len = null)
     {
         if ($len) {
-            return trim(fgets($this->_streamSocket, $len + 1));
+            return trim(fgets($this->streamSocket, $len + 1));
         } else {
-            return trim(fgets($this->_streamSocket));
+            return trim(fgets($this->streamSocket));
         }
     }
 
@@ -166,7 +166,7 @@ class Connection
      *
      * @return resource
      */
-    private function _getStream($address)
+    private function getStream($address)
     {
         $fp = stream_socket_client($address, $errno, $errstr, STREAM_CLIENT_CONNECT);
         if (!$fp) {
@@ -183,7 +183,7 @@ class Connection
      */
     public function isConnected()
     {
-        return isset($this->_streamSocket);
+        return isset($this->streamSocket);
     }
 
     /**
@@ -191,9 +191,9 @@ class Connection
      */
     public function connect()
     {
-        $this->_streamSocket = $this->_getStream($this->_options->getAddress());
-        $msg = 'CONNECT '.$this->_options->toJSON();
-        $this->_send($msg);
+        $this->streamSocket = $this->getStream($this->options->getAddress());
+        $msg = 'CONNECT '.$this->options->toJSON();
+        $this->send($msg);
     }
 
     /**
@@ -202,8 +202,8 @@ class Connection
     public function ping()
     {
         $msg = 'PING';
-        $this->_send($msg);
-        $this->_pings += 1;
+        $this->send($msg);
+        $this->pings += 1;
     }
 
     /**
@@ -217,9 +217,9 @@ class Connection
     public function publish($subject, $payload)
     {
         $msg = 'PUB '.$subject.' '.strlen($payload);
-        $this->_send($msg);
-        $this->_send($payload);
-        $this->_pubs += 1;
+        $this->send($msg);
+        $this->send($payload);
+        $this->pubs += 1;
     }
 
     /**
@@ -234,8 +234,8 @@ class Connection
     {
         $sid = uniqid();
         $msg = 'SUB '.$subject.' '.$sid;
-        $this->_send($msg);
-        $this->_subscriptions[$sid] = $callback;
+        $this->send($msg);
+        $this->subscriptions[$sid] = $callback;
 
         return $sid;
     }
@@ -248,15 +248,15 @@ class Connection
     public function unsubscribe($sid)
     {
         $msg = 'UNSUB '.$sid;
-        $this->_send($msg);
+        $this->send($msg);
     }
 
     /**
      * Handles PING command.
      */
-    private function _handlePING()
+    private function handlePING()
     {
-        $this->_send('PONG');
+        $this->send('PONG');
     }
 
     /**
@@ -266,15 +266,15 @@ class Connection
      *
      * @return \Exception|void
      */
-    private function _handleMSG($line)
+    private function handleMSG($line)
     {
         $parts = explode(' ', $line);
         $length = $parts[3];
         $sid = $parts[2];
 
-        $payload = $this->_receive($length);
+        $payload = $this->receive($length);
 
-        $func = $this->_subscriptions[$sid];
+        $func = $this->subscriptions[$sid];
         if (is_callable($func)) {
             $func($payload);
         } else {
@@ -294,18 +294,18 @@ class Connection
     public function wait($quantity = 0)
     {
         $count = 0;
-        while (!feof($this->_streamSocket)) {
-            $line = $this->_receive();
+        while (!feof($this->streamSocket)) {
+            $line = $this->receive();
 
             // PING
             if (strpos($line, 'PING') === 0) {
-                $this->_handlePing();
+                $this->handlePING();
             }
 
             // MSG
             if (strpos($line, 'MSG') === 0) {
                 $count = $count + 1;
-                $this->_handleMSG($line);
+                $this->handleMSG($line);
                 if (($quantity != 0) && ($count >= $quantity)) {
                     return;
                 }
@@ -321,7 +321,7 @@ class Connection
      */
     public function reconnect()
     {
-        $this->_reconnects += 1;
+        $this->reconnects += 1;
         $this->close();
         $this->connect();
     }
@@ -331,7 +331,7 @@ class Connection
      */
     public function close()
     {
-        fclose($this->_streamSocket);
-        $this->_streamSocket = null;
+        fclose($this->streamSocket);
+        $this->streamSocket = null;
     }
 }
