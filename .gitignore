@@ -3,3 +3,4 @@ vendor
 cover
 *.phar
 composer.lock
+build

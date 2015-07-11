@@ -6,10 +6,13 @@ phpnats
 * Master: [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=master)](https://travis-ci.org/repejota/phpnats)
 * Develop: [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=develop)](https://travis-ci.org/repejota/phpnats)
 
-**Insight**
+**Coverage**
 
-* [![SensioLabsInsight](https://insight.sensiolabs.com/projects/3fb84121-278d-489f-8394-d95c3e3b05d2/mini.png)](https://insight.sensiolabs.com/projects/3fb84121-278d-489f-8394-d95c3e3b05d2)
+* Master: [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=master)](https://coveralls.io/r/repejota/phpnats?branch=master)
+* Develop: [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=develop)](https://coveralls.io/r/repejota/phpnats?branch=develop)
 
+Introduction
+------------
 
 A PHP client for the [NATS messaging system](https://nats.io).
 
@@ -28,7 +31,7 @@ Usage
 ### Basic Usage
 
 ```php
-$client = new \Nats\Connection(verbose=True);
+$client = new \Nats\Connection();
 $client->connect();
 
 # Simple Publisher
@@ -45,12 +48,45 @@ $client->subscribe("foo", $callback);
 $client->wait(1);
 ```
 
+Developer's Information
+-----------------------
 
-Tests
------
+### Tests
 
 Tests are in the `tests` folder.
 To run them, you need `PHPUnit` and execute `make test`.
+
+### Code Quality
+
+We are using [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer/docs)
+to ensure our code follow an high quality standard.
+
+To perform an analysis of the code execute `make cs`.
+
+
+Creators
+--------
+
+**Raül Pérez**
+
+- <https://twitter.com/repejota>
+- <https://github.com/repejota>
+
+**Adrià Cidre**
+
+- <https://twitter.com/adriacidre>
+- <https://github.com/adriacidre>
+
+**José Gil**
+
+- <https://twitter.com/josgilmo>
+- <https://github.com/josgilmo>
+
+**Gorka López de Torre**
+
+- <https://twitter.com/glopezdetorre>
+- <https://github.com/glopezdetorre>
+
 
 
 License

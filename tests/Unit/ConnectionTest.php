@@ -1,132 +1,145 @@
 <?php
+
 /**
- * TestConnection Class
+ * TestConnection Class.
  *
  * PHP version 5
  *
  * @category Class
- * @package  Nats\Tests\Unit
- * @author   Raül Përez <repejota@gmail.com>
- * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/repejota/phpnats
+ *
+ * @author  Raül Përez <repejota@gmail.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ *
+ * @link https://github.com/repejota/phpnats
  */
-namespace Nats\Tests\Unit;
 
-use Prophecy\PhpUnit\ProphecyTestCase as TestCase;
+namespace Nats\tests\Unit;
 
 use Nats;
+use Nats\ConnectionOptions;
+use Cocur\BackgroundProcess\BackgroundProcess;
 
 /**
- * Class TestConnection
+ * Class ConnectionTest.
  *
  * @category Class
- * @package  Nats\Tests\Unit
- * @author   Raül Përez <repejota@gmail.com>
- * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/repejota/phpnats
+ *
+ * @author  Raül Përez <repejota@gmail.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ *
+ * @link https://github.com/repejota/phpnats
  */
-class TestConnection extends TestCase
+class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
-    private $_c;
+    private $c;
 
-    /**
-     * Setup tests
-     *
-     * @return null
-     */
+    private static $process;
+
+    private static $isGnatsd = false;
+
+    public static function setUpBeforeClass()
+    {
+        if (($socket = @fsockopen("localhost", 4222, $err))!==false) {
+             self::$isGnatsd = true;
+        } else {
+            self::$process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
+            self::$process->run();
+        }
+    }
+
+    public static function tearDownAfterClass()
+    {
+        if (!self::$isGnatsd) {
+            self::$process->stop();
+        }
+    }
+
     public function setUp()
     {
-        $this->_c = new Nats\Connection();
-        $this->_c->connect();
+        $options = new ConnectionOptions();
+        if (!self::$isGnatsd) {
+            time_nanosleep(2, 0);
+            $options->port = 55555;
+        }
+        $this->c = new Nats\Connection($options);
+        $this->c->connect();
     }
 
-    /**
-     * Test Dummy
-     *
-     * @return null
-     */
-    public function testDummy()
-    {
-        $this->assertTrue(true);
-    }
 
     /**
-     * Test Connection
-     *
-     * @return null
+     * Test Connection.
      */
     public function testConnection()
     {
         // Connect
-        $this->_c->connect();
-        $this->assertTrue($this->_c->isConnected());
+        $this->c->connect();
+        $this->assertTrue($this->c->isConnected());
 
         // Disconnect
-        $this->_c->close();
-        $this->assertFalse($this->_c->isConnected());
+        $this->c->close();
+        $this->assertFalse($this->c->isConnected());
     }
 
     /**
-     * Test Ping command
-     *
-     * @return null
+     * Test Ping command.
      */
     public function testPing()
     {
-        $this->_c->ping();
-        $count = $this->_c->pingsCount();
-        $this->assertInternalType("int", $count);
+        $this->c->ping();
+        $count = $this->c->pingsCount();
+        $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
-        $this->_c->close();
+        $this->c->close();
     }
 
     /**
-     * Test Publish command
-     *
-     * @return null
+     * Test Publish command.
      */
     public function testPublish()
     {
-        $this->_c->publish("foo", "bar");
-        $count = $this->_c->pubsCount();
-        $this->assertInternalType("int", $count);
+        $this->c->ping();
+        $this->c->publish('foo', 'bar');
+        $count = $this->c->pubsCount();
+        $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
-        $this->_c->close();
+        $this->c->close();
     }
 
     /**
-     * Test Server reconnection
-     *
-     * @return null
+     * Test Reconnect command.
      */
     public function testReconnect()
     {
-        $this->_c->reconnect();
-        $count = $this->_c->reconnectsCount();
-        $this->assertInternalType("int", $count);
+        $this->c->reconnect();
+        $count = $this->c->reconnectsCount();
+        $this->assertInternalType('int', $count);
         $this->assertGreaterThan(0, $count);
-        $this->_c->close();
+        $this->c->close();
     }
 
     /**
-     * Test Server subscription
-     *
-     * @return null
+     * Test Subscription command.
      */
     public function testSubscription()
     {
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+        
         $callback = function ($message) {
             $this->assertNotNull($message);
-            $this->assertEquals($message, "bar");
+            $this->assertEquals($message, 'bar');
         };
-        $this->_c->subscribe("foo", $callback);
-        $this->assertGreaterThan(0, $this->_c->subscriptionsCount());
+        $this->c->subscribe('foo', $callback);
+        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
+        $subscriptions = $this->c->getSubscriptions();
+        $this->assertInternalType('array', $subscriptions);
 
-        $subscriptions = $this->_c->getSubscriptions();
-        $this->assertInternalType("array", $subscriptions);
+        $this->c->publish('foo', 'bar');
+        $this->assertEquals(1, $this->c->pubsCount());
+        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
+        $process->run();
 
-        $this->_c->publish("foo", "bar");
-        $this->_c->wait(1);
+        $this->c->wait(1);
     }
-
 }
