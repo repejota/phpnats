@@ -9,19 +9,19 @@ cache:
    - vendor
    - $HOME/.composer/cache
 before_script:
-  - sudo apt-get install python-software-properties  # 12.04
-  - sudo add-apt-repository -y ppa:duh/golang
-  - sudo apt-get update
-  - sudo apt-get install golang
-  - export GOROOT=`go env GOROOT` && export GOPATH=$HOME/go
-  - go get -u github.com/nats-io/gnatsd
-  - gnats="$GOPATH/bin/gnatsd"
-  - $gnats &
-  - composer install
+  # - sudo apt-get install python-software-properties  # 12.04
+  # - sudo add-apt-repository -y ppa:duh/golang
+  # - sudo apt-get update
+  # - sudo apt-get install golang
+  # - export GOROOT=`go env GOROOT` && export GOPATH=$HOME/go
+  # - go get -u github.com/nats-io/gnatsd
+  # - gnats="$GOPATH/bin/gnatsd"
+  # - $gnats &
+  - make deps
 script:
-  - make lint
+  - make cs
   - mkdir -p build/logs
-  - php vendor/bin/phpunit -c phpunit.xml.dist
+  - make test
 after_script:
   - php vendor/bin/coveralls
   - php vendor/bin/coveralls -v
