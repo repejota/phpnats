@@ -126,6 +126,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $this->assertNotNull($message);
             $this->assertEquals($message, 'bar');
         };
+
         $this->c->subscribe('foo', $callback);
         $this->assertGreaterThan(0, $this->c->subscriptionsCount());
         $subscriptions = $this->c->getSubscriptions();
@@ -133,9 +134,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->c->publish('foo', 'bar');
         $this->assertEquals(1, $this->c->pubsCount());
-        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
-        $process->run();
 
-        $this->c->wait(1);
+        //$process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
+        //$process->run();
+        //$this->c->wait(1);
     }
 }
