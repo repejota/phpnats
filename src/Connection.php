@@ -7,10 +7,10 @@
  *
  * @category Class
  *
- * @author   Raül Përez <repejota@gmail.com>
- * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ * @author  Raül Përez <repejota@gmail.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
  *
- * @link     https://github.com/repejota/phpnats
+ * @link https://github.com/repejota/phpnats
  */
 
 namespace Nats;
@@ -20,10 +20,10 @@ namespace Nats;
  *
  * @category Class
  *
- * @author   Raül Përez <repejota@gmail.com>
- * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
+ * @author  Raül Përez <repejota@gmail.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
  *
- * @link     https://github.com/repejota/phpnats
+ * @link https://github.com/repejota/phpnats
  */
 class Connection
 {

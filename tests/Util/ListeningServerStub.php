@@ -27,7 +27,7 @@ class ListeningServerStub
             socket_getsockname($this->sock, $this->addr, $this->port);
         
         } catch (\Exception $e) {
-            throw $e; 
+            throw $e;
         }
     }
 
@@ -50,7 +50,7 @@ while ($time>0) {
     $clientSocket = socket_accept($server->getSock());
 
 
-    if(!is_null($clientSocket)) {
+    if (!is_null($clientSocket)) {
         $lll = socket_read($clientSocket, 100000);
         $line = "MSG OK 55966a4463383 10";
         $line = "PING";

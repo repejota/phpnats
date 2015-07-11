@@ -39,7 +39,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        if(($socket = @fsockopen("localhost" , 4222, $err))!==false) {
+        if (($socket = @fsockopen("localhost", 4222, $err))!==false) {
              self::$_isGnatsd = true;
         } else {
             self::$_process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
@@ -58,8 +58,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $options = new ConnectionOptions();
         if (!self::$_isGnatsd) {
-            time_nanosleep(1,5000000);
-            $options->port = 55555; 
+            time_nanosleep(1, 5000000);
+            $options->port = 55555;
         }
         $this->_c = new Nats\Connection($options);
         $this->_c->connect();
