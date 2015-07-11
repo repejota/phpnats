@@ -1,6 +1,6 @@
 cs: lint
 	./vendor/bin/phpcbf --standard=PSR2 src tests examples
-	./vendor/bin/phpcs --standard=PSR2 src tests examples
+	./vendor/bin/phpcs --standard=PSR2 --warning-severity=0 src tests examples
 
 test:
 	./vendor/bin/phpunit
