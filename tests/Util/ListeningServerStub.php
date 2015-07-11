@@ -17,7 +17,7 @@ class ListeningServerStub
     public function __construct()
     {
         try {
-            if (($this->sock = socket_create_listen(55555)) === false) {
+            if (($this->sock = socket_create_listen(4222)) === false) {
                 echo socket_strerror(socket_last_error());
             } else {
                 echo "Socket created\n";

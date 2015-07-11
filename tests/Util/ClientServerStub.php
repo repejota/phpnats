@@ -17,7 +17,7 @@ class ClientServerStub
     public function __construct()
     {
         $this->sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_connect($this->sock, 'localhost', 55555);
+        socket_connect($this->sock, 'localhost', 4222);
     }
 
     public function write()
