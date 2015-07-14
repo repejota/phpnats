@@ -1,29 +1,8 @@
 <?php
-
-/**
- * Connection Class.
- *
- * PHP version 5
- *
- * @category Class
- *
- * @author  Raül Përez <repejota@gmail.com>
- * @license http://opensource.org/licenses/MIT The MIT License (MIT)
- *
- * @link https://github.com/repejota/phpnats
- */
-
 namespace Nats;
 
 /**
  * Connection Class.
- *
- * @category Class
- *
- * @author  Raül Përez <repejota@gmail.com>
- * @license http://opensource.org/licenses/MIT The MIT License (MIT)
- *
- * @link https://github.com/repejota/phpnats
  */
 class Connection
 {
@@ -105,6 +84,11 @@ class Connection
         return array_keys($this->subscriptions);
     }
 
+    /**
+     * Connection options object
+     *
+     * @var ConnectionOptions|null
+     */
     private $options = null;
 
     /**
@@ -117,8 +101,7 @@ class Connection
     /**
      * Constructor.
      *
-     * @param string $host name, by default "localhost"
-     * @param int    $port number, by default 4222
+     * @param ConnectionOptions $options Connection options object.
      */
     public function __construct(ConnectionOptions $options = null)
     {
@@ -135,7 +118,8 @@ class Connection
     /**
      * Sends data thought the stream.
      *
-     * @param string $payload message data
+     * @param string $payload Message data.
+     * @return void
      */
     private function send($payload)
     {
@@ -146,7 +130,7 @@ class Connection
     /**
      * Receives a message thought the stream.
      *
-     * @param int $len Number of bytes to receive
+     * @param integer $len Number of bytes to receive.
      *
      * @return string
      */
@@ -162,7 +146,7 @@ class Connection
     /**
      * Returns an stream socket to the desired server.
      *
-     * @param string $address Server url string
+     * @param string $address Server url string.
      *
      * @return resource
      */
@@ -179,7 +163,7 @@ class Connection
     /**
      * Checks if the client is connected to a server.
      *
-     * @return bool
+     * @return boolean
      */
     public function isConnected()
     {
@@ -188,6 +172,8 @@ class Connection
 
     /**
      * Connect to server.
+     *
+     * @return void
      */
     public function connect()
     {
@@ -198,6 +184,8 @@ class Connection
 
     /**
      * Sends PING message.
+     *
+     * @return void
      */
     public function ping()
     {
@@ -209,10 +197,9 @@ class Connection
     /**
      * Publish publishes the data argument to the given subject.
      *
-     * @param string $subject message topic
-     * @param string $payload message data
-     *
-     * @return string
+     * @param string $subject Message topic.
+     * @param string $payload Message data.
+     * @return void
      */
     public function publish($subject, $payload)
     {
@@ -225,9 +212,8 @@ class Connection
     /**
      * Subscribes to an specific event given a subject.
      *
-     * @param string $subject  message topic
-     * @param mixed  $callback closure to be executed as callback
-     *
+     * @param string   $subject  Message topic.
+     * @param resource $callback Closure to be executed as callback.
      * @return string
      */
     public function subscribe($subject, $callback)
@@ -243,7 +229,8 @@ class Connection
     /**
      * Unsubscribe from a event given a subject.
      *
-     * @param string $sid Subscription ID
+     * @param string $sid Subscription ID.
+     * @return void
      */
     public function unsubscribe($sid)
     {
@@ -253,6 +240,8 @@ class Connection
 
     /**
      * Handles PING command.
+     *
+     * @return void
      */
     private function handlePING()
     {
@@ -262,7 +251,7 @@ class Connection
     /**
      * Handles MSG command.
      *
-     * @param string $line Message command from NATS
+     * @param string $line Message command from NATS.
      *
      * @return \Exception|void
      */
@@ -287,9 +276,8 @@ class Connection
     /**
      * Waits for messages.
      *
-     * @param int $quantity Number of messages to wait for
-     *
-     * @return \Exception|void
+     * @param integer $quantity Number of messages to wait for.
+     * @return resource $connection Connection object
      */
     public function wait($quantity = 0)
     {
@@ -307,7 +295,7 @@ class Connection
                 $count = $count + 1;
                 $this->handleMSG($line);
                 if (($quantity != 0) && ($count >= $quantity)) {
-                    return;
+                    return $this;
                 }
             }
         }
@@ -318,6 +306,8 @@ class Connection
 
     /**
      * Reconnects to the server.
+     *
+     * @return void
      */
     public function reconnect()
     {
@@ -328,6 +318,8 @@ class Connection
 
     /**
      * Close will close the connection to the server.
+     *
+     * @return void
      */
     public function close()
     {

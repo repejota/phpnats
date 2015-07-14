@@ -1,18 +1,4 @@
 <?php
-
-/**
- * TestConnection Class.
- *
- * PHP version 5
- *
- * @category Class
- *
- * @author  Raül Përez <repejota@gmail.com>
- * @license http://opensource.org/licenses/MIT The MIT License (MIT)
- *
- * @link https://github.com/repejota/phpnats
- */
-
 namespace Nats\tests\Unit;
 
 use Nats;
@@ -21,22 +7,29 @@ use Cocur\BackgroundProcess\BackgroundProcess;
 
 /**
  * Class ConnectionTest.
- *
- * @category Class
- *
- * @author  Raül Përez <repejota@gmail.com>
- * @license http://opensource.org/licenses/MIT The MIT License (MIT)
- *
- * @link https://github.com/repejota/phpnats
  */
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var resource Client
+     */
     private $c;
 
+    /**
+     * @var resource A separated process
+     */
     private static $process;
 
+    /**
+     * @var bool Am I using a real or a fake server?
+     */
     private static $isGnatsd = false;
 
+    /**
+     * Before Class code setup
+     *
+     * @return void
+     */
     public static function setUpBeforeClass()
     {
         if (($socket = @fsockopen("localhost", 4222, $err))!==false) {
@@ -47,6 +40,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * After Class code setup
+     *
+     * @return void
+     */
     public static function tearDownAfterClass()
     {
         if (!self::$isGnatsd) {
@@ -54,6 +52,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * setUp test suite
+     *
+     * @return void
+     */
     public function setUp()
     {
         $options = new ConnectionOptions();
@@ -68,6 +71,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Connection.
+     *
+     * @return void
      */
     public function testConnection()
     {
@@ -82,6 +87,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Ping command.
+     *
+     * @return void
      */
     public function testPing()
     {
@@ -94,6 +101,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Publish command.
+     *
+     * @return void
      */
     public function testPublish()
     {
@@ -107,6 +116,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Reconnect command.
+     *
+     * @return void
      */
     public function testReconnect()
     {
@@ -119,6 +130,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Subscription command.
+     *
+     * @return void
      */
     public function testSubscription()
     {
