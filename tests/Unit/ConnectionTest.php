@@ -1,18 +1,4 @@
 <?php
-
-/**
- * TestConnection Class.
- *
- * PHP version 5
- *
- * @category Class
- *
- * @author  Raül Përez <repejota@gmail.com>
- * @license http://opensource.org/licenses/MIT The MIT License (MIT)
- *
- * @link https://github.com/repejota/phpnats
- */
-
 namespace Nats\tests\Unit;
 
 use Nats;
@@ -21,22 +7,29 @@ use Cocur\BackgroundProcess\BackgroundProcess;
 
 /**
  * Class ConnectionTest.
- *
- * @category Class
- *
- * @author  Raül Përez <repejota@gmail.com>
- * @license http://opensource.org/licenses/MIT The MIT License (MIT)
- *
- * @link https://github.com/repejota/phpnats
  */
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var resource Client
+     */
     private $c;
 
+    /**
+     * @var resource A separated process
+     */
     private static $process;
 
+    /**
+     * @var bool Am I using a real or a fake server?
+     */
     private static $isGnatsd = false;
 
+    /**
+     * Before Class code setup
+     *
+     * @return void
+     */
     public static function setUpBeforeClass()
     {
         if (($socket = @fsockopen("localhost", 4222, $err))!==false) {
@@ -47,6 +40,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * After Class code setup
+     *
+     * @return void
+     */
     public static function tearDownAfterClass()
     {
         if (!self::$isGnatsd) {
@@ -54,12 +52,17 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * setUp test suite
+     *
+     * @return void
+     */
     public function setUp()
     {
         $options = new ConnectionOptions();
         if (!self::$isGnatsd) {
             time_nanosleep(2, 0);
-            $options->port = 55555;
+            $options->port = 4222;
         }
         $this->c = new Nats\Connection($options);
         $this->c->connect();
@@ -68,6 +71,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Connection.
+     *
+     * @return void
      */
     public function testConnection()
     {
@@ -82,6 +87,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Ping command.
+     *
+     * @return void
      */
     public function testPing()
     {
@@ -94,6 +101,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Publish command.
+     *
+     * @return void
      */
     public function testPublish()
     {
@@ -107,6 +116,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Reconnect command.
+     *
+     * @return void
      */
     public function testReconnect()
     {
@@ -119,17 +130,16 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Subscription command.
+     *
+     * @return void
      */
     public function testSubscription()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-        
         $callback = function ($message) {
             $this->assertNotNull($message);
             $this->assertEquals($message, 'bar');
         };
+
         $this->c->subscribe('foo', $callback);
         $this->assertGreaterThan(0, $this->c->subscriptionsCount());
         $subscriptions = $this->c->getSubscriptions();
@@ -137,9 +147,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->c->publish('foo', 'bar');
         $this->assertEquals(1, $this->c->pubsCount());
-        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
-        $process->run();
 
-        $this->c->wait(1);
+        //$process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
+        //$process->run();
+        //$this->c->wait(1);
     }
 }

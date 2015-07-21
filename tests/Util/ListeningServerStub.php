@@ -4,20 +4,40 @@ namespace Nats\tests\Util;
 
 require 'vendor/autoload.php';
 
+/**
+ * Class ListeningServerStub
+ */
 class ListeningServerStub
 {
+    /**
+     * @var resource Client
+     */
     protected $client;
 
+    /**
+     * @var resource Socket
+     */
     protected $sock;
 
+    /**
+     * @var string Server address
+     */
     protected $addr;
 
+    /**
+     * @var int Server port
+     */
     protected $port;
 
+    /**
+     * Constructor.
+     *
+     * @throws \Exception Connection Error exception.
+     */
     public function __construct()
     {
         try {
-            if (($this->sock = socket_create_listen(55555)) === false) {
+            if (($this->sock = socket_create_listen(4222)) === false) {
                 echo socket_strerror(socket_last_error());
             } else {
                 echo "Socket created\n";
@@ -29,11 +49,21 @@ class ListeningServerStub
         }
     }
 
+    /**
+     * Close socket.
+     *
+     * @return void
+     */
     public function close()
     {
         socket_close($this->sock);
     }
 
+    /**
+     * Get the socket.
+     *
+     * @return resource socket pointer
+     */
     public function getSock()
     {
         return $this->sock;

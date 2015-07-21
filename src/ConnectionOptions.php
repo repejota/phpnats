@@ -1,25 +1,8 @@
 <?php
-/**
- * ConnectionOptions Class
- *
- * PHP version 5
- *
- * @category Class
- * @package  Nats
- * @author   Raül Përez <repejota@gmail.com>
- * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/repejota/phpnats
- */
 namespace Nats;
 
 /**
  * ConnectionOptions Class
- *
- * @category Class
- * @package  Nats\Tests\Unit
- * @author   Raül Përez <repejota@gmail.com>
- * @license  http://opensource.org/licenses/MIT The MIT License (MIT)
- * @link     https://github.com/repejota/phpnats
  */
 class ConnectionOptions
 {
@@ -34,7 +17,7 @@ class ConnectionOptions
     /**
      * Port number to connect
      *
-     * @var int
+     * @var integer
      */
     public $port = 4222;
 
@@ -69,21 +52,21 @@ class ConnectionOptions
     /**
      * If verbose mode is enabled
      *
-     * @var bool
+     * @var boolean
      */
     public $verbose = false;
 
     /**
      * If pedantic mode is enabled
      *
-     * @var bool
+     * @var boolean
      */
     public $pedantic = false;
 
     /**
      * If reconnect mode is enabled
      *
-     * @var bool
+     * @var boolean
      */
     public $reconnect = true;
 
