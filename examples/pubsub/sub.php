@@ -13,4 +13,6 @@ $callback = function ($payload) {
 
 $sid = $c->subscribe("foo", $callback);
 
-$c->wait();
+$c->wait(2);
+
+$c->unsubscribe($sid);
