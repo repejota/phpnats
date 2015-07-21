@@ -204,8 +204,7 @@ class Connection
     public function publish($subject, $payload)
     {
         $msg = 'PUB '.$subject.' '.strlen($payload);
-        $this->send($msg);
-        $this->send($payload);
+        $this->send($msg . "\r\n" . $payload);
         $this->pubs += 1;
     }
 

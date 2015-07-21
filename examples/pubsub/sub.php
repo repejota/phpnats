@@ -4,7 +4,7 @@ require_once "../../vendor/autoload.php";
 const HOST = "localhost";
 const PORT = 4222;
 
-$c = new Nats\Connection(HOST, PORT);
+$c = new Nats\Connection();
 $c->connect();
 
 $callback = function ($payload) {
@@ -13,4 +13,6 @@ $callback = function ($payload) {
 
 $sid = $c->subscribe("foo", $callback);
 
-$c->wait();
+$c->wait(2);
+
+$c->unsubscribe($sid);
