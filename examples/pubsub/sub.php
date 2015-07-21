@@ -4,7 +4,7 @@ require_once "../../vendor/autoload.php";
 const HOST = "localhost";
 const PORT = 4222;
 
-$c = new Nats\Connection(HOST, PORT);
+$c = new Nats\Connection();
 $c->connect();
 
 $callback = function ($payload) {
