@@ -60,8 +60,8 @@ class ClientServerStub
 }
 
 $client = new ClientServerStub();
-time_nanosleep(1, 0);
+time_nanosleep(4, 0);
 
 $client->write();
 
-$client->close();
+ $client->close();
