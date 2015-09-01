@@ -5,7 +5,7 @@ namespace Nats\tests\Util;
 require 'vendor/autoload.php';
 
 /**
- * Class ListeningServerStub.
+ * Class ListeningServerStub
  */
 class ListeningServerStub
 {
@@ -37,8 +37,13 @@ class ListeningServerStub
     public function __construct()
     {
         try {
-            $address = "tcp://localhost:4222";
-            $this->sock = stream_socket_server($address, $errno, $errstr);
+            if (($this->sock = socket_create_listen(4222)) === false) {
+                echo socket_strerror(socket_last_error());
+            } else {
+                echo "Socket created\n";
+            }
+            socket_getsockname($this->sock, $this->addr, $this->port);
+        
         } catch (\Exception $e) {
             throw $e;
         }
@@ -46,6 +51,8 @@ class ListeningServerStub
 
     /**
      * Close socket.
+     *
+     * @return void
      */
     public function close()
     {
@@ -64,26 +71,23 @@ class ListeningServerStub
 }
 
 $server = new ListeningServerStub();
-$time = 15;
+$time=25;
 
 while ($time>0) {
-    time_nanosleep(1, 0);
-    $clientSocket = stream_socket_accept($server->getSock());
+    time_nanosleep(1, 100000);
+    $clientSocket = socket_accept($server->getSock());
 
     if (!is_null($clientSocket)) {
-        $lll =  trim(fgets($clientSocket));
-
-        $line = "MSG OK $lll 10";
-        if (strpos($lll, 'CONNECT') === false) {
-            fwrite($clientSocket, $line, strlen($line));
-        } else {
-            fwrite($clientSocket, "PING", strlen("PING"));
-        }
-
+        $lll = socket_read($clientSocket, 100000);
+        $line = "MSG OK 55966a4463383 10";
+        $line = "PING";
+        socket_write($clientSocket, $line);
     } else {
-        $line = 'PING';
-  //      fwrite($server->getSock(), $line, strlen($line));
+        $line = "PING";
+        socket_write($server->getSock(), $line);
+        time_nanosleep(1, 20000);
         continue;
+    
     }
     $time--;
 }

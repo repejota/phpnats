@@ -1,5 +1,4 @@
 <?php
-
 namespace Nats\tests\Unit;
 
 use Nats;
@@ -27,12 +26,14 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     private static $isGnatsd = false;
 
     /**
-     * Before Class code setup.
+     * Before Class code setup
+     *
+     * @return void
      */
     public static function setUpBeforeClass()
     {
-        if (($socket = @fsockopen('localhost', 4222, $err)) !== false) {
-            self::$isGnatsd = true;
+        if (($socket = @fsockopen("localhost", 4222, $err))!==false) {
+             self::$isGnatsd = true;
         } else {
             self::$process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
             self::$process->run();
@@ -40,7 +41,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * After Class code setup.
+     * After Class code setup
+     *
+     * @return void
      */
     public static function tearDownAfterClass()
     {
@@ -50,21 +53,26 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * setUp test suite.
+     * setUp test suite
+     *
+     * @return void
      */
     public function setUp()
     {
         $options = new ConnectionOptions();
         if (!self::$isGnatsd) {
-            time_nanosleep(0, 300000000);
+            time_nanosleep(1, 700000000);
             $options->port = 4222;
         }
         $this->c = new Nats\Connection($options);
         $this->c->connect();
     }
 
+
     /**
      * Test Connection.
+     *
+     * @return void
      */
     public function testConnection()
     {
@@ -78,21 +86,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Connection with bad configuration.
-     *
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testConnectionBadStream()
-    {
-        $options = new ConnectionOptions();
-        $options->host = null;
-        $options->port = null;
-        $this->c = new Nats\Connection($options);
-        $this->c->connect();
-    }
-
-    /**
      * Test Ping command.
+     *
+     * @return void
      */
     public function testPing()
     {
@@ -103,9 +99,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->close();
     }
 
-
     /**
      * Test Publish command.
+     *
+     * @return void
      */
     public function testPublish()
     {
@@ -117,9 +114,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->close();
     }
 
-
     /**
      * Test Reconnect command.
+     *
+     * @return void
      */
     public function testReconnect()
     {
@@ -132,50 +130,27 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Subscription command.
+     *
+     * @return void
      */
     public function testSubscription()
     {
-
         $callback = function ($message) {
             $this->assertNotNull($message);
             $this->assertEquals($message, 'bar');
         };
-        $sid = $this->c->subscribe('foo', $callback);
 
+        $this->c->subscribe('foo', $callback);
         $this->assertGreaterThan(0, $this->c->subscriptionsCount());
-
         $subscriptions = $this->c->getSubscriptions();
         $this->assertInternalType('array', $subscriptions);
 
         $this->c->publish('foo', 'bar');
         $this->assertEquals(1, $this->c->pubsCount());
 
-        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php '.$sid);
+        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
         $process->run();
-
+        // time_nanosleep(1, 0);
         $this->c->wait(1);
-    }
-
-    /**
-     * Test Unsubscription command.
-     */
-    public function testUnSubscription()
-    {
-        $callback = function ($message) {
-            $this->assertNotNull($message);
-            $this->assertEquals($message, 'bar');
-        };
-
-        $sid = $this->c->subscribe('foo', $callback);
-
-        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
-        $subscriptions = $this->c->getSubscriptions();
-        $this->assertInternalType('array', $subscriptions);
-
-        $this->c->publish('foo', 'bar');
-        $this->assertEquals(1, $this->c->pubsCount());
-
-        $this->c->unsubscribe($sid);
-        $this->assertEquals(0, $this->c->subscriptionsCount());
     }
 }
