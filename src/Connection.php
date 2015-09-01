@@ -107,7 +107,6 @@ class Connection
     {
         $this->pings = 0;
         $this->pubs = 0;
-        $this->subscriptions = 0;
         $this->subscriptions = [];
         $this->options = $options;
         if (is_null($options)) {
@@ -235,6 +234,11 @@ class Connection
     {
         $msg = 'UNSUB '.$sid;
         $this->send($msg);
+
+        if (!empty($this->subscriptions[$sid])) {
+            unset($this->subscriptions[$sid]);
+        }
+
     }
 
     /**
@@ -259,9 +263,7 @@ class Connection
         $parts = explode(' ', $line);
         $length = $parts[3];
         $sid = $parts[2];
-
         $payload = $this->receive($length);
-
         $func = $this->subscriptions[$sid];
         if (is_callable($func)) {
             $func($payload);
@@ -298,6 +300,7 @@ class Connection
                 }
             }
         }
+
         $this->close();
 
         return $this;

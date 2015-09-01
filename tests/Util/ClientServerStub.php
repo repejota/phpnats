@@ -33,8 +33,12 @@ class ClientServerStub
      */
     public function __construct()
     {
+        $address = "tcp://localhost:4222";
+        $this->sock = stream_socket_client($address, $errno, $errstr, STREAM_CLIENT_CONNECT);
+/*
         $this->sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         socket_connect($this->sock, 'localhost', 4222);
+*/
     }
 
     /**
@@ -42,26 +46,16 @@ class ClientServerStub
      *
      * @return void
      */
-    public function write()
+    public function write($msg)
     {
-        socket_write($this->sock, "PING");
-
-    }
-
-    /**
-     * Close the connection
-     *
-     * @return void
-     */
-    public function close()
-    {
-        socket_close($this->sock);
+        fwrite($this->sock, $msg, strlen($msg));
     }
 }
 
 $client = new ClientServerStub();
-time_nanosleep(4, 0);
+$msg = "PING";
+if (!empty($argv[1])) {
+    $msg = trim($argv[1]);
+}
 
-$client->write();
-
- $client->close();
+$client->write($msg);
