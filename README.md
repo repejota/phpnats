@@ -28,6 +28,30 @@ Requirements
 Usage
 -----
 
+### Installation
+
+Let's start by downloading composer into our project dir:
+```
+curl -O http://getcomposer.org/composer.phar
+chmod +x composer.phar
+```
+
+Now let's tell composer about our project's dependancies, in this case, PHPNats. The way we do this is by creating a composer.json file, and placing it in the root folder of our project, right next to composer.phar
+
+```
+{
+  "require": {
+    "repejota/nats": "master"
+  }
+}
+```
+Let's let Composer work its magic:
+```
+php composer.phar install
+```
+Composer will download all the dependencies defined in composer.json, and prepare all the files needed to autoload them.
+
+
 ### Basic Usage
 
 ```php
@@ -48,13 +72,20 @@ $client->subscribe("foo", $callback);
 $client->wait(1);
 ```
 
+
 Developer's Information
 -----------------------
+
+### Releases
+
+[Latest stable](https://github.com/repejota/phpnats/tree/master)
+[Latest dev](https://github.com/repejota/phpnats/tree/develop)
 
 ### Tests
 
 Tests are in the `tests` folder.
 To run them, you need `PHPUnit` and execute `make test`.
+
 
 ### Code Quality
 
