@@ -178,7 +178,7 @@ class Connection
     public function connect()
     {
         $this->streamSocket = $this->getStream($this->options->getAddress());
-        $msg = 'CONNECT '.$this->options->toJSON();
+        $msg = 'CONNECT '.$this->options;
         $this->send($msg);
     }
 
