@@ -10,10 +10,15 @@ namespace Nats\tests\Unit;
 
 use Nats\ConnectionOptions;
 
+/**
+ * Class ConnectionOptionsTest
+ */
 class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Tests Connection Options getters and setters. Only necessary for code coverage.
+     *
+     * @return void
      */
     public function testSettersAndGetters()
     {
