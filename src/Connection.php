@@ -242,8 +242,8 @@ class Connection
     /**
      * Subscribes to an specific event given a subject.
      *
-     * @param string $subject  Message topic.
-     * @param mixed  $callback Closure to be executed as callback.
+     * @param string   $subject  Message topic.
+     * @param \Closure $callback Closure to be executed as callback.
      *
      * @return string
      */
