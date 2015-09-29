@@ -62,7 +62,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $options = new ConnectionOptions();
         if (!self::$isGnatsd) {
             time_nanosleep(1, 700000000);
-            $options->port = 4222;
+            $options->setPort(4222);
         }
         $this->c = new Nats\Connection($options);
         $this->c->connect();
