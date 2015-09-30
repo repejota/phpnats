@@ -4,3 +4,4 @@ cover
 *.phar
 composer.lock
 build
+.idea

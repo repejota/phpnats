@@ -71,12 +71,11 @@ class ListeningServerStub
 }
 
 $server = new ListeningServerStub();
-$time=20;
+$time=25;
 
 while ($time>0) {
     time_nanosleep(1, 100000);
     $clientSocket = socket_accept($server->getSock());
-
 
     if (!is_null($clientSocket)) {
         $lll = socket_read($clientSocket, 100000);

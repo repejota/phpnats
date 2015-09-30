@@ -12,63 +12,63 @@ class ConnectionOptions
      *
      * @var string
      */
-    public $host = "localhost";
+    private $host = "localhost";
 
     /**
      * Port number to connect
      *
      * @var integer
      */
-    public $port = 4222;
+    private $port = 4222;
 
     /**
      * Username to connect
      *
      * @var string
      */
-    public $user = null;
+    private $user = null;
 
     /**
      * Password to connect
      *
      * @var string
      */
-    public $pass = null;
+    private $pass = null;
 
     /**
      * Language of this client
      *
      * @var string
      */
-    public $lang = "php";
+    private $lang = "php";
 
     /**
      * Version of this client
      *
      * @var string
      */
-    public $version = "0.0.5";
+    private $version = "0.0.5";
 
     /**
      * If verbose mode is enabled
      *
      * @var boolean
      */
-    public $verbose = false;
+    private $verbose = false;
 
     /**
      * If pedantic mode is enabled
      *
      * @var boolean
      */
-    public $pedantic = false;
+    private $pedantic = false;
 
     /**
      * If reconnect mode is enabled
      *
      * @var boolean
      */
-    public $reconnect = true;
+    private $reconnect = true;
 
     /**
      * Get the URI for a server
@@ -85,7 +85,7 @@ class ConnectionOptions
      *
      * @return string
      */
-    public function toJSON()
+    public function __toString()
     {
         $a = [
             "lang" => $this->lang,
@@ -100,5 +100,221 @@ class ConnectionOptions
             $a["pass"] = $this->pass;
         }
         return json_encode($a);
+    }
+
+    /**
+     * Get host
+     *
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * Set host
+     *
+     * @param string $host Host.
+     *
+     * @return $this
+     */
+    public function setHost($host)
+    {
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Get port
+     *
+     * @return integer
+     */
+    public function getPort()
+    {
+        return $this->port;
+    }
+
+    /**
+     * Set port
+     *
+     * @param integer $port Port.
+     *
+     * @return $this
+     */
+    public function setPort($port)
+    {
+        $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return string
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set user
+     *
+     * @param string $user User.
+     *
+     * @return $this
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string
+     */
+    public function getPass()
+    {
+        return $this->pass;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $pass Password.
+     *
+     * @return $this
+     */
+    public function setPass($pass)
+    {
+        $this->pass = $pass;
+
+        return $this;
+    }
+
+    /**
+     * Get language
+     *
+     * @return string
+     */
+    public function getLang()
+    {
+        return $this->lang;
+    }
+
+    /**
+     * Set language
+     *
+     * @param string $lang Language.
+     *
+     * @return $this
+     */
+    public function setLang($lang)
+    {
+        $this->lang = $lang;
+
+        return $this;
+    }
+
+    /**
+     * Get version
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * Set version
+     *
+     * @param string $version Version number.
+     *
+     * @return $this
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Get verbose
+     *
+     * @return boolean
+     */
+    public function isVerbose()
+    {
+        return $this->verbose;
+    }
+
+    /**
+     * Set verbose
+     *
+     * @param boolean $verbose Verbose flag.
+     *
+     * @return $this
+     */
+    public function setVerbose($verbose)
+    {
+        $this->verbose = $verbose;
+
+        return $this;
+    }
+
+    /**
+     * Get pedantic
+     *
+     * @return boolean
+     */
+    public function isPedantic()
+    {
+        return $this->pedantic;
+    }
+
+    /**
+     * Set pedantic
+     *
+     * @param boolean $pedantic Pedantic flag.
+     *
+     * @return $this
+     */
+    public function setPedantic($pedantic)
+    {
+        $this->pedantic = $pedantic;
+
+        return $this;
+    }
+
+    /**
+     * Get reconnect
+     *
+     * @return boolean
+     */
+    public function isReconnect()
+    {
+        return $this->reconnect;
+    }
+
+    /**
+     * Set reconnect
+     *
+     * @param boolean $reconnect Reconnect flag.
+     *
+     * @return $this
+     */
+    public function setReconnect($reconnect)
+    {
+        $this->reconnect = $reconnect;
+
+        return $this;
     }
 }
