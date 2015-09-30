@@ -85,7 +85,7 @@ class ConnectionOptions
      *
      * @return string
      */
-    public function toJSON()
+    public function __toString()
     {
         $a = [
             "lang" => $this->lang,
