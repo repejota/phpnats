@@ -146,11 +146,10 @@ class Connection
     /**
      * Returns an stream socket to the desired server.
      *
-     * @param string $address Server url string.
-     *
-     * @param null $timeout
+     * @param string  $address Server url string.
+     * @param integer $timeout Number of seconds until the connect() system call should timeout.
      * @return resource
-     * @throws \Exception
+     * @throws \Exception Exception raised if connection fails.
      */
     private function getStream($address, $timeout = null)
     {
@@ -178,8 +177,9 @@ class Connection
     /**
      * Connect to server.
      *
-     * @param null $timeout
-     * @throws \Exception
+     * @param integer $timeout Number of seconds until the connect() system call should timeout.
+     * @throws \Exception Exception raised if connection fails.
+     * @return void
      */
     public function connect($timeout = null)
     {
