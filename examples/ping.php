@@ -1,11 +1,14 @@
 <?php
-require_once "../vendor/autoload.php";
+require_once __DIR__ . "/../vendor/autoload.php";
 
-const HOST = "localhost";
-const PORT = 4222;
+$connectionOptions = new \Nats\ConnectionOptions();
+$connectionOptions
+    ->setHost('localhost')
+    ->setPort(4222);
 
-echo "Server: nats://" . HOST . ":" . PORT . PHP_EOL;
-$c = new Nats\Connection();
+echo "Server: nats://" . $connectionOptions->getHost() . ":" . $connectionOptions->getPort() . PHP_EOL;
+
+$c = new Nats\Connection($connectionOptions);
 $c->connect();
 
 $c->ping();
