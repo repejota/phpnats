@@ -107,7 +107,6 @@ class Connection
     {
         $this->pings = 0;
         $this->pubs = 0;
-        $this->subscriptions = 0;
         $this->subscriptions = [];
         $this->options = $options;
         if (is_null($options)) {
@@ -241,6 +240,8 @@ class Connection
     {
         $msg = 'UNSUB '.$sid;
         $this->send($msg);
+
+        unset($this->subscriptions[$sid]);
     }
 
     /**
