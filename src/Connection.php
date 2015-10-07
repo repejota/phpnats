@@ -200,6 +200,26 @@ class Connection
     }
 
     /**
+     * Request does a request and executes a callback with the response.
+     *
+     * @param string $subject Message topic.
+     * @param string $payload Message data.
+     * @param resource $callback Closure to be executed as callback.
+     * @param integer $quantity Number of messages to wait for.
+     */
+    public function request($subject, $payload, $callback, $wait = 1)
+    {
+        $inbox = uniqid('_INBOX.');
+        $this->subscribe($inbox, $callback);
+
+        $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
+        $this->send($msg . "\r\n" . $payload);
+        $this->pubs += 1;
+
+        $this->wait($wait);
+    }
+
+    /**
      * Publish publishes the data argument to the given subject.
      *
      * @param string $subject Message topic.
@@ -264,18 +284,25 @@ class Connection
     private function handleMSG($line)
     {
         $parts = explode(' ', $line);
+        $subject = null;
         $length = $parts[3];
         $sid = $parts[2];
 
+        if (count($parts) == 5) {
+            $length = $parts[5];
+            $subject = $parts[3];
+        }
+
         $payload = $this->receive($length);
+        $msg = new Message($subject, $payload, $sid, $this);
 
         $func = $this->subscriptions[$sid];
         if (is_callable($func)) {
-            $func($payload);
+            $func($msg);
         } else {
             return new \Exception('not callable');
         }
-        
+
         return;
     }
 

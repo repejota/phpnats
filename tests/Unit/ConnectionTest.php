@@ -153,4 +153,21 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         // time_nanosleep(1, 0);
         $this->c->wait(1);
     }
+
+    /**
+     * Test Request command
+     *
+     * @return void
+     */
+    public function testRequest()
+    {
+        $this->c->subscribe("sayhello", function ($res) {
+            $res->reply("Hello, ".$res->getBody(). " !!!");
+        });
+
+        $this->c->request('sayhello', 'McFly', function ($message) {
+            $this->assertNotNull($message);
+            $this->assertEquals($message, 'Hello, McFly !!!');
+        });
+    }
 }
