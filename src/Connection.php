@@ -85,7 +85,7 @@ class Connection
     }
 
     /**
-     * Connection options object
+     * Connection options object.
      *
      * @var ConnectionOptions|null
      */
@@ -118,6 +118,7 @@ class Connection
      * Sends data thought the stream.
      *
      * @param string $payload Message data.
+     *
      * @return void
      */
     private function send($payload)
@@ -147,6 +148,7 @@ class Connection
      *
      * @param string  $address Server url string.
      * @param integer $timeout Number of seconds until the connect() system call should timeout.
+     *
      * @return resource
      * @throws \Exception Exception raised if connection fails.
      */
@@ -177,6 +179,7 @@ class Connection
      * Connect to server.
      *
      * @param integer $timeout Number of seconds until the connect() system call should timeout.
+     *
      * @throws \Exception Exception raised if connection fails.
      * @return void
      */
@@ -202,10 +205,12 @@ class Connection
     /**
      * Request does a request and executes a callback with the response.
      *
-     * @param string $subject Message topic.
-     * @param string $payload Message data.
-     * @param resource $callback Closure to be executed as callback.
-     * @param integer $quantity Number of messages to wait for.
+     * @param string  $subject  Message topic.
+     * @param string  $payload  Message data.
+     * @param mixed   $callback Closure to be executed as callback.
+     * @param integer $wait     Number of messages to wait for.
+     *
+     * @return void
      */
     public function request($subject, $payload, $callback, $wait = 1)
     {
@@ -224,6 +229,7 @@ class Connection
      *
      * @param string $subject Message topic.
      * @param string $payload Message data.
+     *
      * @return void
      */
     public function publish($subject, $payload)
@@ -236,8 +242,9 @@ class Connection
     /**
      * Subscribes to an specific event given a subject.
      *
-     * @param string   $subject  Message topic.
-     * @param resource $callback Closure to be executed as callback.
+     * @param string $subject  Message topic.
+     * @param mixed  $callback Closure to be executed as callback.
+     *
      * @return string
      */
     public function subscribe($subject, $callback)
@@ -254,6 +261,7 @@ class Connection
      * Unsubscribe from a event given a subject.
      *
      * @param string $sid Subscription ID.
+     *
      * @return void
      */
     public function unsubscribe($sid)
@@ -310,6 +318,7 @@ class Connection
      * Waits for messages.
      *
      * @param integer $quantity Number of messages to wait for.
+     *
      * @return resource $connection Connection object
      */
     public function wait($quantity = 0)

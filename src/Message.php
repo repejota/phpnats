@@ -7,41 +7,42 @@ namespace Nats;
 class Message
 {
     /**
-     * Message Subject
+     * Message Subject.
      *
      * @var string
      */
     private $subject;
 
     /**
-     * Message Body
+     * Message Body.
      *
      * @var string
      */
     private $body;
 
     /**
-     * Message Ssid
+     * Message Ssid.
      *
      * @var string
      */
     private $sid;
 
     /**
-     * Message related connection
+     * Message related connection.
      *
      * @var string
      */
     private $conn;
 
     /**
-     * Message constructor
-     * @param string $subject
-     * @param string $body
-     * @param string $sid
-     * @param Connection $conn
+     * Message constructor.
+     *
+     * @param string     $subject Message subject.
+     * @param string     $body    Message body.
+     * @param string     $sid     Message Sid.
+     * @param Connection $conn    Message Connection.
      */
-    public function __construct($subject, $body, $sid, $conn)
+    public function __construct($subject, $body, $sid, Connection $conn)
     {
         $this->setSubject($subject);
         $this->setBody($body);
@@ -50,9 +51,10 @@ class Message
     }
 
     /**
-     * Set subject
+     * Set subject.
      *
-     * @param string $subject Subject
+     * @param string $subject Subject.
+     *
      * @return $this
      */
     public function setSubject($subject)
@@ -63,7 +65,7 @@ class Message
     }
 
     /**
-     * Get subject
+     * Get subject.
      *
      * @return string
      */
@@ -73,9 +75,10 @@ class Message
     }
 
     /**
-     * Set body
+     * Set body.
      *
-     * @param string $body Body
+     * @param string $body Body.
+     *
      * @return $this
      */
     public function setBody($body)
@@ -85,7 +88,7 @@ class Message
     }
 
     /**
-     * Get body
+     * Get body.
      *
      * @return string
      */
@@ -95,9 +98,10 @@ class Message
     }
 
     /**
-     * Set Ssid
+     * Set Ssid.
      *
-     * @param string $sid Ssid
+     * @param string $sid Ssid.
+     *
      * @return $this
      */
     public function setSid($sid)
@@ -107,7 +111,7 @@ class Message
     }
 
     /**
-     * Get Ssid
+     * Get Ssid.
      *
      * @return string
      */
@@ -117,7 +121,7 @@ class Message
     }
 
     /**
-     * String representation of a message
+     * String representation of a message.
      *
      * @return string
      */
@@ -127,19 +131,20 @@ class Message
     }
 
     /**
-     * Set Conn
+     * Set Conn.
      *
-     * @param Connection $conn
+     * @param Connection $conn Connection.
+     *
      * @return $this
      */
-    public function setConn($conn)
+    public function setConn(Connection $conn)
     {
         $this->conn = $conn;
         return $this;
     }
 
     /**
-     * Get Conn
+     * Get Conn.
      *
      * @return string
      */
@@ -149,9 +154,11 @@ class Message
     }
 
     /**
-     * Allows you reply the message with a specific body
+     * Allows you reply the message with a specific body.
      *
-     * @param string $body
+     * @param string $body Body to be set.
+     *
+     * @return void
      */
     public function reply($body)
     {
