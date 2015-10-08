@@ -288,6 +288,7 @@ class Connection
      * @param string $line Message command from NATS.
      *
      * @return \Exception|void
+     * @codeCoverageIgnore
      */
     private function handleMSG($line)
     {
