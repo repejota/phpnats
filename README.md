@@ -68,6 +68,18 @@ $callback = function($payload)
 };
 $client->subscribe("foo", $callback);
 
+# Request 
+$c->request('sayhello', 'Marty McFly', function ($response) {
+    echo $response->getBody();
+});
+
+# Responding to requests
+$sid = $c->subscribe("sayhello", function ($res) {
+    $res->reply("Hello, " . $res->getBody() . " !!!");
+});
+
+
+
 # Wait for 1 message
 $client->wait(1);
 ```

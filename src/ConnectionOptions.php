@@ -2,76 +2,76 @@
 namespace Nats;
 
 /**
- * ConnectionOptions Class
+ * ConnectionOptions Class.
  */
 class ConnectionOptions
 {
 
     /**
-     * Hostname or IP to connect
+     * Hostname or IP to connect.
      *
      * @var string
      */
     private $host = "localhost";
 
     /**
-     * Port number to connect
+     * Port number to connect.
      *
      * @var integer
      */
     private $port = 4222;
 
     /**
-     * Username to connect
+     * Username to connect.
      *
      * @var string
      */
     private $user = null;
 
     /**
-     * Password to connect
+     * Password to connect.
      *
      * @var string
      */
     private $pass = null;
 
     /**
-     * Language of this client
+     * Language of this client.
      *
      * @var string
      */
     private $lang = "php";
 
     /**
-     * Version of this client
+     * Version of this client.
      *
      * @var string
      */
     private $version = "0.0.5";
 
     /**
-     * If verbose mode is enabled
+     * If verbose mode is enabled.
      *
      * @var boolean
      */
     private $verbose = false;
 
     /**
-     * If pedantic mode is enabled
+     * If pedantic mode is enabled.
      *
      * @var boolean
      */
     private $pedantic = false;
 
     /**
-     * If reconnect mode is enabled
+     * If reconnect mode is enabled.
      *
      * @var boolean
      */
     private $reconnect = true;
 
     /**
-     * Get the URI for a server
+     * Get the URI for a server.
      *
      * @return string
      */
@@ -81,7 +81,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get the options JSON string
+     * Get the options JSON string.
      *
      * @return string
      */
@@ -103,7 +103,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get host
+     * Get host.
      *
      * @return string
      */
@@ -113,7 +113,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set host
+     * Set host.
      *
      * @param string $host Host.
      *
@@ -127,7 +127,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get port
+     * Get port.
      *
      * @return integer
      */
@@ -137,7 +137,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set port
+     * Set port.
      *
      * @param integer $port Port.
      *
@@ -151,7 +151,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get user
+     * Get user.
      *
      * @return string
      */
@@ -161,7 +161,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set user
+     * Set user.
      *
      * @param string $user User.
      *
@@ -175,7 +175,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get password
+     * Get password.
      *
      * @return string
      */
@@ -185,7 +185,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set password
+     * Set password.
      *
      * @param string $pass Password.
      *
@@ -199,7 +199,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get language
+     * Get language.
      *
      * @return string
      */
@@ -209,7 +209,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set language
+     * Set language.
      *
      * @param string $lang Language.
      *
@@ -223,7 +223,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get version
+     * Get version.
      *
      * @return string
      */
@@ -233,7 +233,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set version
+     * Set version.
      *
      * @param string $version Version number.
      *
@@ -247,7 +247,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get verbose
+     * Get verbose.
      *
      * @return boolean
      */
@@ -257,7 +257,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set verbose
+     * Set verbose.
      *
      * @param boolean $verbose Verbose flag.
      *
@@ -271,7 +271,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get pedantic
+     * Get pedantic.
      *
      * @return boolean
      */
@@ -281,7 +281,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set pedantic
+     * Set pedantic.
      *
      * @param boolean $pedantic Pedantic flag.
      *
@@ -295,7 +295,7 @@ class ConnectionOptions
     }
 
     /**
-     * Get reconnect
+     * Get reconnect.
      *
      * @return boolean
      */
@@ -305,7 +305,7 @@ class ConnectionOptions
     }
 
     /**
-     * Set reconnect
+     * Set reconnect.
      *
      * @param boolean $reconnect Reconnect flag.
      *
