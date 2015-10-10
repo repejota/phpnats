@@ -11,22 +11,28 @@ use Cocur\BackgroundProcess\BackgroundProcess;
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * Client.
+     *
      * @var resource Client
      */
     private $c;
 
     /**
-     * @var resource A separated process
+     * Process.
+     *
+     * @var resource A separated process.
      */
     private static $process;
 
     /**
+     * Gnatsd switch.
+     *
      * @var bool Am I using a real or a fake server?
      */
     private static $isGnatsd = false;
 
     /**
-     * Before Class code setup
+     * Before Class code setup.
      *
      * @return void
      */
@@ -41,7 +47,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * After Class code setup
+     * After Class code setup.
      *
      * @return void
      */
@@ -53,7 +59,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * setUp test suite
+     * SetUp test suite.
      *
      * @return void
      */
@@ -155,7 +161,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Request command
+     * Test Request command.
      *
      * @return void
      */
@@ -169,5 +175,32 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $this->assertNotNull($message);
             $this->assertEquals($message, 'Hello, McFly !!!');
         });
+    }
+
+    /**
+     * Test Unsubscribe command.
+     *
+     * @return void
+     */
+    public function testUnsubscribe()
+    {
+        $sid = $this->c->subscribe("unsub", function($res) {
+            $this->assertTrue(false);
+        });
+        $this->c->unsubscribe($sid);
+        $this->c->publish('unsub', 'bar');
+
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Test setStreamTimeout command.
+     *
+     * @return void
+     */
+    public function testSetStreamTimeout()
+    {
+        $this->assertTrue($this->c->setStreamTimeout(2));
+        $this->assertFalse($this->c->setStreamTimeout("hello"));
     }
 }
