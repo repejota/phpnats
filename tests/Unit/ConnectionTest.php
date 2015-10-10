@@ -167,14 +167,21 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequest()
     {
-        $this->c->subscribe("sayhello", function ($res) {
-            $res->reply("Hello, ".$res->getBody(). " !!!");
-        });
+        $this->c->subscribe(
+            "sayhello",
+            function ($res) {
+                $res->reply("Hello, ".$res->getBody(). " !!!");
+            }
+        );
 
-        $this->c->request('sayhello', 'McFly', function ($message) {
-            $this->assertNotNull($message);
-            $this->assertEquals($message, 'Hello, McFly !!!');
-        });
+        $this->c->request(
+            'sayhello',
+            'McFly',
+            function ($message) {
+                $this->assertNotNull($message);
+                $this->assertEquals($message, 'Hello, McFly !!!');
+            }
+        );
     }
 
     /**
@@ -184,9 +191,12 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testUnsubscribe()
     {
-        $sid = $this->c->subscribe("unsub", function($res) {
-            $this->assertTrue(false);
-        });
+        $sid = $this->c->subscribe(
+            "unsub",
+            function ($res) {
+                $this->assertTrue(false);
+            }
+        );
         $this->c->unsubscribe($sid);
         $this->c->publish('unsub', 'bar');
 
