@@ -247,7 +247,7 @@ class Connection
      *
      * @return string
      */
-    public function subscribe($subject, $callback)
+    public function subscribe($subject, \Closure $callback)
     {
         $sid = uniqid();
         $msg = 'SUB '.$subject.' '.$sid;
