@@ -242,12 +242,12 @@ class Connection
     /**
      * Subscribes to an specific event given a subject.
      *
-     * @param string $subject  Message topic.
-     * @param mixed  $callback Closure to be executed as callback.
+     * @param string   $subject  Message topic.
+     * @param \Closure $callback Closure to be executed as callback.
      *
      * @return string
      */
-    public function subscribe($subject, $callback)
+    public function subscribe($subject, \Closure $callback)
     {
         $sid = uniqid();
         $msg = 'SUB '.$subject.' '.$sid;
