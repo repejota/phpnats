@@ -137,9 +137,15 @@ class Connection
     private function receive($len = null)
     {
         if ($len) {
-            return trim(fgets($this->streamSocket, $len + 1));
+            $line = fgets($this->streamSocket, $len + 1);
         } else {
-            return trim(fgets($this->streamSocket));
+            $line = fgets($this->streamSocket);
+        }
+
+        if ($line === false) {
+            return $line;
+        } else {
+            return trim($line);
         }
     }
 
@@ -327,13 +333,14 @@ class Connection
         $count = 0;
         while (!feof($this->streamSocket)) {
             $line = $this->receive();
+            if ($line === false) {
+                return null;
+            }
 
-            // PING
             if (strpos($line, 'PING') === 0) {
                 $this->handlePING();
             }
 
-            // MSG
             if (strpos($line, 'MSG') === 0) {
                 $count = $count + 1;
                 $this->handleMSG($line);
@@ -345,6 +352,26 @@ class Connection
         $this->close();
 
         return $this;
+    }
+
+    /**
+     * Set Stream Timeout.
+     *
+     * @param integer $seconds Before timeout on stream.
+     *
+     * @return boolean
+     */
+    public function setStreamTimeout($seconds)
+    {
+        if ($this->isConnected()) {
+            try {
+                return stream_set_timeout($this->streamSocket, $seconds);
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**
