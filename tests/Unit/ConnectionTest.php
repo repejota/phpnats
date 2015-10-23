@@ -44,7 +44,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $options = new ConnectionOptions();
 
-        $streamWrapper = $this->prophesize(StreamWrapper::class);
+        $streamWrapper = $this->prophesize("Nats\StreamWrapper");
         $streamWrapper->getStreamSocketClient(Argument::any(), Argument::any(), Argument::any(), Argument::any(), Argument::any())->will(function ($args) {
             return fopen("/tmp/".uniqid(), 'w');
 
