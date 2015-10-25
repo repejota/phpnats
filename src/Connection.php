@@ -108,22 +108,31 @@ class Connection
     /**
      * Constructor.
      *
-     * @param ConnectionOptions $options       Connection options object.
-     * @param StreamWrapper     $streamWrapper Wrapper for stream functions. Testing purposes.
+     * @param ConnectionOptions $options Connection options object.
      */
-    public function __construct(ConnectionOptions $options = null, StreamWrapper $streamWrapper = null)
+    public function __construct(ConnectionOptions $options = null)
     {
         $this->pings = 0;
         $this->pubs = 0;
         $this->subscriptions = [];
         $this->options = $options;
-        $this->streamWrapper = $streamWrapper;
+        $this->streamWrapper = new StreamWrapper();
+
         if (is_null($options)) {
             $this->options = new ConnectionOptions();
         }
-        if (is_null($streamWrapper)) {
-            $this->streamWrapper = new StreamWrapper();
-        }
+    }
+
+    /**
+     * Setter for $streamWrapper. For testing purposes.
+     *
+     * @param StreamWrapper $streamWrapper StreamWrapper for testing purposes.
+     *
+     * @return void
+     */
+    public function setStreamWrapper(StreamWrapper $streamWrapper)
+    {
+        $this->streamWrapper = $streamWrapper;
     }
 
     /**

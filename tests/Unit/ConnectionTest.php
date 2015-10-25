@@ -52,7 +52,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $streamWrapper->setStreamTimeout(Argument::any(), Argument::any())->willReturn(true);
 
-        $this->c = new Nats\Connection($options, $streamWrapper->reveal());
+        $this->c = new Nats\Connection($options);
+        $this->c->setStreamWrapper($streamWrapper->reveal());
         $this->c->connect();
     }
 
