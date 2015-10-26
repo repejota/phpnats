@@ -99,6 +99,13 @@ class Connection
     private $streamSocket;
 
     /**
+     * Stream wrapper for testing purposes.
+     *
+     * @var mixed StreamWrapper.
+     */
+    private $streamWrapper;
+
+    /**
      * Constructor.
      *
      * @param ConnectionOptions $options Connection options object.
@@ -109,9 +116,23 @@ class Connection
         $this->pubs = 0;
         $this->subscriptions = [];
         $this->options = $options;
+        $this->streamWrapper = new StreamWrapper();
+
         if (is_null($options)) {
             $this->options = new ConnectionOptions();
         }
+    }
+
+    /**
+     * Setter for $streamWrapper. For testing purposes.
+     *
+     * @param StreamWrapper $streamWrapper StreamWrapper for testing purposes.
+     *
+     * @return void
+     */
+    public function setStreamWrapper(StreamWrapper $streamWrapper)
+    {
+        $this->streamWrapper = $streamWrapper;
     }
 
     /**
@@ -163,10 +184,16 @@ class Connection
         if (is_null($timeout)) {
             $timeout = intval(ini_get('default_socket_timeout'));
         }
-        $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+        $errno = null;
+        $errstr = null;
+        //$fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+        
+        $fp = $this->streamWrapper->getStreamSocketClient($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+
         if (!$fp) {
             throw new \Exception($errstr, $errno);
         }
+
         //stream_set_blocking($fp, 0);
         return $fp;
     }
@@ -364,10 +391,12 @@ class Connection
     public function setStreamTimeout($seconds)
     {
         if ($this->isConnected()) {
-            try {
-                return stream_set_timeout($this->streamSocket, $seconds);
-            } catch (\Exception $e) {
-                return false;
+            if (is_int($seconds)) {
+                try {
+                    return $this->streamWrapper->setStreamTimeout($this->streamSocket, $seconds);
+                } catch (\Exception $e) {
+                    return false;
+                }
             }
         }
 
