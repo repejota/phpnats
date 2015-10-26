@@ -3,7 +3,10 @@ namespace Nats\tests\Unit;
 
 use Nats;
 use Nats\ConnectionOptions;
-use Cocur\BackgroundProcess\BackgroundProcess;
+use Nats\StreamWrapper;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamFile;
+use Prophecy\Argument;
 
 /**
  * Class ConnectionTest.
@@ -31,32 +34,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     private static $isGnatsd = false;
 
-    /**
-     * Before Class code setup.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass()
-    {
-        if (($socket = @fsockopen("localhost", 4222, $err))!==false) {
-             self::$isGnatsd = true;
-        } else {
-            self::$process = new BackgroundProcess('/usr/bin/php ./tests/Util/ListeningServerStub.php ');
-            self::$process->run();
-        }
-    }
-
-    /**
-     * After Class code setup.
-     *
-     * @return void
-     */
-    public static function tearDownAfterClass()
-    {
-        if (!self::$isGnatsd) {
-            self::$process->stop();
-        }
-    }
 
     /**
      * SetUp test suite.
@@ -66,14 +43,19 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $options = new ConnectionOptions();
-        if (!self::$isGnatsd) {
-            time_nanosleep(1, 700000000);
-            $options->setPort(4222);
-        }
+
+        $streamWrapper = $this->prophesize("Nats\StreamWrapper");
+        $streamWrapper->getStreamSocketClient(Argument::any(), Argument::any(), Argument::any(), Argument::any(), Argument::any())->will(function ($args) {
+            return fopen("/tmp/".uniqid(), 'w');
+
+        });
+
+        $streamWrapper->setStreamTimeout(Argument::any(), Argument::any())->willReturn(true);
+
         $this->c = new Nats\Connection($options);
+        $this->c->setStreamWrapper($streamWrapper->reveal());
         $this->c->connect();
     }
-
 
     /**
      * Test Connection.
@@ -122,7 +104,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test Reconnect command.
-     *
      * @return void
      */
     public function testReconnect()
@@ -153,9 +134,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->c->publish('foo', 'bar');
         $this->assertEquals(1, $this->c->pubsCount());
-
+/*
         $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
         $process->run();
+*/
         // time_nanosleep(1, 0);
         $this->c->wait(1);
     }
