@@ -53,7 +53,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      *
      * @return StreamWrapper
     */
-    private function getMockStreamSocketClient() {
+    private function getMockStreamSocketClient()
+    {
         $streamWrapper = $this->prophesize("Nats\StreamWrapper");
         $streamWrapper->setStreamTimeout(Argument::any(), Argument::any())->willReturn(true);
         $streamWrapper->getStreamSocketClient(Argument::any(), Argument::any(), Argument::any(), Argument::any(), Argument::any())->will(function ($args) {
