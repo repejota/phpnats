@@ -333,6 +333,9 @@ class Connection
         if (count($parts) == 5) {
             $length = $parts[5];
             $subject = $parts[3];
+        } elseif (count($parts) == 4) {
+            $length = $parts[3];
+            $subject = $parts[1];
         }
 
         $payload = $this->receive($length);
