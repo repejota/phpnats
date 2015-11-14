@@ -4,8 +4,6 @@ namespace Nats\tests\Unit;
 use Nats;
 use Nats\ConnectionOptions;
 use Nats\StreamWrapper;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamFile;
 use Prophecy\Argument;
 
 /**
@@ -43,19 +41,35 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $options = new ConnectionOptions();
-
-        $streamWrapper = $this->prophesize("Nats\StreamWrapper");
-        $streamWrapper->getStreamSocketClient(Argument::any(), Argument::any(), Argument::any(), Argument::any(), Argument::any())->will(function ($args) {
-            return fopen("/tmp/".uniqid(), 'w');
-
-        });
-
-        $streamWrapper->setStreamTimeout(Argument::any(), Argument::any())->willReturn(true);
+        $streamWrapper = $this->getMockStreamSocketClient();
 
         $this->c = new Nats\Connection($options);
         $this->c->setStreamWrapper($streamWrapper->reveal());
         $this->c->connect();
     }
+
+    /**
+     * Function for building Socket Mock.
+     *
+     * @return StreamWrapper
+    */
+    private function getMockStreamSocketClient()
+    {
+        $streamWrapper = $this->prophesize("Nats\StreamWrapper");
+        $streamWrapper->setStreamTimeout(Argument::any(), Argument::any())->willReturn(true);
+        $streamWrapper->getStreamSocketClient(Argument::any(), Argument::any(), Argument::any(), Argument::any(), Argument::any())->will(function ($args) {
+            $fileName = "/tmp/".uniqid();
+            $f  = fopen($fileName, 'w');
+            fwrite($f, "INFO: \n");
+            fwrite($f, "-ERR \n");
+
+            return $f;
+
+        });
+
+        return $streamWrapper;
+    }
+
 
     /**
      * Test Connection.
@@ -72,6 +86,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->close();
         $this->assertFalse($this->c->isConnected());
     }
+
 
     /**
      * Test Ping command.

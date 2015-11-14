@@ -186,7 +186,6 @@ class Connection
         }
         $errno = null;
         $errstr = null;
-        //$fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
         
         $fp = $this->streamWrapper->getStreamSocketClient($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
 
@@ -221,6 +220,17 @@ class Connection
         $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
+
+        $response = $this->receive();
+
+        $this->ping();
+        $response = $this->receive();
+
+        if ($response !== "PONG") {
+            if (strpos($response, '-ERR')!== false) {
+                throw new \Exception("Failing connection: $response");
+            }
+        }
     }
 
     /**
