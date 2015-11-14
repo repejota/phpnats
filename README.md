@@ -16,8 +16,6 @@ Introduction
 
 A PHP client for the [NATS messaging system](https://nats.io).
 
->  Note: phpnats is under heavy development.
-
 Requirements
 ------------
 
