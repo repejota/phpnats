@@ -341,7 +341,7 @@ class Connection
         $sid = $parts[2];
 
         if (count($parts) == 5) {
-            $length = $parts[5];
+            $length = $parts[4];
             $subject = $parts[3];
         } elseif (count($parts) == 4) {
             $length = $parts[3];
