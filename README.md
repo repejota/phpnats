@@ -67,12 +67,12 @@ $callback = function($payload)
 $client->subscribe("foo", $callback);
 
 # Request
-$c->request('sayhello', 'Marty McFly', function ($response) {
+$client->request('sayhello', 'Marty McFly', function ($response) {
     echo $response->getBody();
 });
 
 # Responding to requests
-$sid = $c->subscribe("sayhello", function ($res) {
+$sid = $client->subscribe("sayhello", function ($res) {
     $res->reply("Hello, " . $res->getBody() . " !!!");
 });
 
