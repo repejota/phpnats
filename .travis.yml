@@ -20,7 +20,7 @@ before_script:
   # - $gnats &
   - make deps
 script:
-  - make cs
+  # - make cs
   - mkdir -p build/logs
   - make test
 after_script:
