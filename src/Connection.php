@@ -301,6 +301,25 @@ class Connection
     }
 
     /**
+     * Subscribes to an specific event given a subject and a queue.
+     *
+     * @param string   $subject  Message topic.
+     * @param string   $queue    Queue name.
+     * @param \Closure $callback Closure to be executed as callback.
+     *
+     * @return string
+     */
+    public function queueSubscribe($subject, $queue, \Closure $callback)
+    {
+        $sid = uniqid();
+        $msg = 'SUB '.$subject.' '.$queue.' '. $sid;
+        $this->send($msg);
+        $this->subscriptions[$sid] = $callback;
+
+        return $sid;
+    }
+
+    /**
      * Unsubscribe from a event given a subject.
      *
      * @param string $sid Subscription ID.
