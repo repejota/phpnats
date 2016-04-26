@@ -158,6 +158,33 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test Queue Subscription command.
+     *
+     * @return void
+     */
+    public function testQueueSubscription()
+    {
+        $callback = function ($message) {
+            $this->assertNotNull($message);
+            $this->assertEquals($message, 'bar');
+        };
+
+        $this->c->queueSubscribe('foo', 'bar', $callback);
+        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
+        $subscriptions = $this->c->getSubscriptions();
+        $this->assertInternalType('array', $subscriptions);
+
+        $this->c->publish('foo', 'bar');
+        $this->assertEquals(1, $this->c->pubsCount());
+/*
+        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
+        $process->run();
+*/
+        // time_nanosleep(1, 0);
+        $this->c->wait(1);
+    }
+
+    /**
      * Test Request command.
      *
      * @return void
