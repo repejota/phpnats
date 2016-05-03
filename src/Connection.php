@@ -370,7 +370,7 @@ class Connection
         while (!feof($this->streamSocket)) {
             $line = $this->receive();
 
-            if (sizeof($line) === 0) {
+            if ($line === false) {
                 return null;
             }
 
