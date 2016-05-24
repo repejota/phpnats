@@ -307,7 +307,7 @@ class Connection
      */
     public function queueSubscribe($subject, $queue, \Closure $callback)
     {
-        $sid = uniqid();
+        $sid = openssl_random_pseudo_bytes(16);
         $msg = 'SUB '.$subject.' '.$queue.' '. $sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
