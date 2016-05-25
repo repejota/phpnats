@@ -263,6 +263,8 @@ class Connection
         $this->wait($wait);
     }
 
+
+
     /**
      * Publish publishes the data argument to the given subject.
      *
@@ -283,13 +285,18 @@ class Connection
      *
      * @param string   $subject  Message topic.
      * @param \Closure $callback Closure to be executed as callback.
+     * @param string   $queue    Queue name for subscription.
      *
      * @return string
      */
-    public function subscribe($subject, \Closure $callback)
+    public function subscribe($subject, \Closure $callback, $queue = null)
     {
         $sid = uniqid();
-        $msg = 'SUB '.$subject.' '.$sid;
+        if (is_null($queue)) {
+            $msg = 'SUB '.$subject.' '.$sid;
+        } else {
+            $msg = 'SUB '.$subject.' '. $queue. ' '. $sid;
+        }
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
 
