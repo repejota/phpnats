@@ -157,17 +157,13 @@ class Connection
      */
     private function receive($len = null)
     {
+
         if ($len) {
-            $line = fgets($this->streamSocket, $len + 1);
+            $line = fread($this->streamSocket, $len);
         } else {
             $line = fgets($this->streamSocket);
         }
-
-        if ($line === false) {
-            return $line;
-        } else {
-            return trim($line);
-        }
+        return $line;
     }
 
     /**
@@ -301,6 +297,25 @@ class Connection
     }
 
     /**
+     * Subscribes to an specific event given a subject and a queue.
+     *
+     * @param string   $subject  Message topic.
+     * @param string   $queue    Queue name.
+     * @param \Closure $callback Closure to be executed as callback.
+     *
+     * @return string
+     */
+    public function queueSubscribe($subject, $queue, \Closure $callback)
+    {
+        $sid = uniqid();
+        $msg = 'SUB '.$subject.' '.$queue.' '. $sid;
+        $this->send($msg);
+        $this->subscriptions[$sid] = $callback;
+
+        return $sid;
+    }
+
+    /**
      * Unsubscribe from a event given a subject.
      *
      * @param string $sid Subscription ID.
@@ -337,14 +352,14 @@ class Connection
     {
         $parts = explode(' ', $line);
         $subject = null;
-        $length = $parts[3];
+        $length = trim($parts[3]);
         $sid = $parts[2];
 
         if (count($parts) == 5) {
-            $length = $parts[4];
+            $length = trim($parts[4]);
             $subject = $parts[3];
         } elseif (count($parts) == 4) {
-            $length = $parts[3];
+            $length = trim($parts[3]);
             $subject = $parts[1];
         }
 
@@ -373,6 +388,7 @@ class Connection
         $count = 0;
         while (!feof($this->streamSocket)) {
             $line = $this->receive();
+
             if ($line === false) {
                 return null;
             }
