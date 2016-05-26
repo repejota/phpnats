@@ -279,7 +279,7 @@ class Connection
      *
      * @return void
      */
-    public function publish($subject, $payload)
+    public function publish($subject, $payload = null)
     {
         $msg = 'PUB '.$subject.' '.strlen($payload);
         $this->send($msg . "\r\n" . $payload);
