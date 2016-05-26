@@ -92,6 +92,13 @@ class Connection
     private $options = null;
 
     /**
+     * Connection timeout
+     *
+     * @var integer
+     */
+    private $timeout = null;
+
+    /**
      * Stream File Pointer.
      *
      * @var mixed Socket file pointer
@@ -213,6 +220,7 @@ class Connection
      */
     public function connect($timeout = null)
     {
+        $this->timeout = $timeout;
         $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
@@ -441,7 +449,7 @@ class Connection
     {
         $this->reconnects += 1;
         $this->close();
-        $this->connect();
+        $this->connect($this->timeout);
     }
 
     /**
