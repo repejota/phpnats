@@ -30,7 +30,7 @@ class Message
     /**
      * Message related connection.
      *
-     * @var string
+     * @var Connection
      */
     private $conn;
 
@@ -146,7 +146,7 @@ class Message
     /**
      * Get Conn.
      *
-     * @return string
+     * @return Connection
      */
     public function getConn()
     {
