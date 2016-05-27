@@ -353,7 +353,8 @@ class Connection
      *
      * @param string $line Message command from NATS.
      *
-     * @return \Exception|void
+     * @return void
+     * @throws Exception
      * @codeCoverageIgnore
      */
     private function handleMSG($line)
@@ -374,11 +375,15 @@ class Connection
         $payload = $this->receive($length);
         $msg = new Message($subject, $payload, $sid, $this);
 
+        if (!isset($this->subscriptions[$sid])) {
+            throw new Exception('subscription not found');
+        }
+
         $func = $this->subscriptions[$sid];
         if (is_callable($func)) {
             $func($msg);
         } else {
-            return new \Exception('not callable');
+            throw new Exception('not callable');
         }
 
         return;
