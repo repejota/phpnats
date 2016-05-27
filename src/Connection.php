@@ -306,7 +306,7 @@ class Connection
      */
     public function subscribe($subject, \Closure $callback)
     {
-        $sid = uniqid();
+        $sid = $this->randomGenerator->generateString(16);
         $msg = 'SUB '.$subject.' '.$sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
