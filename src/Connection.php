@@ -1,6 +1,9 @@
 <?php
 namespace Nats;
 
+use RandomLib\Factory;
+use RandomLib\Generator;
+
 /**
  * Connection Class.
  */
@@ -113,6 +116,11 @@ class Connection
     private $streamWrapper;
 
     /**
+     * @var Generator
+     */
+    private $randomGenerator;
+
+    /**
      * Constructor.
      *
      * @param ConnectionOptions $options Connection options object.
@@ -124,6 +132,8 @@ class Connection
         $this->subscriptions = [];
         $this->options = $options;
         $this->streamWrapper = new StreamWrapper();
+        $randomFactory = new Factory();
+        $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
 
         if (is_null($options)) {
             $this->options = new ConnectionOptions();
@@ -296,7 +306,7 @@ class Connection
      */
     public function subscribe($subject, \Closure $callback)
     {
-        $sid = uniqid();
+        $sid = $this->randomGenerator->generateString(16);
         $msg = 'SUB '.$subject.' '.$sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
@@ -315,7 +325,7 @@ class Connection
      */
     public function queueSubscribe($subject, $queue, \Closure $callback)
     {
-        $sid = openssl_random_pseudo_bytes(16);
+        $sid = $this->randomGenerator->generateString(16);
         $msg = 'SUB '.$subject.' '.$queue.' '. $sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
