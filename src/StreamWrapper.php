@@ -16,11 +16,13 @@ class StreamWrapper
      * @param integer $timeout    Timeout.
      * @param integer $typeStream Type of stream.
      *
-     * @return stream
+     * @return resource
      */
     public function getStreamSocketClient($address, &$errno, &$errstr, $timeout, $typeStream)
     {
-        return stream_socket_client($address, $errno, $errstr, $timeout, $typeStream);
+        $stream = stream_socket_client($address, $errno, $errstr, $timeout, $typeStream);
+        stream_set_timeout($stream, $timeout);
+        return $stream;
     }
     
     /**
