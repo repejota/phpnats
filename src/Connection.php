@@ -235,17 +235,19 @@ class Connection
     {
         $this->timeout = $timeout;
         $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
+
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
-
-        $response = $this->receive();
+        $connect_response = $this->receive();
+        if (strpos($connect_response, '-ERR')!== false) {
+            throw new \Exception("Failing connection: $connect_response");
+        }
 
         $this->ping();
-        $response = $this->receive();
-
-        if ($response !== "PONG") {
-            if (strpos($response, '-ERR')!== false) {
-                throw new \Exception("Failing connection: $response");
+        $ping_response = $this->receive();
+        if ($ping_response !== "PONG") {
+            if (strpos($ping_response, '-ERR')!== false) {
+                throw new \Exception("Failing on first ping: $ping_response");
             }
         }
     }
