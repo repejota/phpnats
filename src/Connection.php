@@ -147,18 +147,6 @@ class Connection
     }
 
     /**
-     * Setter for $streamWrapper. For testing purposes.
-     *
-     * @param StreamWrapper $streamWrapper StreamWrapper for testing purposes.
-     *
-     * @return void
-     */
-    public function setStreamWrapper(StreamWrapper $streamWrapper)
-    {
-        $this->streamWrapper = $streamWrapper;
-    }
-
-    /**
      * Sends data thought the stream.
      *
      * @param string $payload Message data.
