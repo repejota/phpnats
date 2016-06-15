@@ -140,11 +140,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->c->publish('foo', 'bar');
         $this->assertEquals(1, $this->c->pubsCount());
-/*
-        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
-        $process->run();
-*/
-        // time_nanosleep(1, 0);
         $this->c->wait(1);
     }
 
