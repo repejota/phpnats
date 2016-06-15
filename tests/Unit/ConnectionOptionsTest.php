@@ -65,4 +65,15 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($options->isPedantic());
         $this->assertTrue($options->isReconnect());
     }
+
+    /**
+     * Test string representation of ConnectionOptions
+     *
+     * @return void
+     */
+    public function testStringRepresentation()
+    {
+        $options = new ConnectionOptions();
+        $this->assertEquals("{\"lang\":\"php\",\"version\":\"0.0.5\",\"verbose\":false,\"pedantic\":false}", $options->__toString());
+    }
 }
