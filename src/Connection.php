@@ -115,13 +115,6 @@ class Connection
     private $streamSocket;
 
     /**
-     * Stream wrapper for testing purposes.
-     *
-     * @var mixed StreamWrapper.
-     */
-    private $streamWrapper;
-
-    /**
      * @var Generator
      */
     private $randomGenerator;
