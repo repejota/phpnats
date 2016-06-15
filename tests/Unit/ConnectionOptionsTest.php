@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: isselguberna
- * Date: 29/9/15
- * Time: 23:48
- */
-
 namespace Nats\tests\Unit;
 
 use Nats\ConnectionOptions;
