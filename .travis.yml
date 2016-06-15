@@ -10,6 +10,8 @@ cache:
   directories:
    - vendor
    - $HOME/.composer/cache
+before_install:
+  - docker run -d --name nats nats
 before_script:
   - make deps
 script:
