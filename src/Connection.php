@@ -17,6 +17,12 @@ class Connection
     private $pings = 0;
 
     /**
+     * Chunk size in bytes to use when reading with fread.
+     * @var int
+     */
+    private $chunkSize = 8192;
+
+    /**
      * Return the number of pings.
      *
      * @return int Number of pings
@@ -176,7 +182,21 @@ class Connection
     {
 
         if ($len) {
-            $line = fread($this->streamSocket, $len);
+            $chunkSize = $this->chunkSize;
+            $line = null;
+            $receivedBytes = 0;
+            while ($receivedBytes < $len) {
+                $bytesLeft = $len - $receivedBytes;
+                if ( $bytesLeft < 1500 ) {
+                    $chunkSize = $bytesLeft;
+                }
+
+                $line .= fread($this->streamSocket, $chunkSize);
+                $receivedBytes += $chunkSize;
+            }
+            if (strlen($line) > 2) {
+                $line = substr($line, 0, -2);
+            }
         } else {
             $line = fgets($this->streamSocket);
         }
@@ -465,6 +485,13 @@ class Connection
         $this->reconnects += 1;
         $this->close();
         $this->connect($this->timeout);
+    }
+
+    /**
+     * @param integer $chunkSize Set byte chunk len to read when reading from wire
+     */
+    public function setChunkSize($chunkSize){
+        $this->chunkSize = $chunkSize;
     }
 
     /**
