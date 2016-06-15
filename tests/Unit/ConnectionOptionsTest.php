@@ -67,7 +67,7 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test string representation of ConnectionOptions
+     * Test string representation of ConnectionOptions.
      *
      * @return void
      */
@@ -75,5 +75,18 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     {
         $options = new ConnectionOptions();
         $this->assertEquals("{\"lang\":\"php\",\"version\":\"0.0.5\",\"verbose\":false,\"pedantic\":false}", $options->__toString());
+    }
+
+    /**
+     * Test string representation of ConnectionOptions with credentials.
+     *
+     * @return void
+     */
+    public function testStringRepresentationWithCredentials()
+    {
+        $options = new ConnectionOptions();
+        $options->setUser("username");
+        $options->setPass("password");
+        $this->assertEquals("{\"lang\":\"php\",\"version\":\"0.0.5\",\"verbose\":false,\"pedantic\":false,\"user\":\"username\",\"pass\":\"password\"}", $options->__toString());
     }
 }
