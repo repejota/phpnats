@@ -97,7 +97,7 @@ class Connection
     /**
      * Connection timeout
      *
-     * @var integer
+     * @var float
      */
     private $timeout = null;
 
@@ -187,7 +187,7 @@ class Connection
      * Returns an stream socket to the desired server.
      *
      * @param string  $address Server url string.
-     * @param integer $timeout Number of seconds until the connect() system call should timeout.
+     * @param float $timeout Number of seconds until the connect() system call should timeout.
      *
      * @return resource
      * @throws \Exception Exception raised if connection fails.
@@ -223,7 +223,7 @@ class Connection
     /**
      * Connect to server.
      *
-     * @param integer $timeout Number of seconds until the connect() system call should timeout.
+     * @param float $timeout Number of seconds until the connect() system call should timeout.
      *
      * @throws \Exception Exception raised if connection fails.
      * @return void
@@ -436,7 +436,7 @@ class Connection
     /**
      * Set Stream Timeout.
      *
-     * @param integer $seconds Before timeout on stream.
+     * @param float $seconds Before timeout on stream.
      *
      * @return boolean
      */
