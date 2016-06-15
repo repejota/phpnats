@@ -1,6 +1,9 @@
 <?php
 namespace Nats;
 
+use RandomLib\Factory;
+use RandomLib\Generator;
+
 /**
  * Connection Class.
  */
@@ -12,6 +15,12 @@ class Connection
      * @var int number of pings
      */
     private $pings = 0;
+
+    /**
+     * Chunk size in bytes to use when reading with fread.
+     * @var int
+     */
+    private $chunkSize = 8192;
 
     /**
      * Return the number of pings.
@@ -92,6 +101,13 @@ class Connection
     private $options = null;
 
     /**
+     * Connection timeout
+     *
+     * @var float
+     */
+    private $timeout = null;
+
+    /**
      * Stream File Pointer.
      *
      * @var mixed Socket file pointer
@@ -106,6 +122,11 @@ class Connection
     private $streamWrapper;
 
     /**
+     * @var Generator
+     */
+    private $randomGenerator;
+
+    /**
      * Constructor.
      *
      * @param ConnectionOptions $options Connection options object.
@@ -117,6 +138,8 @@ class Connection
         $this->subscriptions = [];
         $this->options = $options;
         $this->streamWrapper = new StreamWrapper();
+        $randomFactory = new Factory();
+        $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
 
         if (is_null($options)) {
             $this->options = new ConnectionOptions();
@@ -159,7 +182,21 @@ class Connection
     {
 
         if ($len) {
-            $line = fread($this->streamSocket, $len);
+            $chunkSize = $this->chunkSize;
+            $line = null;
+            $receivedBytes = 0;
+            while ($receivedBytes < $len) {
+                $bytesLeft = $len - $receivedBytes;
+                if ( $bytesLeft < 1500 ) {
+                    $chunkSize = $bytesLeft;
+                }
+
+                $line .= fread($this->streamSocket, $chunkSize);
+                $receivedBytes += $chunkSize;
+            }
+            if (strlen($line) > 2) {
+                $line = substr($line, 0, -2);
+            }
         } else {
             $line = fgets($this->streamSocket);
         }
@@ -170,7 +207,7 @@ class Connection
      * Returns an stream socket to the desired server.
      *
      * @param string  $address Server url string.
-     * @param integer $timeout Number of seconds until the connect() system call should timeout.
+     * @param float $timeout Number of seconds until the connect() system call should timeout.
      *
      * @return resource
      * @throws \Exception Exception raised if connection fails.
@@ -206,13 +243,14 @@ class Connection
     /**
      * Connect to server.
      *
-     * @param integer $timeout Number of seconds until the connect() system call should timeout.
+     * @param float $timeout Number of seconds until the connect() system call should timeout.
      *
      * @throws \Exception Exception raised if connection fails.
      * @return void
      */
     public function connect($timeout = null)
     {
+        $this->timeout = $timeout;
         $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
@@ -271,7 +309,7 @@ class Connection
      *
      * @return void
      */
-    public function publish($subject, $payload)
+    public function publish($subject, $payload = null)
     {
         $msg = 'PUB '.$subject.' '.strlen($payload);
         $this->send($msg . "\r\n" . $payload);
@@ -288,7 +326,7 @@ class Connection
      */
     public function subscribe($subject, \Closure $callback)
     {
-        $sid = uniqid();
+        $sid = $this->randomGenerator->generateString(16);
         $msg = 'SUB '.$subject.' '.$sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
@@ -307,7 +345,7 @@ class Connection
      */
     public function queueSubscribe($subject, $queue, \Closure $callback)
     {
-        $sid = uniqid();
+        $sid = $this->randomGenerator->generateString(16);
         $msg = 'SUB '.$subject.' '.$queue.' '. $sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
@@ -345,7 +383,8 @@ class Connection
      *
      * @param string $line Message command from NATS.
      *
-     * @return \Exception|void
+     * @return void
+     * @throws Exception
      * @codeCoverageIgnore
      */
     private function handleMSG($line)
@@ -366,11 +405,15 @@ class Connection
         $payload = $this->receive($length);
         $msg = new Message($subject, $payload, $sid, $this);
 
+        if (!isset($this->subscriptions[$sid])) {
+            throw new Exception('subscription not found');
+        }
+
         $func = $this->subscriptions[$sid];
         if (is_callable($func)) {
             $func($msg);
         } else {
-            return new \Exception('not callable');
+            throw new Exception('not callable');
         }
 
         return;
@@ -413,7 +456,7 @@ class Connection
     /**
      * Set Stream Timeout.
      *
-     * @param integer $seconds Before timeout on stream.
+     * @param float $seconds Before timeout on stream.
      *
      * @return boolean
      */
@@ -441,7 +484,14 @@ class Connection
     {
         $this->reconnects += 1;
         $this->close();
-        $this->connect();
+        $this->connect($this->timeout);
+    }
+
+    /**
+     * @param integer $chunkSize Set byte chunk len to read when reading from wire
+     */
+    public function setChunkSize($chunkSize){
+        $this->chunkSize = $chunkSize;
     }
 
     /**
