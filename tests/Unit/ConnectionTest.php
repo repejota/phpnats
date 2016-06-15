@@ -3,7 +3,6 @@ namespace Nats\tests\Unit;
 
 use Nats;
 use Nats\ConnectionOptions;
-use Nats\StreamWrapper;
 use Prophecy\Argument;
 
 /**
