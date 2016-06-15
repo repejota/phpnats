@@ -11,7 +11,7 @@ cache:
    - vendor
    - $HOME/.composer/cache
 before_install:
-  - docker run -d --name nats nats
+  - docker run -d -p 4222:4222 --name nats nats
 before_script:
   - make deps
 script:
