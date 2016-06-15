@@ -18,20 +18,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     private $c;
 
-    /**
-     * Process.
-     *
-     * @var resource A separated process.
-     */
-    private static $process;
-
-    /**
-     * Gnatsd switch.
-     *
-     * @var bool Am I using a real or a fake server?
-     */
-    private static $isGnatsd = false;
-
 
     /**
      * SetUp test suite.
