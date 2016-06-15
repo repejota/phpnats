@@ -91,58 +91,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Subscription command.
-     *
-     * @return void
-     */
-    public function testSubscription()
-    {
-        $this->markTestSkipped(
-            'WIP: moving to real NATS dockerized server.'
-        );
-
-        $callback = function ($message) {
-            $this->assertNotNull($message);
-            $this->assertEquals($message, 'bar');
-        };
-
-        $this->c->subscribe('foo', $callback);
-        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
-        $subscriptions = $this->c->getSubscriptions();
-        $this->assertInternalType('array', $subscriptions);
-
-        $this->c->publish('foo', 'bar');
-        $this->assertEquals(1, $this->c->pubsCount());
-        $this->c->wait(1);
-    }
-
-    /**
-     * Test Queue Subscription command.
-     *
-     * @return void
-     */
-    public function testQueueSubscription()
-    {
-        $this->markTestSkipped(
-            'WIP: moving to real NATS dockerized server.'
-        );
-
-        $callback = function ($message) {
-            $this->assertNotNull($message);
-            $this->assertEquals($message, 'bar');
-        };
-
-        $this->c->queueSubscribe('foo', 'bar', $callback);
-        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
-        $subscriptions = $this->c->getSubscriptions();
-        $this->assertInternalType('array', $subscriptions);
-
-        $this->c->publish('foo', 'bar');
-        $this->assertEquals(1, $this->c->pubsCount());
-        $this->c->wait(1);
-    }
-
-    /**
      * Test Request command.
      *
      * @return void
@@ -183,16 +131,5 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->publish('unsub', 'bar');
 
         $this->assertTrue(true);
-    }
-
-    /**
-     * Test setStreamTimeout command.
-     *
-     * @return void
-     */
-    public function testSetStreamTimeout()
-    {
-        $this->assertTrue($this->c->setStreamTimeout(2));
-        $this->assertFalse($this->c->setStreamTimeout("hello"));
     }
 }
