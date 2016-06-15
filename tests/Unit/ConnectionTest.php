@@ -45,28 +45,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->connect();
     }
 
-    /**
-     * Function for building Socket Mock.
-     *
-     * @return StreamWrapper
-    */
-    private function getMockStreamSocketClient()
-    {
-        $streamWrapper = $this->prophesize("Nats\StreamWrapper");
-        $streamWrapper->setStreamTimeout(Argument::any(), Argument::any())->willReturn(true);
-        $streamWrapper->getStreamSocketClient(Argument::any(), Argument::any(), Argument::any(), Argument::any(), Argument::any())->will(function ($args) {
-            $fileName = "/tmp/".uniqid();
-            $f  = fopen($fileName, 'w');
-            fwrite($f, "INFO: \n");
-            fwrite($f, "-ERR \n");
-
-            return $f;
-
-        });
-
-        return $streamWrapper;
-    }
-
 
     /**
      * Test Connection.
@@ -163,7 +141,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->markTestSkipped(
             'WIP: moving to real NATS dockerized server.'
         );
-        
+
         $callback = function ($message) {
             $this->assertNotNull($message);
             $this->assertEquals($message, 'bar');
