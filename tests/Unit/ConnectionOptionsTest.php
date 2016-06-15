@@ -9,7 +9,7 @@ use Nats\ConnectionOptions;
 class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Tests Connection Options getters and setters. Only necessary for code coverage.
+     * Tests Connection Options getters and setters.
      *
      * @return void
      */
@@ -31,6 +31,34 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(4222, $options->getPort());
         $this->assertEquals('user', $options->getUser());
         $this->assertEquals('password', $options->getPass());
+        $this->assertEquals('lang', $options->getLang());
+        $this->assertEquals('version', $options->getVersion());
+        $this->assertTrue($options->isVerbose());
+        $this->assertTrue($options->isPedantic());
+        $this->assertTrue($options->isReconnect());
+    }
+
+    /**
+     * Tests Connection Options getters and setters without setting user and password.
+     *
+     * @return void
+     */
+    public function testSettersAndGettersWithoutCredentials()
+    {
+        $options = new ConnectionOptions();
+        $options
+            ->setHost('host')
+            ->setPort(4222)
+            ->setLang('lang')
+            ->setVersion('version')
+            ->setVerbose(true)
+            ->setPedantic(true)
+            ->setReconnect(true);
+
+        $this->assertEquals('host', $options->getHost());
+        $this->assertEquals(4222, $options->getPort());
+        $this->assertNull($options->getUser());
+        $this->assertNull($options->getPass());
         $this->assertEquals('lang', $options->getLang());
         $this->assertEquals('version', $options->getVersion());
         $this->assertTrue($options->isVerbose());
