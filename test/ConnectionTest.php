@@ -150,7 +150,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->publish('foo', 'bar');
         $this->assertEquals(1, $this->c->pubsCount());
 /*
-        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
+        $process = new BackgroundProcess('/usr/bin/php ./test/Util/ClientServerStub.php ');
         $process->run();
 */
         // time_nanosleep(1, 0);
@@ -177,7 +177,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->publish('foo', 'bar');
         $this->assertEquals(1, $this->c->pubsCount());
 /*
-        $process = new BackgroundProcess('/usr/bin/php ./tests/Util/ClientServerStub.php ');
+        $process = new BackgroundProcess('/usr/bin/php ./test/Util/ClientServerStub.php ');
         $process->run();
 */
         // time_nanosleep(1, 0);
