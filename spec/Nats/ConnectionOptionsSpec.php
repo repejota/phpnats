@@ -11,4 +11,8 @@ class ConnectionOptionsSpec extends ObjectBehavior
     {
         $this->shouldHaveType('Nats\ConnectionOptions');
     }
+
+    function it_has_default_host_value_as_localhost() {
+        $this->getHost()->shouldEqual("localhost");
+    }
 }
