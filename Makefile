@@ -1,3 +1,8 @@
+lint:
+	find src -name *.php -exec php -l {} \;
+	find tests -name *.php -exec php -l {} \;
+	find examples -name *.php -exec php -l {} \;
+	
 cs: lint
 	./vendor/bin/phpcbf --standard=PSR2 src tests examples
 	./vendor/bin/phpcs --standard=PSR2 --warning-severity=0 src tests examples
@@ -8,11 +13,6 @@ test:
 
 cover:
 	./vendor/bin/phpunit --coverage-html ./cover
-
-lint:
-	find src -name *.php -exec php -l {} \;
-	find tests -name *.php -exec php -l {} \;
-	find examples -name *.php -exec php -l {} \;
 
 deps:
 	wget -q https://getcomposer.org/composer.phar -O ./composer.phar
