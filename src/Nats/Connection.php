@@ -366,7 +366,7 @@ class Connection
     /**
      * Handles MSG command.
      *
-     * @param string $line Message command from NATS.
+     * @param string $line Message command from Nats.
      *
      * @return void
      * @throws Exception
