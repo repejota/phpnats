@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: isselguberna
- * Date: 29/9/15
- * Time: 23:48
- */
-
 namespace Nats\tests\Unit;
 
 use Nats\ConnectionOptions;
@@ -16,7 +9,7 @@ use Nats\ConnectionOptions;
 class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Tests Connection Options getters and setters. Only necessary for code coverage.
+     * Tests Connection Options getters and setters.
      *
      * @return void
      */
@@ -43,5 +36,57 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($options->isVerbose());
         $this->assertTrue($options->isPedantic());
         $this->assertTrue($options->isReconnect());
+    }
+
+    /**
+     * Tests Connection Options getters and setters without setting user and password.
+     *
+     * @return void
+     */
+    public function testSettersAndGettersWithoutCredentials()
+    {
+        $options = new ConnectionOptions();
+        $options
+            ->setHost('host')
+            ->setPort(4222)
+            ->setLang('lang')
+            ->setVersion('version')
+            ->setVerbose(true)
+            ->setPedantic(true)
+            ->setReconnect(true);
+
+        $this->assertEquals('host', $options->getHost());
+        $this->assertEquals(4222, $options->getPort());
+        $this->assertNull($options->getUser());
+        $this->assertNull($options->getPass());
+        $this->assertEquals('lang', $options->getLang());
+        $this->assertEquals('version', $options->getVersion());
+        $this->assertTrue($options->isVerbose());
+        $this->assertTrue($options->isPedantic());
+        $this->assertTrue($options->isReconnect());
+    }
+
+    /**
+     * Test string representation of ConnectionOptions.
+     *
+     * @return void
+     */
+    public function testStringRepresentation()
+    {
+        $options = new ConnectionOptions();
+        $this->assertEquals("{\"lang\":\"php\",\"version\":\"0.0.5\",\"verbose\":false,\"pedantic\":false}", $options->__toString());
+    }
+
+    /**
+     * Test string representation of ConnectionOptions with credentials.
+     *
+     * @return void
+     */
+    public function testStringRepresentationWithCredentials()
+    {
+        $options = new ConnectionOptions();
+        $options->setUser("username");
+        $options->setPass("password");
+        $this->assertEquals("{\"lang\":\"php\",\"version\":\"0.0.5\",\"verbose\":false,\"pedantic\":false,\"user\":\"username\",\"pass\":\"password\"}", $options->__toString());
     }
 }
