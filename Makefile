@@ -13,7 +13,7 @@ test:
 	./bin/phpunit test
 
 bdd:
-	./bin/phpspec run
+	./bin/phpspec run --format=pretty
 
 cover:
 	./bin/phpunit --coverage-html ./cover test
