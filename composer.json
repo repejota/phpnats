@@ -13,9 +13,6 @@
         "squizlabs/php_codesniffer": "~2.0",
         "phpspec/phpspec": "~2.0"
     },
-    "config": {
-        "bin-dir": "bin"
-    },
     "authors": [
         {
             "name": "Raül Pérez",

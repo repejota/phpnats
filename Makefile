@@ -10,13 +10,13 @@ cs: lint
 	./bin/phpcs --standard=Squiz --sniffs=Squiz.Commenting.FunctionComment,Squiz.Commenting.FunctionCommentThrowTag,Squiz.Commenting.ClassComment,Squiz.Commenting.VariableComment src tests examples
 
 test:
-	./bin/phpunit test
+	./vendor/bin/phpunit test
 
 bdd:
-	./bin/phpspec run
+	./vendor/bin/phpspec run --format=pretty
 
 cover:
-	./bin/phpunit --coverage-html ./cover test
+	./vendor/bin/phpunit --coverage-html ./cover test
 deps:
 	wget -q https://getcomposer.org/composer.phar -O ./composer.phar
 	chmod +x composer.phar

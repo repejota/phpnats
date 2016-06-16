@@ -4,5 +4,6 @@ vendor
 cover
 *.phar
 /composer.phar
+/composer.lock
 build
 .idea
