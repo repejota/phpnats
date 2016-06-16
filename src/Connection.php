@@ -167,7 +167,7 @@ class Connection
             $receivedBytes = 0;
             while ($receivedBytes < $len) {
                 $bytesLeft = $len - $receivedBytes;
-                if ( $bytesLeft < 1500 ) {
+                if ( $bytesLeft < $this->chunkSize ) {
                     $chunkSize = $bytesLeft;
                 }
 
