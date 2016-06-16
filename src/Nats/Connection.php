@@ -115,13 +115,6 @@ class Connection
     private $streamSocket;
 
     /**
-     * Stream wrapper for testing purposes.
-     *
-     * @var mixed StreamWrapper.
-     */
-    private $streamWrapper;
-
-    /**
      * @var Generator
      */
     private $randomGenerator;
@@ -137,25 +130,12 @@ class Connection
         $this->pubs = 0;
         $this->subscriptions = [];
         $this->options = $options;
-        $this->streamWrapper = new StreamWrapper();
         $randomFactory = new Factory();
         $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
 
         if (is_null($options)) {
             $this->options = new ConnectionOptions();
         }
-    }
-
-    /**
-     * Setter for $streamWrapper. For testing purposes.
-     *
-     * @param StreamWrapper $streamWrapper StreamWrapper for testing purposes.
-     *
-     * @return void
-     */
-    public function setStreamWrapper(StreamWrapper $streamWrapper)
-    {
-        $this->streamWrapper = $streamWrapper;
     }
 
     /**
@@ -220,13 +200,16 @@ class Connection
         $errno = null;
         $errstr = null;
         
-        $fp = $this->streamWrapper->getStreamSocketClient($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+        $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+        $timeout = number_format($timeout, 3);
+        $seconds = floor($timeout);
+        $microseconds = ($timeout - $seconds) * 1000;
+        stream_set_timeout($fp, $seconds, $microseconds);
 
         if (!$fp) {
             throw new \Exception($errstr, $errno);
         }
 
-        //stream_set_blocking($fp, 0);
         return $fp;
     }
 
@@ -252,17 +235,19 @@ class Connection
     {
         $this->timeout = $timeout;
         $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
+
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
-
-        $response = $this->receive();
+        $connect_response = $this->receive();
+        if (strpos($connect_response, '-ERR')!== false) {
+            throw new \Exception("Failing connection: $connect_response");
+        }
 
         $this->ping();
-        $response = $this->receive();
-
-        if ($response !== "PONG") {
-            if (strpos($response, '-ERR')!== false) {
-                throw new \Exception("Failing connection: $response");
+        $ping_response = $this->receive();
+        if ($ping_response !== "PONG") {
+            if (strpos($ping_response, '-ERR')!== false) {
+                throw new \Exception("Failing on first ping: $ping_response");
             }
         }
     }

@@ -3,7 +3,6 @@ namespace Nats\tests\Unit;
 
 use Nats;
 use Nats\ConnectionOptions;
-use Nats\StreamWrapper;
 use Prophecy\Argument;
 
 /**
@@ -18,20 +17,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     private $c;
 
-    /**
-     * Process.
-     *
-     * @var resource A separated process.
-     */
-    private static $process;
-
-    /**
-     * Gnatsd switch.
-     *
-     * @var bool Am I using a real or a fake server?
-     */
-    private static $isGnatsd = false;
-
 
     /**
      * SetUp test suite.
@@ -41,33 +26,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $options = new ConnectionOptions();
-        $streamWrapper = $this->getMockStreamSocketClient();
-
         $this->c = new Nats\Connection($options);
-        $this->c->setStreamWrapper($streamWrapper->reveal());
         $this->c->connect();
-    }
-
-    /**
-     * Function for building Socket Mock.
-     *
-     * @return StreamWrapper
-    */
-    private function getMockStreamSocketClient()
-    {
-        $streamWrapper = $this->prophesize("Nats\StreamWrapper");
-        $streamWrapper->setStreamTimeout(Argument::any(), Argument::any())->willReturn(true);
-        $streamWrapper->getStreamSocketClient(Argument::any(), Argument::any(), Argument::any(), Argument::any(), Argument::any())->will(function ($args) {
-            $fileName = "/tmp/".uniqid();
-            $f  = fopen($fileName, 'w');
-            fwrite($f, "INFO: \n");
-            fwrite($f, "-ERR \n");
-
-            return $f;
-
-        });
-
-        return $streamWrapper;
     }
 
 
@@ -131,60 +91,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Subscription command.
-     *
-     * @return void
-     */
-    public function testSubscription()
-    {
-        $callback = function ($message) {
-            $this->assertNotNull($message);
-            $this->assertEquals($message, 'bar');
-        };
-
-        $this->c->subscribe('foo', $callback);
-        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
-        $subscriptions = $this->c->getSubscriptions();
-        $this->assertInternalType('array', $subscriptions);
-
-        $this->c->publish('foo', 'bar');
-        $this->assertEquals(1, $this->c->pubsCount());
-/*
-        $process = new BackgroundProcess('/usr/bin/php ./test/Util/ClientServerStub.php ');
-        $process->run();
-*/
-        // time_nanosleep(1, 0);
-        $this->c->wait(1);
-    }
-
-    /**
-     * Test Queue Subscription command.
-     *
-     * @return void
-     */
-    public function testQueueSubscription()
-    {
-        $callback = function ($message) {
-            $this->assertNotNull($message);
-            $this->assertEquals($message, 'bar');
-        };
-
-        $this->c->queueSubscribe('foo', 'bar', $callback);
-        $this->assertGreaterThan(0, $this->c->subscriptionsCount());
-        $subscriptions = $this->c->getSubscriptions();
-        $this->assertInternalType('array', $subscriptions);
-
-        $this->c->publish('foo', 'bar');
-        $this->assertEquals(1, $this->c->pubsCount());
-/*
-        $process = new BackgroundProcess('/usr/bin/php ./test/Util/ClientServerStub.php ');
-        $process->run();
-*/
-        // time_nanosleep(1, 0);
-        $this->c->wait(1);
-    }
-
-    /**
      * Test Request command.
      *
      * @return void
@@ -225,16 +131,5 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->publish('unsub', 'bar');
 
         $this->assertTrue(true);
-    }
-
-    /**
-     * Test setStreamTimeout command.
-     *
-     * @return void
-     */
-    public function testSetStreamTimeout()
-    {
-        $this->assertTrue($this->c->setStreamTimeout(2));
-        $this->assertFalse($this->c->setStreamTimeout("hello"));
     }
 }
