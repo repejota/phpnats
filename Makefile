@@ -1,6 +1,7 @@
 lint:
 	find src -name *.php -exec php -l {} \;
-	find tests -name *.php -exec php -l {} \;
+	find test -name *.php -exec php -l {} \;
+	find spec -name *.php -exec php -l {} \;
 	find examples -name *.php -exec php -l {} \;
 
 cs: lint
