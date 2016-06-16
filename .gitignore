@@ -3,6 +3,6 @@ bin
 vendor
 cover
 *.phar
-composer.lock
+/composer.phar
 build
 .idea
