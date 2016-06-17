@@ -49,4 +49,18 @@ class ConnectionSpec extends ObjectBehavior
         $this->close();
         $this->isConnected()->shouldBe(false);
     }
+
+    function it_increases_reconnects_count_on_each_reconnection()
+    {
+        $this->connect();
+        $this->reconnect();
+        $this->reconnectsCount()->shouldBe(1);
+        $this->isConnected()->shouldBe(true);
+    }
+
+    function it_a_ping_is_sent_after_a_successful_connection()
+    {
+        $this->connect();
+        $this->pingsCount()->shouldBe(1);
+    }
 }
