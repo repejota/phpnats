@@ -56,11 +56,43 @@ class ConnectionSpec extends ObjectBehavior
         $this->reconnect();
         $this->reconnectsCount()->shouldBe(1);
         $this->isConnected()->shouldBe(true);
+        $this->close();
     }
 
     function it_a_ping_is_sent_after_a_successful_connection()
     {
         $this->connect();
         $this->pingsCount()->shouldBe(1);
+        $this->close();
     }
+
+    function it_increases_pubs_after_publishing_a_message()
+    {
+        $this->connect();
+        $this->publish("foo");
+        $this->pubsCount()->shouldBe(1);
+        $this->close();
+    }
+
+    function it_increases_subscriptions_after_subscribing_to_a_topic()
+    {
+        $this->connect();
+        $callback = function($payload) {};
+        $sid = $this->subscribe("foo", $callback);
+        $this->subscriptionsCount()->shouldBe(1);
+        $this->unsubscribe($sid);
+        $this->close();
+    }
+
+    function it_decreases_subscriptions_after_unsubscribing_to_a_topic()
+    {
+        $this->connect();
+        $callback = function($payload) {};
+        $sid = $this->subscribe("foo", $callback);
+        $this->unsubscribe($sid);
+        $this->subscriptionsCount()->shouldBe(0);
+        $this->close();
+    }
+
+
 }
