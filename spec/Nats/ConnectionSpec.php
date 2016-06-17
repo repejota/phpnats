@@ -40,4 +40,13 @@ class ConnectionSpec extends ObjectBehavior
     {
         $this->isConnected()->shouldBe(false);
     }
+
+    function it_can_connect_and_disconnect_with_default_options()
+    {
+        $this->connect();
+        $this->shouldHaveType('Nats\Connection');
+        $this->isConnected()->shouldBe(true);
+        $this->close();
+        $this->isConnected()->shouldBe(false);
+    }
 }
