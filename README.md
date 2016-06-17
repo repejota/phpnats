@@ -96,6 +96,8 @@ Developer's Information
 Tests are in the `tests` folder.
 To run them, you need `PHPUnit` and execute `make test`.
 
+We also have a BDD test suite under the `spec` folder.
+To run the suite, you need `PHPSpec` and execute `make bdd`.
 
 ### Code Quality
 
