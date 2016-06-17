@@ -9,7 +9,9 @@ cs: lint
 	./bin/phpcs --standard=PSR2 --warning-severity=0 src tests examples
 	./bin/phpcs --standard=Squiz --sniffs=Squiz.Commenting.FunctionComment,Squiz.Commenting.FunctionCommentThrowTag,Squiz.Commenting.ClassComment,Squiz.Commenting.VariableComment src tests examples
 
-test:
+test: tdd bdd
+
+tdd:
 	./vendor/bin/phpunit test
 
 bdd:
