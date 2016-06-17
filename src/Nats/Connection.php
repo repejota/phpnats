@@ -174,9 +174,6 @@ class Connection
                 $line .= fread($this->streamSocket, $chunkSize);
                 $receivedBytes += $chunkSize;
             }
-            if (strlen($line) > 2) {
-                $line = substr($line, 0, -2);
-            }
         } else {
             $line = fgets($this->streamSocket);
         }
