@@ -148,7 +148,7 @@ class Connection
     private function send($payload)
     {
         $msg = $payload."\r\n";
-        fwrite($this->streamSocket, $msg, strlen($msg));
+        fwrite($this->streamSocket, $msg, mb_strlen($msg));
     }
 
     /**
@@ -174,8 +174,8 @@ class Connection
                 $line .= fread($this->streamSocket, $chunkSize);
                 $receivedBytes += $chunkSize;
             }
-            if (strlen($line) > 2) {
-                $line = substr($line, 0, -2);
+            if (mb_strlen($line) > 2) {
+                $line = mb_substr($line, 0, -2);
             }
         } else {
             $line = fgets($this->streamSocket);
@@ -280,7 +280,7 @@ class Connection
         $inbox = uniqid('_INBOX.');
         $this->subscribe($inbox, $callback);
 
-        $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
+        $msg = 'PUB '.$subject.' '.$inbox.' '.mb_strlen($payload);
         $this->send($msg . "\r\n" . $payload);
         $this->pubs += 1;
 
@@ -297,7 +297,7 @@ class Connection
      */
     public function publish($subject, $payload = null)
     {
-        $msg = 'PUB '.$subject.' '.strlen($payload);
+        $msg = 'PUB '.$subject.' '.mb_strlen($payload);
         $this->send($msg . "\r\n" . $payload);
         $this->pubs += 1;
     }
