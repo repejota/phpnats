@@ -1,7 +1,9 @@
 .contrib
+bin
 vendor
 cover
 *.phar
-composer.lock
+/composer.phar
+/composer.lock
 build
 .idea

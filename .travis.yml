@@ -1,26 +1,20 @@
+sudo: required
+services:
+  - docker
 language: php
 php:
-  # - 5.4
   - 5.5
   - 5.6
   - 7
-  # - nightly
 cache:
   directories:
    - vendor
    - $HOME/.composer/cache
+before_install:
+  - docker run -d -p 4222:4222 --name nats nats
 before_script:
-  # - sudo apt-get install python-software-properties  # 12.04
-  # - sudo add-apt-repository -y ppa:duh/golang
-  # - sudo apt-get update
-  # - sudo apt-get install golang
-  # - export GOROOT=`go env GOROOT` && export GOPATH=$HOME/go
-  # - go get -u github.com/nats-io/gnatsd
-  # - gnats="$GOPATH/bin/gnatsd"
-  # - $gnats &
   - make deps
 script:
-  # - make cs
   - mkdir -p build/logs
   - make test
 after_script:
