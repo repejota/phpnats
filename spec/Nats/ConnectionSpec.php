@@ -41,7 +41,7 @@ class ConnectionSpec extends ObjectBehavior
         $this->isConnected()->shouldBe(false);
     }
 
-    function it_can_connect_and_disconnect_with_default_options()
+    function it_connects_and_disconnects_with_default_options()
     {
         $this->connect();
         $this->shouldHaveType('Nats\Connection');
@@ -59,7 +59,7 @@ class ConnectionSpec extends ObjectBehavior
         $this->close();
     }
 
-    function it_a_ping_is_sent_after_a_successful_connection()
+    function it_sends_ping_after_a_successful_connection()
     {
         $this->connect();
         $this->pingsCount()->shouldBe(1);
@@ -94,5 +94,30 @@ class ConnectionSpec extends ObjectBehavior
         $this->close();
     }
 
+    function it_sends_a_message_with_a_1024c_subject()
+    {
+        $this->connect();
+        $subject = str_pad("", 1024*1, "x");
+        $this->publish($subject);
+        $this->pubsCount()->shouldBe(1);
+        $this->close();
+    }
 
+    function it_sends_a_message_with_a_1024x10c_subject()
+    {
+        $this->connect();
+        $subject = str_pad("", 1024*10, "x");
+        $this->publish($subject);
+        $this->pubsCount()->shouldBe(1);
+        $this->close();
+    }
+
+    function it_sends_a_message_with_a_1024x100c_subject()
+    {
+        $this->connect();
+        $subject = str_pad("", 1024*100, "x");
+        $this->publish($subject);
+        $this->pubsCount()->shouldBe(1);
+        $this->close();
+    }
 }
