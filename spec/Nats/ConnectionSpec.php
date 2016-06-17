@@ -35,4 +35,9 @@ class ConnectionSpec extends ObjectBehavior
     {
         $this->getSubscriptions()->shouldHaveCount(0);
     }
+
+    function it_is_disconnected()
+    {
+        $this->isConnected()->shouldBe(false);
+    }
 }
