@@ -233,6 +233,7 @@ class Connection
      */
     public function connect($timeout = null)
     {
+
         $this->timeout = $timeout;
         $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
 
@@ -456,7 +457,6 @@ class Connection
                 }
             }
         }
-
         return false;
     }
 
