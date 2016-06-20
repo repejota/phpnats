@@ -133,14 +133,18 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         
         $contentLen = strlen($content);
 
+        $contentSum = md5($content);
+
         $i = 0;
         do {
 
             $this->c->subscribe(
                 "saybighello$i",
-                function ($res) use ($contentLen) {
+                function ($res) use ($contentLen, $contentSum) {
                     $gotLen = strlen($res->getBody());
+                    $gotSum = md5($res->getBody());
                     $this->assertEquals($contentLen, $gotLen);
+                    $this->assertEquals($contentSum, $gotSum);
                     $res->reply($gotLen);
                 }
             );
