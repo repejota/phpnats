@@ -20,7 +20,7 @@ class Connection
      * Chunk size in bytes to use when reading with fread.
      * @var int
      */
-    private $chunkSize = 8192;
+    private $chunkSize = 1500;
 
     /**
      * Return the number of pings.
@@ -171,11 +171,9 @@ class Connection
                     $chunkSize = $bytesLeft;
                 }
 
-                $line .= fread($this->streamSocket, $chunkSize);
-                $receivedBytes += $chunkSize;
-            }
-            if (strlen($line) > 2) {
-                $line = substr($line, 0, -2);
+                $readChunk = fread($this->streamSocket, $chunkSize);
+                $receivedBytes += strlen($readChunk);
+                $line .= $readChunk;
             }
         } else {
             $line = fgets($this->streamSocket);
