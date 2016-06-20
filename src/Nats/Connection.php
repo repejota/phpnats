@@ -18,9 +18,9 @@ class Connection
 
     /**
      * Chunk size in bytes to use when reading with fread.
-     * @var int
+     * @var integer
      */
-    private $chunkSize = 8192;
+    private $chunkSize = 1500;
 
     /**
      * Return the number of pings.
@@ -167,15 +167,13 @@ class Connection
             $receivedBytes = 0;
             while ($receivedBytes < $len) {
                 $bytesLeft = $len - $receivedBytes;
-                if ( $bytesLeft < $this->chunkSize ) {
+                if ($bytesLeft < $this->chunkSize) {
                     $chunkSize = $bytesLeft;
                 }
 
-                $line .= fread($this->streamSocket, $chunkSize);
-                $receivedBytes += $chunkSize;
-            }
-            if (strlen($line) > 2) {
-                $line = substr($line, 0, -2);
+                $readChunk = fread($this->streamSocket, $chunkSize);
+                $receivedBytes += strlen($readChunk);
+                $line .= $readChunk;
             }
         } else {
             $line = fgets($this->streamSocket);
@@ -186,8 +184,8 @@ class Connection
     /**
      * Returns an stream socket to the desired server.
      *
-     * @param string  $address Server url string.
-     * @param float $timeout Number of seconds until the connect() system call should timeout.
+     * @param string $address Server url string.
+     * @param float  $timeout Number of seconds until the connect() system call should timeout.
      *
      * @return resource
      * @throws \Exception Exception raised if connection fails.
@@ -370,7 +368,7 @@ class Connection
      * @param string $line Message command from Nats.
      *
      * @return void
-     * @throws Exception
+     * @throws Exception If subscription not found.
      * @codeCoverageIgnore
      */
     private function handleMSG($line)
@@ -473,9 +471,11 @@ class Connection
     }
 
     /**
-     * @param integer $chunkSize Set byte chunk len to read when reading from wire
+     * @param integer $chunkSize Set byte chunk len to read when reading from wire.
+     * @return void
      */
-    public function setChunkSize($chunkSize){
+    public function setChunkSize($chunkSize)
+    {
         $this->chunkSize = $chunkSize;
     }
 

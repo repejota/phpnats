@@ -13,7 +13,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     /**
      * Client.
      *
-     * @var resource Client
+     * @var Nats\Connection Client
      */
     private $c;
 
@@ -97,21 +97,68 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequest()
     {
-        $this->c->subscribe(
-            "sayhello",
-            function ($res) {
-                $res->reply("Hello, ".$res->getBody(). " !!!");
-            }
-        );
 
-        $this->c->request(
-            'sayhello',
-            'McFly',
-            function ($message) {
-                $this->assertNotNull($message);
-                $this->assertEquals($message, 'Hello, McFly !!!');
-            }
-        );
+        $i = 0;
+        do {
+            $this->c->subscribe(
+                "sayhello$i",
+                function ($res) {
+                    $res->reply("Hello, ".$res->getBody(). " !!!");
+                }
+            );
+
+            $this->c->request(
+                "sayhello$i",
+                'McFly',
+                function ($message) {
+                    $this->assertNotNull($message);
+                    $this->assertEquals($message, 'Hello, McFly !!!');
+                }
+            );
+
+            $i++;
+        } while ($i < 100);
+    }
+
+    /**
+     * Test Request command with large payload.
+     *
+     * @return void
+     */
+    public function testLargeRequest()
+    {
+
+        $content = file_get_contents(dirname(__FILE__).'/test.pdf');
+        
+        $contentLen = strlen($content);
+
+        $contentSum = md5($content);
+
+        $i = 0;
+        do {
+            $this->c->subscribe(
+                "saybighello$i",
+                function ($res) use ($contentLen, $contentSum) {
+                    $gotLen = strlen($res->getBody());
+                    $gotSum = md5($res->getBody());
+                    $this->assertEquals($contentLen, $gotLen);
+                    $this->assertEquals($contentSum, $gotSum);
+                    $res->reply($gotLen);
+                }
+            );
+
+            $this->c->request(
+                "saybighello$i",
+                $content,
+                function ($message) use ($contentLen) {
+                    $this->assertNotNull($message);
+                    $this->assertEquals($message->getBody(), $contentLen);
+                }
+            );
+
+            $i++;
+        } while ($i < 100);
+
     }
 
     /**
