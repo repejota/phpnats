@@ -18,7 +18,7 @@ class Connection
 
     /**
      * Chunk size in bytes to use when reading with fread.
-     * @var int
+     * @var integer
      */
     private $chunkSize = 1500;
 
@@ -167,7 +167,7 @@ class Connection
             $receivedBytes = 0;
             while ($receivedBytes < $len) {
                 $bytesLeft = $len - $receivedBytes;
-                if ( $bytesLeft < $this->chunkSize ) {
+                if ($bytesLeft < $this->chunkSize) {
                     $chunkSize = $bytesLeft;
                 }
 
@@ -184,8 +184,8 @@ class Connection
     /**
      * Returns an stream socket to the desired server.
      *
-     * @param string  $address Server url string.
-     * @param float $timeout Number of seconds until the connect() system call should timeout.
+     * @param string $address Server url string.
+     * @param float  $timeout Number of seconds until the connect() system call should timeout.
      *
      * @return resource
      * @throws \Exception Exception raised if connection fails.
@@ -368,7 +368,7 @@ class Connection
      * @param string $line Message command from Nats.
      *
      * @return void
-     * @throws Exception
+     * @throws Exception If subscription not found.
      * @codeCoverageIgnore
      */
     private function handleMSG($line)
@@ -471,9 +471,11 @@ class Connection
     }
 
     /**
-     * @param integer $chunkSize Set byte chunk len to read when reading from wire
+     * @param integer $chunkSize Set byte chunk len to read when reading from wire.
+     * @return void
      */
-    public function setChunkSize($chunkSize){
+    public function setChunkSize($chunkSize)
+    {
         $this->chunkSize = $chunkSize;
     }
 

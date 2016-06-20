@@ -5,9 +5,9 @@ lint:
 	find examples -name *.php -exec php -l {} \;
 
 cs: lint
-	./bin/phpcbf --standard=PSR2 src tests examples
-	./bin/phpcs --standard=PSR2 --warning-severity=0 src tests examples
-	./bin/phpcs --standard=Squiz --sniffs=Squiz.Commenting.FunctionComment,Squiz.Commenting.FunctionCommentThrowTag,Squiz.Commenting.ClassComment,Squiz.Commenting.VariableComment src tests examples
+	./vendor/bin/phpcbf --standard=PSR2 src test examples
+	./vendor/bin/phpcs --standard=PSR2 --warning-severity=0 src test examples
+	./vendor/bin/phpcs --standard=Squiz --sniffs=Squiz.Commenting.FunctionComment,Squiz.Commenting.FunctionCommentThrowTag,Squiz.Commenting.ClassComment,Squiz.Commenting.VariableComment src test examples
 
 test:
 	./vendor/bin/phpunit test

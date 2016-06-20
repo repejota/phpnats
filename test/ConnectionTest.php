@@ -117,7 +117,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             );
 
             $i++;
-
         } while ($i < 100);
     }
 
@@ -137,7 +136,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $i = 0;
         do {
-
             $this->c->subscribe(
                 "saybighello$i",
                 function ($res) use ($contentLen, $contentSum) {
