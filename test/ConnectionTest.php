@@ -163,7 +163,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test setting a timeout on the stream
-     * 
+     *
      * @return void
      */
     public function testSetStreamTimeout()
@@ -173,7 +173,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->request(
             "nonexistantsubject",
             "test",
-            function($message) {
+            function ($message) {
                 $this->fail("should never have gotten here");
             }
         );
