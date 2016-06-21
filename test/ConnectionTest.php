@@ -178,8 +178,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             }
         );
         $timeTaken = time() - $before;
-        
-        $this->assertEquals(1, $timeTaken);
+
+        $this->assertGreaterThan(0, $timeTaken);
+        $this->assertLessThan(3, $timeTaken);
 
         $meta = stream_get_meta_data($this->c->streamSocket());
 
