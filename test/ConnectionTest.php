@@ -162,6 +162,32 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test setting a timeout on the stream
+     *
+     * @return void
+     */
+    public function testSetStreamTimeout()
+    {
+        $this->c->setStreamTimeout(1);
+        $before = time();
+        $this->c->request(
+            "nonexistantsubject",
+            "test",
+            function ($message) {
+                $this->fail("should never have gotten here");
+            }
+        );
+        $timeTaken = time() - $before;
+
+        $this->assertGreaterThan(0, $timeTaken);
+        $this->assertLessThan(3, $timeTaken);
+
+        $meta = stream_get_meta_data($this->c->streamSocket());
+
+        $this->assertTrue($meta["timed_out"]);
+    }
+
+    /**
      * Test Unsubscribe command.
      *
      * @return void

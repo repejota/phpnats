@@ -449,7 +449,7 @@ class Connection
         if ($this->isConnected()) {
             if (is_int($seconds)) {
                 try {
-                    return $this->streamWrapper->setStreamTimeout($this->streamSocket, $seconds);
+                    return stream_set_timeout($this->streamSocket, $seconds);
                 } catch (\Exception $e) {
                     return false;
                 }
@@ -488,5 +488,14 @@ class Connection
     {
         fclose($this->streamSocket);
         $this->streamSocket = null;
+    }
+
+
+    /**
+     * @return resource
+     */
+    public function streamSocket()
+    {
+        return $this->streamSocket;
     }
 }
