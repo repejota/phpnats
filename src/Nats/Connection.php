@@ -197,7 +197,7 @@ class Connection
         }
         $errno = null;
         $errstr = null;
-        
+
         $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
         $timeout = number_format($timeout, 3);
         $seconds = floor($timeout);
