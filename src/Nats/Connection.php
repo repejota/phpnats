@@ -410,7 +410,8 @@ class Connection
     public function wait($quantity = 0)
     {
         $count = 0;
-        while (!feof($this->streamSocket)) {
+        $info = stream_get_meta_data($this->streamSocket);
+        while (is_resource($this->streamSocket) && !feof($this->streamSocket) && !$info['timed_out']) {
             $line = $this->receive();
 
             if ($line === false) {
@@ -428,6 +429,7 @@ class Connection
                     return $this;
                 }
             }
+            $info = stream_get_meta_data($this->streamSocket);
         }
         $this->close();
 
