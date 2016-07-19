@@ -190,19 +190,12 @@ class Connection
      * @return resource
      * @throws \Exception Exception raised if connection fails.
      */
-    private function getStream($address, $timeout = null)
+    private function getStream($address)
     {
-        if (is_null($timeout)) {
-            $timeout = intval(ini_get('default_socket_timeout'));
-        }
         $errno = null;
         $errstr = null;
 
-        $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
-        $timeout = number_format($timeout, 3);
-        $seconds = floor($timeout);
-        $microseconds = ($timeout - $seconds) * 1000;
-        stream_set_timeout($fp, $seconds, $microseconds);
+        $fp = stream_socket_client($address, $errno, $errstr, null, STREAM_CLIENT_CONNECT);
 
         if (!$fp) {
             throw new \Exception($errstr, $errno);
@@ -231,9 +224,13 @@ class Connection
      */
     public function connect($timeout = null)
     {
+        if ($timeout === null) {
+            $timeout = intval(ini_get('default_socket_timeout'));
+        }
 
         $this->timeout = $timeout;
-        $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
+        $this->streamSocket = $this->getStream($this->options->getAddress());
+        $this->setStreamTimeout($timeout);
 
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
@@ -447,9 +444,12 @@ class Connection
     public function setStreamTimeout($seconds)
     {
         if ($this->isConnected()) {
-            if (is_int($seconds)) {
+            if (is_numeric($seconds)) {
                 try {
-                    return stream_set_timeout($this->streamSocket, $seconds);
+                    $timeout = number_format($seconds, 3);
+                    $seconds = floor($timeout);
+                    $microseconds = ($timeout - $seconds) * 1000;
+                    return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
                 } catch (\Exception $e) {
                     return false;
                 }
