@@ -190,12 +190,16 @@ class Connection
      * @return resource
      * @throws \Exception Exception raised if connection fails.
      */
-    private function getStream($address)
+    private function getStream($address, $timeout)
     {
         $errno = null;
         $errstr = null;
 
-        $fp = stream_socket_client($address, $errno, $errstr, null, STREAM_CLIENT_CONNECT);
+        $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+        $timeout = number_format($timeout, 3);
+        $seconds = floor($timeout);
+        $microseconds = ($timeout - $seconds) * 1000;
+        stream_set_timeout($fp, $seconds, $microseconds);
 
         if (!$fp) {
             throw new \Exception($errstr, $errno);
@@ -229,7 +233,7 @@ class Connection
         }
 
         $this->timeout = $timeout;
-        $this->streamSocket = $this->getStream($this->options->getAddress());
+        $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
         $this->setStreamTimeout($timeout);
 
         $msg = 'CONNECT '.$this->options;
