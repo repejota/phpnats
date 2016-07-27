@@ -128,8 +128,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testLargeRequest()
     {
 
-        $content = file_get_contents(dirname(__FILE__).'/test.pdf');
-        
+        $content = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 51200);
+
         $contentLen = strlen($content);
 
         $contentSum = md5($content);
