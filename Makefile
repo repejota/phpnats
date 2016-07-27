@@ -9,11 +9,13 @@ cs: lint
 	./vendor/bin/phpcs --standard=PSR2 --warning-severity=0 src test examples
 	./vendor/bin/phpcs --standard=Squiz --sniffs=Squiz.Commenting.FunctionComment,Squiz.Commenting.FunctionCommentThrowTag,Squiz.Commenting.ClassComment,Squiz.Commenting.VariableComment src test examples
 
-test:
+test: tdd bdd
+
+tdd:
 	./vendor/bin/phpunit test
 
 bdd:
-	./vendor/bin/phpspec run --format=pretty
+	./vendor/bin/phpspec run --format=pretty -v
 
 cover:
 	./vendor/bin/phpunit --coverage-html ./cover test

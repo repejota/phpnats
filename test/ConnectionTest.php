@@ -128,8 +128,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testLargeRequest()
     {
 
-        $content = file_get_contents(dirname(__FILE__).'/test.pdf');
-        
+        $content = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 51200);
+
         $contentLen = strlen($content);
 
         $contentSum = md5($content);
@@ -159,6 +159,32 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $i++;
         } while ($i < 100);
 
+    }
+
+    /**
+     * Test setting a timeout on the stream
+     *
+     * @return void
+     */
+    public function testSetStreamTimeout()
+    {
+        $this->c->setStreamTimeout(1);
+        $before = time();
+        $this->c->request(
+            "nonexistantsubject",
+            "test",
+            function ($message) {
+                $this->fail("should never have gotten here");
+            }
+        );
+        $timeTaken = time() - $before;
+
+        $this->assertGreaterThan(0, $timeTaken);
+        $this->assertLessThan(3, $timeTaken);
+
+        $meta = stream_get_meta_data($this->c->streamSocket());
+
+        $this->assertTrue($meta["timed_out"]);
     }
 
     /**

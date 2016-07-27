@@ -33,7 +33,7 @@ class ConnectionOptionsSpec extends ObjectBehavior
     }
 
     function it_has_default_version_value_as_null() {
-        $this->getVersion()->shouldEqual("0.0.5");
+        $this->getVersion()->shouldEqual("0.8.0");
     }
 
     function it_has_default_verbose_value_as_null() {

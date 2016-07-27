@@ -190,14 +190,11 @@ class Connection
      * @return resource
      * @throws \Exception Exception raised if connection fails.
      */
-    private function getStream($address, $timeout = null)
+    private function getStream($address, $timeout)
     {
-        if (is_null($timeout)) {
-            $timeout = intval(ini_get('default_socket_timeout'));
-        }
         $errno = null;
         $errstr = null;
-        
+
         $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
         $timeout = number_format($timeout, 3);
         $seconds = floor($timeout);
@@ -231,9 +228,13 @@ class Connection
      */
     public function connect($timeout = null)
     {
+        if ($timeout === null) {
+            $timeout = intval(ini_get('default_socket_timeout'));
+        }
 
         $this->timeout = $timeout;
         $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
+        $this->setStreamTimeout($timeout);
 
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
@@ -413,7 +414,8 @@ class Connection
     public function wait($quantity = 0)
     {
         $count = 0;
-        while (!feof($this->streamSocket)) {
+        $info = stream_get_meta_data($this->streamSocket);
+        while (is_resource($this->streamSocket) && !feof($this->streamSocket) && !$info['timed_out']) {
             $line = $this->receive();
 
             if ($line === false) {
@@ -431,6 +433,7 @@ class Connection
                     return $this;
                 }
             }
+            $info = stream_get_meta_data($this->streamSocket);
         }
         $this->close();
 
@@ -447,9 +450,12 @@ class Connection
     public function setStreamTimeout($seconds)
     {
         if ($this->isConnected()) {
-            if (is_int($seconds)) {
+            if (is_numeric($seconds)) {
                 try {
-                    return $this->streamWrapper->setStreamTimeout($this->streamSocket, $seconds);
+                    $timeout = number_format($seconds, 3);
+                    $seconds = floor($timeout);
+                    $microseconds = ($timeout - $seconds) * 1000;
+                    return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
                 } catch (\Exception $e) {
                     return false;
                 }
@@ -488,5 +494,14 @@ class Connection
     {
         fclose($this->streamSocket);
         $this->streamSocket = null;
+    }
+
+
+    /**
+     * @return resource
+     */
+    public function streamSocket()
+    {
+        return $this->streamSocket;
     }
 }
