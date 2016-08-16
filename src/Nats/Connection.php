@@ -429,7 +429,7 @@ class Connection
             if (strpos($line, 'MSG') === 0) {
                 $count = $count + 1;
                 $this->handleMSG($line);
-                if (($quantity != 0) && ($count >= $quantity)) {
+                if (($quantity !== 0) && ($count >= $quantity)) {
                     return $this;
                 }
             }
