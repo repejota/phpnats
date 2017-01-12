@@ -1,7 +1,6 @@
 <?php
 namespace Nats;
 
-use PhpSpec\CodeGenerator\Generator\GeneratorInterface;
 use RandomLib\Factory;
 use RandomLib\Generator;
 
