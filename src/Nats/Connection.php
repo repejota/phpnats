@@ -148,7 +148,21 @@ class Connection
     private function send($payload)
     {
         $msg = $payload."\r\n";
-        fwrite($this->streamSocket, $msg, strlen($msg));
+        $len = strlen($msg);
+        while (true) {
+            if (false === ($written = @fwrite($this->streamSocket, $msg))) {
+                throw new \Exception('Error sending data');
+            }
+            if ($written === 0) {
+                throw new \Exception('Broken pipe or closed connection');
+            }
+            $len = $len - $written;
+            if ($len > 0) {
+                $msg = substr($msg, 0 - $len);
+            } else {
+                break;
+            }
+        }
     }
 
     /**
