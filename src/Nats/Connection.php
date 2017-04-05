@@ -195,15 +195,18 @@ class Connection
         $errno = null;
         $errstr = null;
 
+        set_error_handler(function(){return true;});
         $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
-        $timeout = number_format($timeout, 3);
-        $seconds = floor($timeout);
-        $microseconds = ($timeout - $seconds) * 1000;
-        stream_set_timeout($fp, $seconds, $microseconds);
+        restore_error_handler();
 
         if (!$fp) {
             throw new \Exception($errstr, $errno);
         }
+
+        $timeout = number_format($timeout, 3);
+        $seconds = floor($timeout);
+        $microseconds = ($timeout - $seconds) * 1000;
+        stream_set_timeout($fp, $seconds, $microseconds);
 
         return $fp;
     }
