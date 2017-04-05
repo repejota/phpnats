@@ -495,6 +495,9 @@ class Connection
      */
     public function close()
     {
+        if ($this->streamSocket === null) {
+            return;
+        }
         fclose($this->streamSocket);
         $this->streamSocket = null;
     }
