@@ -115,7 +115,7 @@ class Connection
     private $streamSocket;
 
     /**
-     * @var Generator
+     * @var Generator|Php71RandomGenerator
      */
     private $randomGenerator;
 
@@ -130,8 +130,12 @@ class Connection
         $this->pubs = 0;
         $this->subscriptions = [];
         $this->options = $options;
-        $randomFactory = new Factory();
-        $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
+        if(version_compare(phpversion(), '7.0', '>')){
+            $this->randomGenerator = new Php71RandomGenerator();
+        } else {
+            $randomFactory = new Factory();
+            $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
+        }
 
         if (is_null($options)) {
             $this->options = new ConnectionOptions();
@@ -148,7 +152,21 @@ class Connection
     private function send($payload)
     {
         $msg = $payload."\r\n";
-        fwrite($this->streamSocket, $msg, strlen($msg));
+        $len = strlen($msg);
+        while (true) {
+            if (false === ($written = @fwrite($this->streamSocket, $msg))) {
+                throw new \Exception('Error sending data');
+            }
+            if ($written === 0) {
+                throw new \Exception('Broken pipe or closed connection');
+            }
+            $len = $len - $written;
+            if ($len > 0) {
+                $msg = substr($msg, 0 - $len);
+            } else {
+                break;
+            }
+        }
     }
 
     /**
@@ -195,15 +213,18 @@ class Connection
         $errno = null;
         $errstr = null;
 
+        set_error_handler(function(){return true;});
         $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
+        restore_error_handler();
+
+        if (!$fp) {
+            throw Exception::forStreamSocketClientError($errstr, $errno);
+        }
+
         $timeout = number_format($timeout, 3);
         $seconds = floor($timeout);
         $microseconds = ($timeout - $seconds) * 1000;
         stream_set_timeout($fp, $seconds, $microseconds);
-
-        if (!$fp) {
-            throw new \Exception($errstr, $errno);
-        }
 
         return $fp;
     }
@@ -239,16 +260,16 @@ class Connection
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
         $connect_response = $this->receive();
-        if (strpos($connect_response, '-ERR')!== false) {
-            throw new \Exception("Failing connection: $connect_response");
+
+        if ($this->isErrorResponse($connect_response)) {
+            throw Exception::forFailedConnection($connect_response);
         }
 
         $this->ping();
         $ping_response = $this->receive();
-        if ($ping_response !== "PONG") {
-            if (strpos($ping_response, '-ERR')!== false) {
-                throw new \Exception("Failing on first ping: $ping_response");
-            }
+
+        if ($this->isErrorResponse($ping_response)) {
+            throw Exception::forFailedPing($ping_response);
         }
     }
 
@@ -391,14 +412,14 @@ class Connection
         $msg = new Message($subject, $payload, $sid, $this);
 
         if (!isset($this->subscriptions[$sid])) {
-            throw new Exception('subscription not found');
+            throw Exception::forSubscriptionNotFound($sid);
         }
 
         $func = $this->subscriptions[$sid];
         if (is_callable($func)) {
             $func($msg);
         } else {
-            throw new Exception('not callable');
+            throw Exception::forSubscriptionCallbackInvalid($sid);
         }
 
         return;
@@ -492,6 +513,9 @@ class Connection
      */
     public function close()
     {
+        if ($this->streamSocket === null) {
+            return;
+        }
         fclose($this->streamSocket);
         $this->streamSocket = null;
     }
@@ -503,5 +527,16 @@ class Connection
     public function streamSocket()
     {
         return $this->streamSocket;
+    }
+
+    /**
+     * Indicates whether $response is an error response.
+     *
+     * @param string $response The Nats Server response.
+     * @return boolean
+     */
+    private function isErrorResponse($response)
+    {
+        return false !== strpos('-ERR', $response);
     }
 }

@@ -30,4 +30,7 @@ dist-clean:
 	rm -f composer.phar
 	rm -f composer.lock
 
+docker-nats:
+	docker run --rm -p 8222:8222 -p 4222:4222 -d --name nats-main nats
+
 .PHONY: lint test cs cover deps dist-clean

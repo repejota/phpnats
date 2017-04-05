@@ -158,7 +158,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
             $i++;
         } while ($i < 100);
-
     }
 
     /**
@@ -204,5 +203,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->publish('unsub', 'bar');
 
         $this->assertTrue(true);
+    }
+
+
+    /**
+     * Test Connecting when nats server is not available
+     *
+     * @return void
+     */
+    public function testRefusedConnection()
+    {
+        $this->setExpectedException(\Exception::class);
+
+        $options = new ConnectionOptions();
+        $options->setHost('localhost');
+        $options->setPort(4223);
+
+        $c = new Nats\Connection($options);
+        $c->connect();
+        $this->assertFalse($this->c->isConnected());
     }
 }
