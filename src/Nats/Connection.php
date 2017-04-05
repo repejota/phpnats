@@ -115,7 +115,7 @@ class Connection
     private $streamSocket;
 
     /**
-     * @var Generator
+     * @var Generator|Php71RandomGenerator
      */
     private $randomGenerator;
 
@@ -130,8 +130,12 @@ class Connection
         $this->pubs = 0;
         $this->subscriptions = [];
         $this->options = $options;
-        $randomFactory = new Factory();
-        $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
+        if(version_compare(phpversion(), '7.0', '>')){
+            $this->randomGenerator = new Php71RandomGenerator();
+        } else {
+            $randomFactory = new Factory();
+            $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
+        }
 
         if (is_null($options)) {
             $this->options = new ConnectionOptions();
