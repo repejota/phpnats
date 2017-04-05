@@ -214,7 +214,7 @@ class Connection
         restore_error_handler();
 
         if (!$fp) {
-            throw new \Exception($errstr, $errno);
+            throw Exception::forStreamSocketClientError($errstr, $errno);
         }
 
         $timeout = number_format($timeout, 3);
@@ -256,16 +256,16 @@ class Connection
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
         $connect_response = $this->receive();
-        if (strpos($connect_response, '-ERR')!== false) {
-            throw new \Exception("Failing connection: $connect_response");
+
+        if ($this->isErrorResponse($connect_response)) {
+            throw Exception::forFailedConnection($connect_response);
         }
 
         $this->ping();
         $ping_response = $this->receive();
-        if ($ping_response !== "PONG") {
-            if (strpos($ping_response, '-ERR')!== false) {
-                throw new \Exception("Failing on first ping: $ping_response");
-            }
+
+        if ($this->isErrorResponse($ping_response)) {
+            throw Exception::forFailedPing($ping_response);
         }
     }
 
@@ -408,14 +408,14 @@ class Connection
         $msg = new Message($subject, $payload, $sid, $this);
 
         if (!isset($this->subscriptions[$sid])) {
-            throw new Exception('subscription not found');
+            throw Exception::forSubscriptionNotFound($sid);
         }
 
         $func = $this->subscriptions[$sid];
         if (is_callable($func)) {
             $func($msg);
         } else {
-            throw new Exception('not callable');
+            throw Exception::forSubscriptionCallbackInvalid($sid);
         }
 
         return;
@@ -523,5 +523,16 @@ class Connection
     public function streamSocket()
     {
         return $this->streamSocket;
+    }
+
+    /**
+     * Indicates whether $response is an error response.
+     *
+     * @param string $response The Nats Server response.
+     * @return boolean
+     */
+    private function isErrorResponse($response)
+    {
+        return false !== strpos('-ERR', $response);
     }
 }

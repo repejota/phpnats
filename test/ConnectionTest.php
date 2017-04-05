@@ -158,7 +158,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
             $i++;
         } while ($i < 100);
-
     }
 
     /**
