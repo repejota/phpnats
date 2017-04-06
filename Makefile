@@ -33,4 +33,7 @@ dist-clean:
 docker-nats:
 	docker run --rm -p 8222:8222 -p 4222:4222 -d --name nats-main nats
 
+phpdoc:
+	wget -q http://phpdoc.org/phpDocumentor.phar -O ./phpDocumentor.phar
+
 .PHONY: lint test cs cover deps dist-clean
