@@ -42,6 +42,6 @@ phpdoc:
 	./phpDocumentor.phar -d ./src/ -t ./docs/api --template=checkstyle --template=responsive-twig
 
 serve-phpdoc:
-	cd docs/api && python -m SimpleHTTPServer
+	cd docs/api && php -S localhost:8000 && cd ../..
 
 .PHONY: lint test cs cover deps dist-clean
