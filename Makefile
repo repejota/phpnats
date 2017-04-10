@@ -19,6 +19,7 @@ bdd:
 
 cover:
 	./vendor/bin/phpunit --coverage-html ./cover test
+
 deps:
 	wget -q https://getcomposer.org/composer.phar -O ./composer.phar
 	chmod +x composer.phar
@@ -29,8 +30,18 @@ dist-clean:
 	rm -rf vendor
 	rm -f composer.phar
 	rm -f composer.lock
+	rm -f phpDocumentor.phar
+	rm -rf docs/api
 
 docker-nats:
 	docker run --rm -p 8222:8222 -p 4222:4222 -d --name nats-main nats
+
+phpdoc:
+	wget -q https://github.com/phpDocumentor/phpDocumentor2/releases/download/v2.9.0/phpDocumentor.phar -O ./phpDocumentor.phar
+	chmod +x phpDocumentor.phar
+	./phpDocumentor.phar -d ./src/ -t ./docs/api --template=checkstyle --template=responsive-twig
+
+serve-phpdoc:
+	cd docs/api && php -S localhost:8000 && cd ../..
 
 .PHONY: lint test cs cover deps dist-clean
