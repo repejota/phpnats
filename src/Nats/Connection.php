@@ -146,8 +146,7 @@ class Connection
      * Sends data thought the stream.
      *
      * @param string $payload Message data.
-     *
-     * @return void
+     * @throws \Exception
      */
     private function send($payload)
     {
@@ -430,7 +429,7 @@ class Connection
      *
      * @param integer $quantity Number of messages to wait for.
      *
-     * @return resource $connection Connection object
+     * @return Connection $connection Connection object
      */
     public function wait($quantity = 0)
     {
