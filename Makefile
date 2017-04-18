@@ -21,7 +21,7 @@ lint-squiz:
 test: test-tdd test-bdd
 
 .PHONY: test-tdd
-test-bdd:
+test-tdd:
 	./vendor/bin/phpunit test
 
 .PHONY: test-bdd
