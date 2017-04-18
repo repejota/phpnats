@@ -3,8 +3,6 @@
 
 namespace Nats;
 
-
-
 class Php71RandomGenerator
 {
     /**
@@ -13,7 +11,8 @@ class Php71RandomGenerator
      * @param $len
      * @return string
      */
-    public function generateString($len) {
+    public function generateString($len)
+    {
         return bin2hex(random_bytes($len));
     }
 }
