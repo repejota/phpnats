@@ -1,0 +1,2 @@
+benchmark:
+	php pub.php

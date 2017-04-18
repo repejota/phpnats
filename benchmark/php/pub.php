@@ -1,17 +1,13 @@
 <?php
-require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . "/../../vendor/autoload.php";
 
 $start = microtime(true);
 
-$connectionOptions = new \Nats\ConnectionOptions();
-$connectionOptions->setHost('localhost')->setPort(4222);
-
-$c = new Nats\Connection($connectionOptions);
+$c = new Nats\Connection();
 $c->connect();
 
-$limit = 1000000;
+$limit = 100000;
 for ($i = 1; $i <= $limit; $i++) {
-    print $i."\n";
     $c->publish("foo");
 }
 
