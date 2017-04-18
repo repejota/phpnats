@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset name="Custom Standard">
+    <description>php-nats Coding Standards for Inline Documentation and Comments</description>
+
+    <rule ref="Squiz.Commenting">
+        <!-- It is too early for PHP7 features to be required -->
+        <exclude name="Squiz.Commenting.FunctionComment.ScalarTypeHintMissing" />
+    </rule>
+
+</ruleset>
