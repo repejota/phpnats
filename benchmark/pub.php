@@ -11,6 +11,7 @@ $c->connect();
 
 $limit = 1000000;
 for ($i = 1; $i <= $limit; $i++) {
+    print $i."\n";
     $c->publish("foo");
 }
 
