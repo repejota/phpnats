@@ -16,8 +16,8 @@ before_install:
 before_script:
   - make deps
 script:
-  - mkdir -p lint-php
   - mkdir -p build/logs
+  - make lint-php
   - make test
 after_script:
   - php vendor/bin/coveralls
