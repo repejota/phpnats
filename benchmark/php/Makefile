@@ -1,2 +1,2 @@
 benchmark:
-	php pub.php
+	php main.php
