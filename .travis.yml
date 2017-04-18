@@ -16,6 +16,7 @@ before_install:
 before_script:
   - make deps
 script:
+  - mkdir -p lint-php
   - mkdir -p build/logs
   - make test
 after_script:
