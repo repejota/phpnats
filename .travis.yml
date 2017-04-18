@@ -18,6 +18,7 @@ before_script:
 script:
   - mkdir -p build/logs
   - make lint-php
+  - make lint-psr2
   - make test
 after_script:
   - php vendor/bin/coveralls
