@@ -1,13 +1,19 @@
-lint:
+lint: lint-php lint-psr2 lint-squiz
+
+lint-php:
 	find src -name *.php -exec php -l {} \;
 	find test -name *.php -exec php -l {} \;
 	find spec -name *.php -exec php -l {} \;
 	find examples -name *.php -exec php -l {} \;
 
-cs: lint
-	./vendor/bin/phpcbf --standard=PSR2 src test examples
-	./vendor/bin/phpcs --standard=PSR2 --warning-severity=0 src test examples
-	./vendor/bin/phpcs --standard=Squiz --sniffs=Squiz.Commenting.FunctionComment,Squiz.Commenting.FunctionCommentThrowTag,Squiz.Commenting.ClassComment,Squiz.Commenting.VariableComment src test examples
+lint-psr2:
+	#./vendor/bin/phpcbf --standard=PSR2 src test examples
+	./vendor/bin/phpcs --standard=PSR2 --colors -w -s --warning-severity=0 src test examples
+
+lint-squiz:
+	# ./vendor/bin/phpcbf --standard=Squiz,./ruleset.xml src test examples
+	./vendor/bin/phpcs --standard=Squiz,./ruleset.xml --colors -w -s --warning-severity=0 src test examples
+
 
 test: tdd bdd
 
