@@ -1,4 +1,4 @@
-all: go php nodejs python python3
+all: go nodejs php ruby python python3
 
 .PHONY: php
 php:
@@ -33,7 +33,6 @@ go:
 	@echo
 	@echo "Go Benchmark:"
 	@echo "=============="
-	@echo "--------------"
 	@go version
 	@echo "--------------"
 	@cd go && make benchmark
@@ -46,4 +45,13 @@ nodejs:
 	@node --version
 	@echo "--------------"
 	@cd nodejs && make benchmark
+
+.PHONY: ruby
+ruby:
+	@echo
+	@echo "Ruby Benchmark:"
+	@echo "=============="
+	@ruby --version
+	@echo "--------------"
+	@cd ruby && make benchmark
 
