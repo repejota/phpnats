@@ -182,7 +182,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThan(0, $timeTaken);
         $this->assertLessThan(3, $timeTaken);
 
-        $meta = stream_get_meta_data($this->c->streamSocket());
+        $meta = stream_get_meta_data($this->c->getStreamSocket());
 
         $this->assertTrue($meta['timed_out']);
     }
