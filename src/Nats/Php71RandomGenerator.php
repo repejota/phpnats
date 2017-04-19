@@ -3,13 +3,21 @@
 
 namespace Nats;
 
+/**
+ * Class Php71RandomGenerator
+ *
+ * @package Nats
+ */
 class Php71RandomGenerator
 {
+
+
     /**
-     * A simple wrapper on random_bytes
+     * A simple wrapper on random_bytes.
      *
-     * @param $len
-     * @return string
+     * @param integer $len Length of the string.
+     *
+     * @return string Random string.
      */
     public function generateString($len)
     {

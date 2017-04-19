@@ -1,17 +1,15 @@
 <?php
-require_once __DIR__ . "/../../vendor/autoload.php";
+require_once __DIR__.'/../../vendor/autoload.php';
 
 $connectionOptions = new \Nats\ConnectionOptions();
-$connectionOptions
-    ->setHost('localhost')
-    ->setPort(4222);
+$connectionOptions->setHost('localhost')->setPort(4222);
 $c = new Nats\Connection($connectionOptions);
 $c->connect();
 
 $sid = $c->subscribe(
-    "sayhello",
+    'sayhello',
     function ($res) {
-        $res->reply("Hello, " . $res->getBody() . " !!!");
+        $res->reply('Hello, '.$res->getBody().' !!!');
     }
 );
 

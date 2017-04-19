@@ -6,6 +6,7 @@ namespace Nats;
  */
 class Message
 {
+
     /**
      * Message Subject.
      *
@@ -34,6 +35,7 @@ class Message
      */
     private $conn;
 
+
     /**
      * Message constructor.
      *
@@ -50,6 +52,7 @@ class Message
         $this->setConn($conn);
     }
 
+
     /**
      * Set subject.
      *
@@ -64,6 +67,7 @@ class Message
         return $this;
     }
 
+
     /**
      * Get subject.
      *
@@ -73,6 +77,7 @@ class Message
     {
         return $this->subject;
     }
+
 
     /**
      * Set body.
@@ -87,6 +92,7 @@ class Message
         return $this;
     }
 
+
     /**
      * Get body.
      *
@@ -96,6 +102,7 @@ class Message
     {
         return $this->body;
     }
+
 
     /**
      * Set Ssid.
@@ -110,6 +117,7 @@ class Message
         return $this;
     }
 
+
     /**
      * Get Ssid.
      *
@@ -120,6 +128,7 @@ class Message
         return $this->sid;
     }
 
+
     /**
      * String representation of a message.
      *
@@ -129,6 +138,7 @@ class Message
     {
         return $this->getBody();
     }
+
 
     /**
      * Set Conn.
@@ -143,6 +153,7 @@ class Message
         return $this;
     }
 
+
     /**
      * Get Conn.
      *
@@ -152,6 +163,7 @@ class Message
     {
         return $this->conn;
     }
+
 
     /**
      * Allows you reply the message with a specific body.
