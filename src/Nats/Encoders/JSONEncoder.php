@@ -8,7 +8,7 @@ namespace Nats\Encoders;
  *
  * @package Nats
  */
-class JSONEncoder implements \Nats\Encoders\Encoder
+class JSONEncoder implements Encoder
 {
 
 

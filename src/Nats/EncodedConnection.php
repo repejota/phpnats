@@ -32,20 +32,15 @@ class EncodedConnection extends Connection
     /**
      * Request does a request and executes a callback with the response.
      *
-     * @param string  $subject  Message topic.
-     * @param string  $payload  Message data.
-     * @param mixed   $callback Closure to be executed as callback.
-     * @param integer $wait     Number of messages to wait for.
+     * @param string $subject Message topic.
+     * @param string $payload Message data.
      *
      * @return void
      */
-    public function request($subject, $payload, $callback, $wait = 1)
+    public function request($subject, $payload)
     {
-        $payload        = $this->encoder->encode($payload);
-        $decodeCallback = function ($payload) use ($callback) {
-            $callback($this->encoder->decode($payload));
-        };
-        parent::request($subject, $payload, $decodeCallback, $wait);
+        $payload = $this->encoder->encode($payload);
+        parent::request($subject, $payload);
     }
 
     /**
@@ -68,14 +63,15 @@ class EncodedConnection extends Connection
      * @param string   $subject  Message topic.
      * @param \Closure $callback Closure to be executed as callback.
      *
-     * @return string
+     * @return void
      */
     public function subscribe($subject, \Closure $callback)
     {
-        $decodeCallback = function ($payload) use ($callback) {
-            $callback($this->encoder->decode($payload));
+        $c = function ($message) use ($callback) {
+            $message->setBody($this->encoder->decode($message->getBody()));
+            $callback($message);
         };
-        return parent::subscribe($subject, $decodeCallback);
+        parent::subscribe($subject, $c);
     }
 
     /**
@@ -85,13 +81,14 @@ class EncodedConnection extends Connection
      * @param string   $queue    Queue name.
      * @param \Closure $callback Closure to be executed as callback.
      *
-     * @return string
+     * @return void
      */
     public function queueSubscribe($subject, $queue, \Closure $callback)
     {
-        $decodeCallback = function ($payload) use ($callback) {
-            $callback($this->encoder->decode($payload));
+        $c = function ($message) use ($callback) {
+            $message->setBody($this->encoder->decode($message->getBody()));
+            $callback($message);
         };
-        return parent::queueSubscribe($subject, $queue, $decodeCallback);
+        parent::queueSubscribe($subject, $queue, $c);
     }
 }
