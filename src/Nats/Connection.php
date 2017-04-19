@@ -6,21 +6,23 @@ use RandomLib\Generator;
 
 /**
  * Connection Class.
+ *
+ * Handles the connection to a NATS server or cluster of servers.
  */
 class Connection
 {
 
     /**
-     * Number of PINGS.
+     * Number of PINGs.
      *
-     * @var int number of pings
+     * @var integer number of pings.
      */
     private $pings = 0;
 
     /**
-     * Chunk size in bytes to use when reading with fread.
+     * Chunk size in bytes to use when reading an stream of data.
      *
-     * @var integer
+     * @var integer size of chunk.
      */
     private $chunkSize = 1500;
 
