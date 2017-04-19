@@ -1,11 +1,11 @@
 <?php
-namespace Nats;
+namespace Nats\Encoders;
 
 /**
  * Class JSONEncoder
  * @package Nats
  */
-class JSONEncoder extends Encoder {
+class JSONEncoder implements \Nats\Encoders\Encoder {
 
     public function encode($payload) {
         $payload = json_encode($payload);

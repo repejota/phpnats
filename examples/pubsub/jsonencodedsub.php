@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/../../vendor/autoload.php";
 
-$encoder = new \Nats\JSONEncoder();
+$encoder = new \Nats\Encoders\JSONEncoder();
 $connectionOptions = new \Nats\ConnectionOptions();
 $connectionOptions
     ->setHost('localhost')

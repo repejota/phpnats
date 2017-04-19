@@ -17,7 +17,7 @@ class EncodedConnection extends Connection {
      * @param ConnectionOptions|null $options
      * @param Encoder|null $encoder
      */
-    public function __construct(ConnectionOptions $options = null, Encoder $encoder = null) {
+    public function __construct(ConnectionOptions $options = null, \Nats\Encoders\Encoder $encoder = null) {
         $this->encoder = $encoder;
         parent::__construct($options);
     }
@@ -54,6 +54,18 @@ class EncodedConnection extends Connection {
             $callback($this->encoder->decode($payload));
         };
         parent::subscribe($subject, $decode_callback);
+    }
+
+    /**
+     * @param string $subject
+     * @param string $queue
+     * @param \Closure $callback
+     */
+    public function queueSubscribe($subject, $queue, \Closure $callback) {
+        $decode_callback = function ($payload) use ($callback) {
+            $callback($this->encoder->decode($payload));
+        };
+        parent::queueSubscribe($subject, $queue, $decode_callback);
     }
 
 }
