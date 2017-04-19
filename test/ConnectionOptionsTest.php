@@ -8,6 +8,8 @@ use Nats\ConnectionOptions;
  */
 class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
 {
+
+
     /**
      * Tests Connection Options getters and setters.
      *
@@ -16,16 +18,7 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testSettersAndGetters()
     {
         $options = new ConnectionOptions();
-        $options
-            ->setHost('host')
-            ->setPort(4222)
-            ->setUser('user')
-            ->setPass('password')
-            ->setLang('lang')
-            ->setVersion('version')
-            ->setVerbose(true)
-            ->setPedantic(true)
-            ->setReconnect(true);
+        $options->setHost('host')->setPort(4222)->setUser('user')->setPass('password')->setLang('lang')->setVersion('version')->setVerbose(true)->setPedantic(true)->setReconnect(true);
 
         $this->assertEquals('host', $options->getHost());
         $this->assertEquals(4222, $options->getPort());
@@ -38,6 +31,7 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($options->isReconnect());
     }
 
+
     /**
      * Tests Connection Options getters and setters without setting user and password.
      *
@@ -46,14 +40,7 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testSettersAndGettersWithoutCredentials()
     {
         $options = new ConnectionOptions();
-        $options
-            ->setHost('host')
-            ->setPort(4222)
-            ->setLang('lang')
-            ->setVersion('version')
-            ->setVerbose(true)
-            ->setPedantic(true)
-            ->setReconnect(true);
+        $options->setHost('host')->setPort(4222)->setLang('lang')->setVersion('version')->setVerbose(true)->setPedantic(true)->setReconnect(true);
 
         $this->assertEquals('host', $options->getHost());
         $this->assertEquals(4222, $options->getPort());
@@ -66,6 +53,7 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($options->isReconnect());
     }
 
+
     /**
      * Test string representation of ConnectionOptions.
      *
@@ -74,8 +62,9 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testStringRepresentation()
     {
         $options = new ConnectionOptions();
-        $this->assertEquals("{\"lang\":\"php\",\"version\":\"0.8.0\",\"verbose\":false,\"pedantic\":false}", $options->__toString());
+        $this->assertEquals('{"lang":"php","version":"0.8.0","verbose":false,"pedantic":false}', $options->__toString());
     }
+
 
     /**
      * Test string representation of ConnectionOptions with credentials.
@@ -85,8 +74,8 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testStringRepresentationWithCredentials()
     {
         $options = new ConnectionOptions();
-        $options->setUser("username");
-        $options->setPass("password");
-        $this->assertEquals("{\"lang\":\"php\",\"version\":\"0.8.0\",\"verbose\":false,\"pedantic\":false,\"user\":\"username\",\"pass\":\"password\"}", $options->__toString());
+        $options->setUser('username');
+        $options->setPass('password');
+        $this->assertEquals('{"lang":"php","version":"0.8.0","verbose":false,"pedantic":false,"user":"username","pass":"password"}', $options->__toString());
     }
 }

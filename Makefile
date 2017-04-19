@@ -1,20 +1,31 @@
-lint:
+lint: lint-php lint-psr2 lint-squiz
+
+.PHONY: lint-php
+lint-php:
 	find src -name *.php -exec php -l {} \;
 	find test -name *.php -exec php -l {} \;
 	find spec -name *.php -exec php -l {} \;
 	find examples -name *.php -exec php -l {} \;
 
-cs: lint
-	./vendor/bin/phpcbf --standard=PSR2 src test examples
-	./vendor/bin/phpcs --standard=PSR2 --warning-severity=0 src test examples
-	./vendor/bin/phpcs --standard=Squiz --sniffs=Squiz.Commenting.FunctionComment,Squiz.Commenting.FunctionCommentThrowTag,Squiz.Commenting.ClassComment,Squiz.Commenting.VariableComment src test examples
+.PHONY: lint-psr2
+lint-psr2:
+	#./vendor/bin/phpcbf --standard=PSR2 src test examples
+	./vendor/bin/phpcs --standard=PSR2 --colors -w -s --warning-severity=0 src test examples
 
-test: tdd bdd
+.PHONY: lint-squiz
+lint-squiz:
+	# ./vendor/bin/phpcbf --standard=Squiz,./ruleset.xml src test examples
+	./vendor/bin/phpcs --standard=Squiz,./ruleset.xml --colors -w -s --warning-severity=0 src test examples
 
-tdd:
+
+test: test-tdd test-bdd
+
+.PHONY: test-tdd
+test-tdd:
 	./vendor/bin/phpunit test
 
-bdd:
+.PHONY: test-bdd
+test-bdd:
 	./vendor/bin/phpspec run --format=pretty -v
 
 cover:
@@ -43,5 +54,3 @@ phpdoc:
 
 serve-phpdoc:
 	cd docs/api && php -S localhost:8000 && cd ../..
-
-.PHONY: lint test cs cover deps dist-clean
