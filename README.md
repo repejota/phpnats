@@ -3,13 +3,15 @@ phpnats
 
 **Travis**
 
-* Master: [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=master)](https://travis-ci.org/repejota/phpnats)
-* Develop: [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=develop)](https://travis-ci.org/repejota/phpnats)
+| Master  | Develop |
+| ------------- | ------------- |
+| [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=master)](https://travis-ci.org/repejota/phpnats)  | [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=develop)](https://travis-ci.org/repejota/phpnats)  |
 
 **Coverage**
 
-* Master: [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=master)](https://coveralls.io/r/repejota/phpnats?branch=master)
-* Develop: [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=develop)](https://coveralls.io/r/repejota/phpnats?branch=develop)
+| Master  | Develop |
+| ------------- | ------------- |
+| [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=master)](https://coveralls.io/r/repejota/phpnats?branch=master) | [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=develop)](https://coveralls.io/r/repejota/phpnats?branch=develop)  |
 
 Introduction
 ------------
@@ -88,23 +90,33 @@ Developer's Information
 
 ### Releases
 
-[Latest stable](https://github.com/repejota/phpnats/tree/master)
-[Latest dev](https://github.com/repejota/phpnats/tree/develop)
+* [Latest stable](https://github.com/repejota/phpnats/tree/master)
+* [Latest dev](https://github.com/repejota/phpnats/tree/develop)
+
+* [PHPNats on Packagist](https://packagist.org/packages/repejota/nats)
 
 ### Tests
 
 Tests are in the `tests` folder.
-To run them, you need `PHPUnit` and execute `make test`.
+To run them, you need `PHPUnit` and execute `make test-tdd`.
 
 We also have a BDD test suite under the `spec` folder.
-To run the suite, you need `PHPSpec` and execute `make bdd`.
+To run the suite, you need `PHPSpec` and execute `make test-bdd`.
+
+You can also execute the all suites ( TDD + BDD ) with `make test`.
 
 ### Code Quality
 
 We are using [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer/docs)
 to ensure our code follow an high quality standard.
 
-To perform an analysis of the code execute `make cs`.
+To perform an analysis of the code execute `make lint`.
+
+There is currently three steps when we lint our code:
+
+* First we lint with php itself `php -l`
+* Then we lint with PSR2 standard
+* And finally we lint with a custom [ruleset.xml](https://github.com/repejota/phpnats/blob/feature/lint-squiz/ruleset.xml) that checks dockblocks and different performance tips.
 
 
 Creators

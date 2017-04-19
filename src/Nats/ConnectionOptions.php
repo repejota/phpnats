@@ -12,7 +12,7 @@ class ConnectionOptions
      *
      * @var string
      */
-    private $host = "localhost";
+    private $host = 'localhost';
 
     /**
      * Port number to connect.
@@ -40,14 +40,14 @@ class ConnectionOptions
      *
      * @var string
      */
-    private $lang = "php";
+    private $lang = 'php';
 
     /**
      * Version of this client.
      *
      * @var string
      */
-    private $version = "0.8.0";
+    private $version = '0.8.2';
 
     /**
      * If verbose mode is enabled.
@@ -70,6 +70,7 @@ class ConnectionOptions
      */
     private $reconnect = true;
 
+
     /**
      * Get the URI for a server.
      *
@@ -77,8 +78,9 @@ class ConnectionOptions
      */
     public function getAddress()
     {
-        return "tcp://" . $this->host . ":" . $this->port;
+        return 'tcp://'.$this->host.':'.$this->port;
     }
+
 
     /**
      * Get the options JSON string.
@@ -88,19 +90,22 @@ class ConnectionOptions
     public function __toString()
     {
         $a = [
-            "lang" => $this->lang,
-            "version" => $this->version,
-            "verbose" => $this->verbose,
-            "pedantic" => $this->pedantic
-        ];
-        if (!is_null($this->user)) {
-            $a["user"] = $this->user;
+              'lang'     => $this->lang,
+              'version'  => $this->version,
+              'verbose'  => $this->verbose,
+              'pedantic' => $this->pedantic,
+             ];
+        if (empty($this->user) === false) {
+            $a['user'] = $this->user;
         }
-        if (!is_null($this->pass)) {
-            $a["pass"] = $this->pass;
+
+        if (empty($this->pass) === false) {
+            $a['pass'] = $this->pass;
         }
+
         return json_encode($a);
     }
+
 
     /**
      * Get host.
@@ -111,6 +116,7 @@ class ConnectionOptions
     {
         return $this->host;
     }
+
 
     /**
      * Set host.
@@ -126,6 +132,7 @@ class ConnectionOptions
         return $this;
     }
 
+
     /**
      * Get port.
      *
@@ -135,6 +142,7 @@ class ConnectionOptions
     {
         return $this->port;
     }
+
 
     /**
      * Set port.
@@ -150,6 +158,7 @@ class ConnectionOptions
         return $this;
     }
 
+
     /**
      * Get user.
      *
@@ -158,7 +167,8 @@ class ConnectionOptions
     public function getUser()
     {
         return $this->user;
-    }
+    }//end getUser()
+
 
     /**
      * Set user.
@@ -172,7 +182,8 @@ class ConnectionOptions
         $this->user = $user;
 
         return $this;
-    }
+    }//end setUser()
+
 
     /**
      * Get password.
@@ -182,7 +193,8 @@ class ConnectionOptions
     public function getPass()
     {
         return $this->pass;
-    }
+    }//end getPass()
+
 
     /**
      * Set password.
@@ -198,6 +210,7 @@ class ConnectionOptions
         return $this;
     }
 
+
     /**
      * Get language.
      *
@@ -207,6 +220,7 @@ class ConnectionOptions
     {
         return $this->lang;
     }
+
 
     /**
      * Set language.
@@ -222,6 +236,7 @@ class ConnectionOptions
         return $this;
     }
 
+
     /**
      * Get version.
      *
@@ -231,6 +246,7 @@ class ConnectionOptions
     {
         return $this->version;
     }
+
 
     /**
      * Set version.
@@ -246,6 +262,7 @@ class ConnectionOptions
         return $this;
     }
 
+
     /**
      * Get verbose.
      *
@@ -255,6 +272,7 @@ class ConnectionOptions
     {
         return $this->verbose;
     }
+
 
     /**
      * Set verbose.
@@ -270,6 +288,7 @@ class ConnectionOptions
         return $this;
     }
 
+
     /**
      * Get pedantic.
      *
@@ -279,6 +298,7 @@ class ConnectionOptions
     {
         return $this->pedantic;
     }
+
 
     /**
      * Set pedantic.
@@ -294,6 +314,7 @@ class ConnectionOptions
         return $this;
     }
 
+
     /**
      * Get reconnect.
      *
@@ -303,6 +324,7 @@ class ConnectionOptions
     {
         return $this->reconnect;
     }
+
 
     /**
      * Set reconnect.
