@@ -31,7 +31,7 @@ class EncodedConnection extends Connection {
     public function request($subject, $payload, $callback, $wait = 1) {
         $payload = $this->encoder->encode($payload);
         $decode_callback = function ($payload) use ($callback) {
-            $callback(json_decode($payload));
+            $callback($this->encoder->decode($payload));
         };
         parent::request($subject, $payload, $decode_callback, $wait);
     }
@@ -51,7 +51,7 @@ class EncodedConnection extends Connection {
      */
     public function subscribe($subject, \Closure $callback) {
         $decode_callback = function ($payload) use ($callback) {
-            $callback(json_decode($payload));
+            $callback($this->encoder->decode($payload));
         };
         parent::subscribe($subject, $decode_callback);
     }
