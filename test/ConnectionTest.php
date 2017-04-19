@@ -10,6 +10,7 @@ use Prophecy\Argument;
  */
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
+
     /**
      * Client.
      *
@@ -38,11 +39,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testConnection()
     {
-        // Connect
+        // Connect.
         $this->c->connect();
         $this->assertTrue($this->c->isConnected());
 
-        // Disconnect
+        // Disconnect.
         $this->c->close();
         $this->assertFalse($this->c->isConnected());
     }
@@ -62,6 +63,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->close();
     }
 
+
     /**
      * Test Publish command.
      *
@@ -77,8 +79,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->close();
     }
 
+
     /**
      * Test Reconnect command.
+     *
      * @return void
      */
     public function testReconnect()
@@ -90,6 +94,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->close();
     }
 
+
     /**
      * Test Request command.
      *
@@ -97,18 +102,17 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequest()
     {
-
         $i = 0;
         do {
             $this->c->subscribe(
-                "sayhello$i",
+                'sayhello'.$i,
                 function ($res) {
-                    $res->reply("Hello, ".$res->getBody(). " !!!");
+                    $res->reply('Hello, '.$res->getBody().' !!!');
                 }
             );
 
             $this->c->request(
-                "sayhello$i",
+                'sayhello'.$i,
                 'McFly',
                 function ($message) {
                     $this->assertNotNull($message);
@@ -120,6 +124,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         } while ($i < 100);
     }
 
+
     /**
      * Test Request command with large payload.
      *
@@ -127,8 +132,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testLargeRequest()
     {
-
-        $content = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 51200);
+        $content = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 51200);
 
         $contentLen = strlen($content);
 
@@ -137,7 +141,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $i = 0;
         do {
             $this->c->subscribe(
-                "saybighello$i",
+                'saybighello'.$i,
                 function ($res) use ($contentLen, $contentSum) {
                     $gotLen = strlen($res->getBody());
                     $gotSum = md5($res->getBody());
@@ -148,7 +152,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             );
 
             $this->c->request(
-                "saybighello$i",
+                'saybighello'.$i,
                 $content,
                 function ($message) use ($contentLen) {
                     $this->assertNotNull($message);
@@ -160,6 +164,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         } while ($i < 100);
     }
 
+
     /**
      * Test setting a timeout on the stream
      *
@@ -170,21 +175,22 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->setStreamTimeout(1);
         $before = time();
         $this->c->request(
-            "nonexistantsubject",
-            "test",
+            'nonexistantsubject',
+            'test',
             function ($message) {
-                $this->fail("should never have gotten here");
+                $this->fail('should never have gotten here');
             }
         );
-        $timeTaken = time() - $before;
+        $timeTaken = (time() - $before);
 
         $this->assertGreaterThan(0, $timeTaken);
         $this->assertLessThan(3, $timeTaken);
 
         $meta = stream_get_meta_data($this->c->streamSocket());
 
-        $this->assertTrue($meta["timed_out"]);
+        $this->assertTrue($meta['timed_out']);
     }
+
 
     /**
      * Test Unsubscribe command.
@@ -194,7 +200,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testUnsubscribe()
     {
         $sid = $this->c->subscribe(
-            "unsub",
+            'unsub',
             function ($res) {
                 $this->assertTrue(false);
             }
