@@ -2,8 +2,8 @@
 namespace Nats\tests\Unit;
 
 use Nats;
+use Nats\Connection;
 use Nats\ConnectionOptions;
-use Prophecy\Argument;
 
 /**
  * Class ConnectionTest.
@@ -27,7 +27,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $options = new ConnectionOptions();
-        $this->c = new Nats\Connection($options);
+        $this->c = new Connection($options);
         $this->c->connect();
     }
 
@@ -113,11 +113,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
             $this->c->request(
                 'sayhello'.$i,
-                'McFly',
-                function ($message) {
-                    $this->assertNotNull($message);
-                    $this->assertEquals($message, 'Hello, McFly !!!');
-                }
+                'McFly'
             );
 
             $i++;
@@ -225,7 +221,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $options->setHost('localhost');
         $options->setPort(4223);
 
-        $c = new Nats\Connection($options);
+        $c = new Connection($options);
         $c->connect();
         $this->assertFalse($this->c->isConnected());
     }

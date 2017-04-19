@@ -6,21 +6,23 @@ use RandomLib\Generator;
 
 /**
  * Connection Class.
+ *
+ * Handles the connection to a NATS server or cluster of servers.
  */
 class Connection
 {
 
     /**
-     * Number of PINGS.
+     * Number of PINGs.
      *
-     * @var int number of pings
+     * @var integer number of pings.
      */
     private $pings = 0;
 
     /**
-     * Chunk size in bytes to use when reading with fread.
+     * Chunk size in bytes to use when reading an stream of data.
      *
-     * @var integer
+     * @var integer size of chunk.
      */
     private $chunkSize = 1500;
 
@@ -313,23 +315,24 @@ class Connection
     /**
      * Request does a request and executes a callback with the response.
      *
-     * @param string  $subject  Message topic.
-     * @param string  $payload  Message data.
-     * @param mixed   $callback Closure to be executed as callback.
-     * @param integer $wait     Number of messages to wait for.
+     * @param string $subject Message topic.
+     * @param string $payload Message data.
      *
      * @return void
      */
-    public function request($subject, $payload, $callback, $wait = 1)
+    public function request($subject, $payload)
     {
         $inbox = uniqid('_INBOX.');
-        $this->subscribe($inbox, $callback);
-
+        $this->subscribe(
+            $inbox,
+            function ($message) {
+            }
+        );
         $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
         $this->send($msg."\r\n".$payload);
         $this->pubs += 1;
 
-        $this->wait($wait);
+        $this->wait(1);
     }
 
 
@@ -363,7 +366,6 @@ class Connection
         $msg = 'SUB '.$subject.' '.$sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
-
         return $sid;
     }
 
@@ -383,7 +385,6 @@ class Connection
         $msg = 'SUB '.$subject.' '.$queue.' '.$sid;
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
-
         return $sid;
     }
 
@@ -399,7 +400,6 @@ class Connection
     {
         $msg = 'UNSUB '.$sid;
         $this->send($msg);
-
         unset($this->subscriptions[$sid]);
     }
 
@@ -420,9 +420,8 @@ class Connection
      *
      * @param string $line Message command from Nats.
      *
-     * @return             void
-     * @throws             Exception If subscription not found.
-     * @codeCoverageIgnore
+     * @return void
+     * @throws Exception If subscription not found.
      */
     private function handleMSG($line)
     {
@@ -452,8 +451,6 @@ class Connection
         } else {
             throw Exception::forSubscriptionCallbackInvalid($sid);
         }
-
-        return;
     }
 
 

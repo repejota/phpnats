@@ -62,7 +62,7 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testStringRepresentation()
     {
         $options = new ConnectionOptions();
-        $this->assertEquals('{"lang":"php","version":"0.8.0","verbose":false,"pedantic":false}', $options->__toString());
+        $this->assertEquals('{"lang":"php","version":"0.8.2","verbose":false,"pedantic":false}', $options->__toString());
     }
 
 
@@ -76,6 +76,6 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
         $options = new ConnectionOptions();
         $options->setUser('username');
         $options->setPass('password');
-        $this->assertEquals('{"lang":"php","version":"0.8.0","verbose":false,"pedantic":false,"user":"username","pass":"password"}', $options->__toString());
+        $this->assertEquals('{"lang":"php","version":"0.8.2","verbose":false,"pedantic":false,"user":"username","pass":"password"}', $options->__toString());
     }
 }
