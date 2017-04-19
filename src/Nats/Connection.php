@@ -130,7 +130,7 @@ class Connection
         $this->pubs = 0;
         $this->subscriptions = [];
         $this->options = $options;
-        if(version_compare(phpversion(), '7.0', '>')){
+        if (version_compare(phpversion(), '7.0', '>')) {
             $this->randomGenerator = new Php71RandomGenerator();
         } else {
             $randomFactory = new Factory();
@@ -212,7 +212,9 @@ class Connection
         $errno = null;
         $errstr = null;
 
-        set_error_handler(function(){return true;});
+        set_error_handler(function () {
+            return true;
+        });
         $fp = stream_socket_client($address, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT);
         restore_error_handler();
 
