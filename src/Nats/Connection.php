@@ -192,9 +192,9 @@ class Connection
      *
      * @return string
      */
-    private function receive($len = null)
+    private function receive($len = 0)
     {
-        if ($len === true) {
+        if ($len > 0) {
             $chunkSize     = $this->chunkSize;
             $line          = null;
             $receivedBytes = 0;
