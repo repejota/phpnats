@@ -78,6 +78,38 @@ $sid = $client->subscribe("sayhello", function ($res) {
     $res->reply("Hello, " . $res->getBody() . " !!!");
 });
 
+# Wait for 1 message
+$client->wait(1);
+```
+
+### Encoded Connections
+
+```php
+$encoder = new \Nats\Encoders\JSONEncoder();
+$options = new \Nats\ConnectionOptions();
+$client = new \Nats\EncodedConnection($options, $encoder);
+$client->connect();
+
+# Simple Publisher
+$client->publish("foo", array("one", "two"));
+
+# Simple Subscriber
+$callback = function($payload)
+{
+    printf("Data: %s\r\n", var_dump($payload));
+};
+$client->subscribe("foo", $callback);
+
+# Request
+$client->request('sayhello', ['foo', 'Marty McFly'], function ($response) {
+    echo 'Hello '.$response->getBody()[1].' !!!';
+});
+
+# Responding to requests
+$sid = $client->subscribe("sayhello", function ($res) {
+    $res->reply("Hello, " . $res->getBody() . " !!!");
+});
+
 
 
 # Wait for 1 message

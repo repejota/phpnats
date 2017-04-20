@@ -110,7 +110,6 @@ class EncodedConnectionTest extends \PHPUnit_Framework_TestCase
              'McFly',
             ],
             function ($res) {
-                var_dump($res);
                 $this->assertEquals('Hello, McFly !!!', $res->getBody());
             }
         );

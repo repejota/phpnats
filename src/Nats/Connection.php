@@ -366,8 +366,6 @@ class Connection
         } else {
             throw Exception::forSubscriptionCallbackInvalid($sid);
         }
-
-        return;
     }
 
     /**
@@ -436,7 +434,7 @@ class Connection
         $this->send($msg."\r\n".$payload);
         $this->pubs += 1;
 
-        $this->wait(1);
+        $this->wait(2);
     }
 
     /**
