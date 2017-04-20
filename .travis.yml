@@ -14,6 +14,7 @@ before_install:
   - docker run -d -p 4222:4222 --name nats nats
 before_script:
   - make deps
+  - make dev-deps
 script:
   - mkdir -p build/logs
   - make lint
