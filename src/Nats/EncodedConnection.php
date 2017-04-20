@@ -32,8 +32,8 @@ class EncodedConnection extends Connection
     /**
      * Request does a request and executes a callback with the response.
      *
-     * @param string $subject Message topic.
-     * @param string $payload Message data.
+     * @param string   $subject  Message topic.
+     * @param string   $payload  Message data.
      * @param \Closure $callback Closure to be executed as callback.
      *
      * @return void

@@ -154,7 +154,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
                 'saybighello'.$i,
                 $content,
                 function ($res) {
-
                 }
             );
 
@@ -176,7 +175,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             'nonexistantsubject',
             'test',
             function ($res) {
-
             }
         );
         $timeTaken = (time() - $before);
