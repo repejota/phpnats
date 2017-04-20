@@ -58,28 +58,32 @@ Composer will download all the dependencies defined in composer.json, and prepar
 $client = new \Nats\Connection();
 $client->connect();
 
-# Simple Publisher
-$client->publish("foo", "foo bar");
+// Publish Subscribe
 
 # Simple Subscriber
-$callback = function($payload)
+$callback = function($message)
 {
-    printf("Data: %s\r\n", $payload);
+    printf("Data: %s\r\n", $message->getBody());
 };
 $client->subscribe("foo", $callback);
 
-# Request
-$client->request('sayhello', 'Marty McFly', function ($response) {
-    echo $response->getBody();
-});
-
-# Responding to requests
-$sid = $client->subscribe("sayhello", function ($res) {
-    $res->reply("Hello, " . $res->getBody() . " !!!");
-});
+# Simple Publisher
+$client->publish("foo", "foo bar");
 
 # Wait for 1 message
 $client->wait(1);
+
+// Request Response
+
+# Responding to requests
+$sid = $client->subscribe("sayhello", function ($message) {
+$message->reply("Reply: Hello, " . $message->getBody() . " !!!");
+});
+
+# Request
+$client->request('sayhello', 'Marty McFly', function ($message) {
+echo $message->getBody();
+});
 ```
 
 ### Encoded Connections
@@ -90,30 +94,32 @@ $options = new \Nats\ConnectionOptions();
 $client = new \Nats\EncodedConnection($options, $encoder);
 $client->connect();
 
-# Simple Publisher
-$client->publish("foo", array("one", "two"));
+// Publish Subscribe
 
 # Simple Subscriber
 $callback = function($payload)
 {
-    printf("Data: %s\r\n", var_dump($payload));
+    printf("Data: %s\r\n", $payload->getBody()[1]);
 };
 $client->subscribe("foo", $callback);
 
-# Request
-$client->request('sayhello', ['foo', 'Marty McFly'], function ($response) {
-    echo 'Hello '.$response->getBody()[1].' !!!';
-});
-
-# Responding to requests
-$sid = $client->subscribe("sayhello", function ($res) {
-    $res->reply("Hello, " . $res->getBody() . " !!!");
-});
-
-
+# Simple Publisher
+$client->publish("foo", ["foo", "bar"]);
 
 # Wait for 1 message
 $client->wait(1);
+
+// Request Response
+
+# Responding to requests
+$sid = $client->subscribe("sayhello", function ($message) {
+    $message->reply("Reply: Hello, " . $message->getBody()[1] . " !!!");
+});
+
+# Request
+$client->request('sayhello', ["foo", "McFly"], function ($message) {
+    echo $message->getBody();
+});
 ```
 
 
