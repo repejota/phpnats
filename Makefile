@@ -48,7 +48,7 @@ deps:
 
 dev-deps:
 	$(call require_phar,composer.phar,$(COMPOSER_PHAR))
-	./composer.phar install --dev
+	./composer.phar install
 
 dist-clean:
 	rm -rf $(CLEAN_PATHS)
@@ -57,8 +57,8 @@ docker-nats:
 	docker run --rm -p 8222:8222 -p 4222:4222 -d --name nats-main nats
 
 phpdoc:
-	$(call require_phar,phpDocumentor.phar,$(PHPDOCUMENTOR_PHAR_URL))
-	./phpDocumentor.phar -d ./src/ -t $(API_DOCS_PATH) --template=checkstyle --template=responsive-twig
+	$(call require_phar,phpdoc.phar,$(PHPDOCUMENTOR_PHAR_URL))
+	./phpdoc.phar -d ./src/ -t $(API_DOCS_PATH) --template=checkstyle --template=responsive-twig
 
 serve-phpdoc:
 	cd $(API_DOCS_PATH) && php -S localhost:8000 && cd ../..
