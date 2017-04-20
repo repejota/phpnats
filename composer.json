@@ -10,7 +10,6 @@
     "require-dev": {
         "phpunit/phpunit": "5.*",
         "satooshi/php-coveralls": "dev-master",
-        "squizlabs/php_codesniffer": "~2.0",
         "phpspec/phpspec": "~2.0"
     },
     "authors": [
