@@ -52,30 +52,4 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($options->isPedantic());
         $this->assertTrue($options->isReconnect());
     }
-
-
-    /**
-     * Test string representation of ConnectionOptions.
-     *
-     * @return void
-     */
-    public function testStringRepresentation()
-    {
-        $options = new ConnectionOptions();
-        $this->assertEquals('{"lang":"php","version":"0.8.2","verbose":false,"pedantic":false}', $options->__toString());
-    }
-
-
-    /**
-     * Test string representation of ConnectionOptions with credentials.
-     *
-     * @return void
-     */
-    public function testStringRepresentationWithCredentials()
-    {
-        $options = new ConnectionOptions();
-        $options->setUser('username');
-        $options->setPass('password');
-        $this->assertEquals('{"lang":"php","version":"0.8.2","verbose":false,"pedantic":false,"user":"username","pass":"password"}', $options->__toString());
-    }
 }
