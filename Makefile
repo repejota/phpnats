@@ -1,7 +1,16 @@
-CLEAN_FILES = bin build cover vendor docs/api composer.phar composer.lock phpDocumentor.phar
+PHPCS_PHAR = https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+COMPOSER_PHAR = https://getcomposer.org/composer.phar
+PHPDOCUMENTOR_PHAR_URL = https://github.com/phpDocumentor/phpDocumentor2/releases/download/v2.9.0/phpDocumentor.phar
+CLEAN_FILES = composer.phar composer.lock phpDocumentor.phar phpcs.phar phpcbf.phar
+CLEAN_FOLDERS = bin build cover vendor docs/api
+CLEAN_PATHS = $(CLEAN_FILES) $(CLEAN_FOLDERS)
 SOURCE_CODE_PATHS = src test examples
 API_DOCS_PATH = ./docs/api
 COVERAGE_PATH = ./cover
+
+define require_phar
+	@[ -f ./$(1) ] || wget -q $(2) -O ./$(1) && chmod +x $(1);
+endef
 
 lint: lint-php lint-psr2 lint-squiz
 
@@ -11,18 +20,12 @@ lint-php:
 
 .PHONY: lint-psr2
 lint-psr2:
-	# wget -qhttps://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ./phpcbf.phar
-	# ./vendor/bin/phpcbf --standard=PSR2 $(CODE_SOURCES)
-	wget -q https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -O ./phpcs.phar
-	chmod +x phpcs.phar
+	$(call require_phar,phpcs.phar,$(PHPCS_PHAR))
 	./phpcs.phar --standard=PSR2 --colors -w -s --warning-severity=0 $(SOURCE_CODE_PATHS)
 
 .PHONY: lint-squiz
 lint-squiz:
-	# wget -qhttps://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ./phpcbf.phar
-	# ./vendor/bin/phpcbf --standard=Squiz,./ruleset.xml $(CODE_SOURCES)
-	wget -q https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -O ./phpcs.phar
-	chmod +x phpcs.phar
+	$(call require_phar,phpcs.phar,$(PHPCS_PHAR))
 	./phpcs.phar --standard=Squiz,./ruleset.xml --colors -w -s --warning-severity=0 $(SOURCE_CODE_PATHS)
 
 
@@ -40,19 +43,21 @@ cover:
 	./vendor/bin/phpunit --coverage-html $(COVERAGE_PATH) test
 
 deps:
-	wget -q https://getcomposer.org/composer.phar -O ./composer.phar
-	chmod +x composer.phar
-	./composer.phar install
+	$(call require_phar,composer.phar,$(COMPOSER_PHAR))
+	./composer.phar install --no-dev
+
+dev-deps:
+	$(call require_phar,composer.phar,$(COMPOSER_PHAR))
+	./composer.phar install --dev
 
 dist-clean:
-	rm -rf $(CLEAN_FILES)
+	rm -rf $(CLEAN_PATHS)
 
 docker-nats:
 	docker run --rm -p 8222:8222 -p 4222:4222 -d --name nats-main nats
 
 phpdoc:
-	wget -q https://github.com/phpDocumentor/phpDocumentor2/releases/download/v2.9.0/phpDocumentor.phar -O ./phpDocumentor.phar
-	chmod +x phpDocumentor.phar
+	$(call require_phar,phpDocumentor.phar,$(PHPDOCUMENTOR_PHAR_URL))
 	./phpDocumentor.phar -d ./src/ -t $(API_DOCS_PATH) --template=checkstyle --template=responsive-twig
 
 serve-phpdoc:
