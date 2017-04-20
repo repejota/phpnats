@@ -34,13 +34,14 @@ class EncodedConnection extends Connection
      *
      * @param string $subject Message topic.
      * @param string $payload Message data.
+     * @param \Closure $callback Closure to be executed as callback.
      *
      * @return void
      */
-    public function request($subject, $payload)
+    public function request($subject, $payload, \Closure $callback)
     {
         $payload = $this->encoder->encode($payload);
-        parent::request($subject, $payload);
+        parent::request($subject, $payload, $callback);
     }
 
     /**
@@ -63,7 +64,7 @@ class EncodedConnection extends Connection
      * @param string   $subject  Message topic.
      * @param \Closure $callback Closure to be executed as callback.
      *
-     * @return void
+     * @return string
      */
     public function subscribe($subject, \Closure $callback)
     {
@@ -71,7 +72,7 @@ class EncodedConnection extends Connection
             $message->setBody($this->encoder->decode($message->getBody()));
             $callback($message);
         };
-        parent::subscribe($subject, $c);
+        return parent::subscribe($subject, $c);
     }
 
     /**

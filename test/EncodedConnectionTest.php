@@ -82,7 +82,10 @@ class EncodedConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->c->request(
             'sayhello',
-            'McFly'
+            'McFly',
+            function ($res) {
+                $this->assertEquals('Hello, McFly !!!', $res->getBody());
+            }
         );
     }
 
@@ -105,7 +108,11 @@ class EncodedConnectionTest extends \PHPUnit_Framework_TestCase
             [
              'foo',
              'McFly',
-            ]
+            ],
+            function ($res) {
+                var_dump($res);
+                $this->assertEquals('Hello, McFly !!!', $res->getBody());
+            }
         );
     }
 }

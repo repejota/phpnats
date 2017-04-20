@@ -19,7 +19,7 @@ class Message
      *
      * @var string
      */
-    private $body;
+    public $body;
 
     /**
      * Message Ssid.

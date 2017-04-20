@@ -421,16 +421,16 @@ class Connection
      *
      * @param string $subject Message topic.
      * @param string $payload Message data.
+     * @param \Closure $callback Closure to be executed as callback.
      *
      * @return void
      */
-    public function request($subject, $payload)
+    public function request($subject, $payload, \Closure $callback)
     {
         $inbox = uniqid('_INBOX.');
         $this->subscribe(
             $inbox,
-            function ($message) {
-            }
+            $callback
         );
         $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
         $this->send($msg."\r\n".$payload);
