@@ -6,21 +6,23 @@ use RandomLib\Generator;
 
 /**
  * Connection Class.
+ *
+ * Handles the connection to a NATS server or cluster of servers.
  */
 class Connection
 {
 
     /**
-     * Number of PINGS.
+     * Number of PINGs.
      *
-     * @var int number of pings
+     * @var integer number of pings.
      */
     private $pings = 0;
 
     /**
-     * Chunk size in bytes to use when reading with fread.
+     * Chunk size in bytes to use when reading an stream of data.
      *
-     * @var integer
+     * @var integer size of chunk.
      */
     private $chunkSize = 1500;
 
@@ -130,91 +132,74 @@ class Connection
 
 
     /**
-     * Constructor.
+     * Sets the chunck size in bytes to be processed when reading.
      *
-     * @param ConnectionOptions $options Connection options object.
-     */
-    public function __construct(ConnectionOptions $options = null)
-    {
-        $this->pings         = 0;
-        $this->pubs          = 0;
-        $this->subscriptions = [];
-        $this->options       = $options;
-        if (version_compare(phpversion(), '7.0', '>') === true) {
-            $this->randomGenerator = new Php71RandomGenerator();
-        } else {
-            $randomFactory         = new Factory();
-            $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
-        }
-
-        if ($options === null) {
-            $this->options = new ConnectionOptions();
-        }
-    }
-
-
-    /**
-     * Sends data thought the stream.
-     *
-     * @param string $payload Message data.
+     * @param integer $chunkSize Set byte chunk len to read when reading from wire.
      *
      * @return void
-     * @throws \Exception Raises if fails sending data.
      */
-    private function send($payload)
+    public function setChunkSize($chunkSize)
     {
-        $msg = $payload."\r\n";
-        $len = strlen($msg);
-        while (true) {
-            $written = @fwrite($this->streamSocket, $msg);
-            if ($written === false) {
-                throw new \Exception('Error sending data');
-            }
+        $this->chunkSize = $chunkSize;
+    }
 
-            if ($written === 0) {
-                throw new \Exception('Broken pipe or closed connection');
-            }
-
-            $len = ($len - $written);
-            if ($len > 0) {
-                $msg = substr($msg, (0 - $len));
-            } else {
-                break;
+    /**
+     * Set Stream Timeout.
+     *
+     * @param float $seconds Before timeout on stream.
+     *
+     * @return boolean
+     */
+    public function setStreamTimeout($seconds)
+    {
+        if ($this->isConnected() === true) {
+            if (is_numeric($seconds) === true) {
+                try {
+                    $timeout      = number_format($seconds, 3);
+                    $seconds      = floor($timeout);
+                    $microseconds = (($timeout - $seconds) * 1000);
+                    return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
+                } catch (\Exception $e) {
+                    return false;
+                }
             }
         }
+
+        return false;
+    }
+
+    /**
+     * Returns an stream socket for this connection.
+     *
+     * @return resource
+     */
+    public function getStreamSocket()
+    {
+        return $this->streamSocket;
+    }
+
+    /**
+     * Indicates whether $response is an error response.
+     *
+     * @param string $response The Nats Server response.
+     *
+     * @return boolean
+     */
+    private function isErrorResponse($response)
+    {
+        return false !== strpos('-ERR', $response);
     }
 
 
     /**
-     * Receives a message thought the stream.
+     * Checks if the client is connected to a server.
      *
-     * @param integer $len Number of bytes to receive.
-     *
-     * @return string
+     * @return boolean
      */
-    private function receive($len = 0)
+    public function isConnected()
     {
-        if ($len > 0) {
-            $chunkSize     = $this->chunkSize;
-            $line          = null;
-            $receivedBytes = 0;
-            while ($receivedBytes < $len) {
-                $bytesLeft = ($len - $receivedBytes);
-                if ($bytesLeft < $this->chunkSize) {
-                    $chunkSize = $bytesLeft;
-                }
-
-                $readChunk      = fread($this->streamSocket, $chunkSize);
-                $receivedBytes += strlen($readChunk);
-                $line          .= $readChunk;
-            }
-        } else {
-            $line = fgets($this->streamSocket);
-        }
-
-        return $line;
+        return isset($this->streamSocket);
     }
-
 
     /**
      * Returns an stream socket to the desired server.
@@ -250,159 +235,89 @@ class Connection
         return $fp;
     }
 
-
     /**
-     * Checks if the client is connected to a server.
+     * Constructor.
      *
-     * @return boolean
+     * @param ConnectionOptions $options Connection options object.
      */
-    public function isConnected()
+    public function __construct(ConnectionOptions $options = null)
     {
-        return isset($this->streamSocket);
-    }
-
-
-    /**
-     * Connect to server.
-     *
-     * @param float $timeout Number of seconds until the connect() system call should timeout.
-     *
-     * @throws \Exception Exception raised if connection fails.
-     * @return void
-     */
-    public function connect($timeout = null)
-    {
-        if ($timeout === null) {
-            $timeout = intval(ini_get('default_socket_timeout'));
+        $this->pings         = 0;
+        $this->pubs          = 0;
+        $this->subscriptions = [];
+        $this->options       = $options;
+        if (version_compare(phpversion(), '7.0', '>') === true) {
+            $this->randomGenerator = new Php71RandomGenerator();
+        } else {
+            $randomFactory         = new Factory();
+            $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
         }
 
-        $this->timeout      = $timeout;
-        $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
-        $this->setStreamTimeout($timeout);
-
-        $msg = 'CONNECT '.$this->options;
-        $this->send($msg);
-        $connectResponse = $this->receive();
-
-        if ($this->isErrorResponse($connectResponse) === true) {
-            throw Exception::forFailedConnection($connectResponse);
-        }
-
-        $this->ping();
-        $pingResponse = $this->receive();
-
-        if ($this->isErrorResponse($pingResponse) === true) {
-            throw Exception::forFailedPing($pingResponse);
+        if ($options === null) {
+            $this->options = new ConnectionOptions();
         }
     }
 
-
     /**
-     * Sends PING message.
+     * Sends data thought the stream.
      *
-     * @return void
-     */
-    public function ping()
-    {
-        $msg = 'PING';
-        $this->send($msg);
-        $this->pings += 1;
-    }
-
-
-    /**
-     * Request does a request and executes a callback with the response.
-     *
-     * @param string  $subject  Message topic.
-     * @param string  $payload  Message data.
-     * @param mixed   $callback Closure to be executed as callback.
-     * @param integer $wait     Number of messages to wait for.
-     *
-     * @return void
-     */
-    public function request($subject, $payload, $callback, $wait = 1)
-    {
-        $inbox = uniqid('_INBOX.');
-        $this->subscribe($inbox, $callback);
-
-        $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
-        $this->send($msg."\r\n".$payload);
-        $this->pubs += 1;
-
-        $this->wait($wait);
-    }
-
-
-    /**
-     * Publish publishes the data argument to the given subject.
-     *
-     * @param string $subject Message topic.
      * @param string $payload Message data.
      *
      * @return void
+     * @throws \Exception Raises if fails sending data.
      */
-    public function publish($subject, $payload = null)
+    private function send($payload)
     {
-        $msg = 'PUB '.$subject.' '.strlen($payload);
-        $this->send($msg."\r\n".$payload);
-        $this->pubs += 1;
+        $msg = $payload."\r\n";
+        $len = strlen($msg);
+        while (true) {
+            $written = @fwrite($this->streamSocket, $msg);
+            if ($written === false) {
+                throw new \Exception('Error sending data');
+            }
+
+            if ($written === 0) {
+                throw new \Exception('Broken pipe or closed connection');
+            }
+
+            $len = ($len - $written);
+            if ($len > 0) {
+                $msg = substr($msg, (0 - $len));
+            } else {
+                break;
+            }
+        }
     }
 
-
     /**
-     * Subscribes to an specific event given a subject.
+     * Receives a message thought the stream.
      *
-     * @param string   $subject  Message topic.
-     * @param \Closure $callback Closure to be executed as callback.
+     * @param integer $len Number of bytes to receive.
      *
      * @return string
      */
-    public function subscribe($subject, \Closure $callback)
+    private function receive($len = 0)
     {
-        $sid = $this->randomGenerator->generateString(16);
-        $msg = 'SUB '.$subject.' '.$sid;
-        $this->send($msg);
-        $this->subscriptions[$sid] = $callback;
+        if ($len > 0) {
+            $chunkSize     = $this->chunkSize;
+            $line          = null;
+            $receivedBytes = 0;
+            while ($receivedBytes < $len) {
+                $bytesLeft = ($len - $receivedBytes);
+                if ($bytesLeft < $this->chunkSize) {
+                    $chunkSize = $bytesLeft;
+                }
 
-        return $sid;
+                $readChunk      = fread($this->streamSocket, $chunkSize);
+                $receivedBytes += strlen($readChunk);
+                $line          .= $readChunk;
+            }
+        } else {
+            $line = fgets($this->streamSocket);
+        }
+
+        return $line;
     }
-
-
-    /**
-     * Subscribes to an specific event given a subject and a queue.
-     *
-     * @param string   $subject  Message topic.
-     * @param string   $queue    Queue name.
-     * @param \Closure $callback Closure to be executed as callback.
-     *
-     * @return string
-     */
-    public function queueSubscribe($subject, $queue, \Closure $callback)
-    {
-        $sid = $this->randomGenerator->generateString(16);
-        $msg = 'SUB '.$subject.' '.$queue.' '.$sid;
-        $this->send($msg);
-        $this->subscriptions[$sid] = $callback;
-
-        return $sid;
-    }
-
-
-    /**
-     * Unsubscribe from a event given a subject.
-     *
-     * @param string $sid Subscription ID.
-     *
-     * @return void
-     */
-    public function unsubscribe($sid)
-    {
-        $msg = 'UNSUB '.$sid;
-        $this->send($msg);
-
-        unset($this->subscriptions[$sid]);
-    }
-
 
     /**
      * Handles PING command.
@@ -413,7 +328,6 @@ class Connection
     {
         $this->send('PONG');
     }
-
 
     /**
      * Handles MSG command.
@@ -452,10 +366,142 @@ class Connection
         } else {
             throw Exception::forSubscriptionCallbackInvalid($sid);
         }
-
-        return;
     }
 
+    /**
+     * Connect to server.
+     *
+     * @param float $timeout Number of seconds until the connect() system call should timeout.
+     *
+     * @throws \Exception Exception raised if connection fails.
+     * @return void
+     */
+    public function connect($timeout = null)
+    {
+        if ($timeout === null) {
+            $timeout = intval(ini_get('default_socket_timeout'));
+        }
+
+        $this->timeout      = $timeout;
+        $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout);
+        $this->setStreamTimeout($timeout);
+
+        $msg = 'CONNECT '.$this->options;
+        $this->send($msg);
+        $connectResponse = $this->receive();
+
+        if ($this->isErrorResponse($connectResponse) === true) {
+            throw Exception::forFailedConnection($connectResponse);
+        }
+
+        $this->ping();
+        $pingResponse = $this->receive();
+
+        if ($this->isErrorResponse($pingResponse) === true) {
+            throw Exception::forFailedPing($pingResponse);
+        }
+    }
+
+    /**
+     * Sends PING message.
+     *
+     * @return void
+     */
+    public function ping()
+    {
+        $msg = 'PING';
+        $this->send($msg);
+        $this->pings += 1;
+    }
+
+    /**
+     * Request does a request and executes a callback with the response.
+     *
+     * @param string   $subject  Message topic.
+     * @param string   $payload  Message data.
+     * @param \Closure $callback Closure to be executed as callback.
+     *
+     * @return void
+     */
+    public function request($subject, $payload, \Closure $callback)
+    {
+        $inbox = uniqid('_INBOX.');
+        $this->subscribe(
+            $inbox,
+            $callback
+        );
+        $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
+        $this->send($msg."\r\n".$payload);
+        $this->pubs += 1;
+
+        $this->wait(2);
+    }
+
+    /**
+     * Subscribes to an specific event given a subject.
+     *
+     * @param string   $subject  Message topic.
+     * @param \Closure $callback Closure to be executed as callback.
+     *
+     * @return string
+     */
+    public function subscribe($subject, \Closure $callback)
+    {
+        $sid = $this->randomGenerator->generateString(16);
+        $msg = 'SUB '.$subject.' '.$sid;
+        $this->send($msg);
+        $this->subscriptions[$sid] = $callback;
+        return $sid;
+    }
+
+    /**
+     * Subscribes to an specific event given a subject and a queue.
+     *
+     * @param string   $subject  Message topic.
+     * @param string   $queue    Queue name.
+     * @param \Closure $callback Closure to be executed as callback.
+     *
+     * @return string
+     */
+    public function queueSubscribe($subject, $queue, \Closure $callback)
+    {
+        $sid = $this->randomGenerator->generateString(16);
+        $msg = 'SUB '.$subject.' '.$queue.' '.$sid;
+        $this->send($msg);
+        $this->subscriptions[$sid] = $callback;
+        return $sid;
+    }
+
+    /**
+     * Unsubscribe from a event given a subject.
+     *
+     * @param string $sid Subscription ID.
+     *
+     * @return void
+     */
+    public function unsubscribe($sid)
+    {
+        $msg = 'UNSUB '.$sid;
+        $this->send($msg);
+        unset($this->subscriptions[$sid]);
+    }
+
+    /**
+     * Publish publishes the data argument to the given subject.
+     *
+     * @param string $subject Message topic.
+     * @param string $payload Message data.
+     *
+     * @return void
+
+     * @throws Exception If subscription not found.
+     */
+    public function publish($subject, $payload = null)
+    {
+        $msg = 'PUB '.$subject.' '.strlen($payload);
+        $this->send($msg."\r\n".$payload);
+        $this->pubs += 1;
+    }
 
     /**
      * Waits for messages.
@@ -495,33 +541,6 @@ class Connection
         return $this;
     }
 
-
-    /**
-     * Set Stream Timeout.
-     *
-     * @param float $seconds Before timeout on stream.
-     *
-     * @return boolean
-     */
-    public function setStreamTimeout($seconds)
-    {
-        if ($this->isConnected() === true) {
-            if (is_numeric($seconds) === true) {
-                try {
-                    $timeout      = number_format($seconds, 3);
-                    $seconds      = floor($timeout);
-                    $microseconds = (($timeout - $seconds) * 1000);
-                    return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
-                } catch (\Exception $e) {
-                    return false;
-                }
-            }
-        }
-
-        return false;
-    }//end setStreamTimeout()
-
-
     /**
      * Reconnects to the server.
      *
@@ -533,20 +552,6 @@ class Connection
         $this->close();
         $this->connect($this->timeout);
     }
-
-
-    /**
-     * Sets the chunck size in bytes to be processed when reading.
-     *
-     * @param integer $chunkSize Set byte chunk len to read when reading from wire.
-     *
-     * @return void
-     */
-    public function setChunkSize($chunkSize)
-    {
-        $this->chunkSize = $chunkSize;
-    }
-
 
     /**
      * Close will close the connection to the server.
@@ -561,29 +566,5 @@ class Connection
 
         fclose($this->streamSocket);
         $this->streamSocket = null;
-    }
-
-
-    /**
-     * Returns an stream socket for this connection.
-     *
-     * @return resource
-     */
-    public function streamSocket()
-    {
-        return $this->streamSocket;
-    }
-
-
-    /**
-     * Indicates whether $response is an error response.
-     *
-     * @param string $response The Nats Server response.
-     *
-     * @return boolean
-     */
-    private function isErrorResponse($response)
-    {
-        return false !== strpos('-ERR', $response);
     }
 }

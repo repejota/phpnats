@@ -21,7 +21,7 @@ A PHP client for the [NATS messaging system](https://nats.io).
 Requirements
 ------------
 
-* php 5.5+
+* php 5.6+
 * [nats](https://github.com/derekcollison/nats) or [gnatsd](https://github.com/apcera/gnatsd)
 
 
@@ -58,30 +58,93 @@ Composer will download all the dependencies defined in composer.json, and prepar
 $client = new \Nats\Connection();
 $client->connect();
 
-# Simple Publisher
-$client->publish("foo", "foo bar");
+// Publish Subscribe
 
-# Simple Subscriber
-$callback = function($payload)
-{
-    printf("Data: %s\r\n", $payload);
-};
-$client->subscribe("foo", $callback);
+// Simple Subscriber.
+$client->subscribe(
+    'foo',
+    function ($message) {
+        printf("Data: %s\r\n", $message->getBody());
+    }
+);
 
-# Request
-$client->request('sayhello', 'Marty McFly', function ($response) {
-    echo $response->getBody();
-});
+// Simple Publisher.
+$client->publish('foo', 'Marty McFly');
 
-# Responding to requests
-$sid = $client->subscribe("sayhello", function ($res) {
-    $res->reply("Hello, " . $res->getBody() . " !!!");
-});
-
-
-
-# Wait for 1 message
+// Wait for 1 message.
 $client->wait(1);
+
+// Request Response
+
+// Responding to requests.
+$sid = $client->subscribe(
+    'sayhello',
+    function ($message) {
+        $message->reply('Reply: Hello, '.$message->getBody().' !!!');
+    }
+);
+
+// Request.
+$client->request(
+    'sayhello',
+    'Marty McFly',
+    function ($message) {
+        echo $message->getBody();
+    }
+);
+```
+
+### Encoded Connections
+
+```php
+$encoder = new \Nats\Encoders\JSONEncoder();
+$options = new \Nats\ConnectionOptions();
+$client = new \Nats\EncodedConnection($options, $encoder);
+$client->connect();
+
+// Publish Subscribe
+
+// Simple Subscriber.
+$client->subscribe(
+    'foo',
+    function ($payload) {
+        printf("Data: %s\r\n", $payload->getBody()[1]);
+    }
+);
+
+// Simple Publisher.
+$client->publish(
+    'foo',
+    [
+     'Marty',
+     'McFly',
+    ]
+);
+
+// Wait for 1 message.
+$client->wait(1);
+
+// Request Response
+
+// Responding to requests.
+$sid = $client->subscribe(
+    'sayhello',
+    function ($message) {
+        $message->reply('Reply: Hello, '.$message->getBody()[1].' !!!');
+    }
+);
+
+// Request.
+$client->request(
+    'sayhello',
+    [
+     'Marty',
+     'McFly',
+    ],
+    function ($message) {
+        echo $message->getBody();
+    }
+);
 ```
 
 

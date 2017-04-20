@@ -32,10 +32,6 @@ class ConnectionOptionsSpec extends ObjectBehavior
         $this->getLang()->shouldEqual("php");
     }
 
-    function it_has_default_version_value_as_null() {
-        $this->getVersion()->shouldEqual("0.8.0");
-    }
-
     function it_has_default_verbose_value_as_null() {
         $this->isVerbose()->shouldBe(false);
     }
