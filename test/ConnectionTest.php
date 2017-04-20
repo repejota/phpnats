@@ -2,8 +2,8 @@
 namespace Nats\tests\Unit;
 
 use Nats;
+use Nats\Connection;
 use Nats\ConnectionOptions;
-use Prophecy\Argument;
 
 /**
  * Class ConnectionTest.
@@ -27,7 +27,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $options = new ConnectionOptions();
-        $this->c = new Nats\Connection($options);
+        $this->c = new Connection($options);
         $this->c->connect();
     }
 
@@ -114,9 +114,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $this->c->request(
                 'sayhello'.$i,
                 'McFly',
-                function ($message) {
-                    $this->assertNotNull($message);
-                    $this->assertEquals($message, 'Hello, McFly !!!');
+                function ($res) {
+                    $this->assertEquals('Hello, McFly !!!', $res->getBody());
                 }
             );
 
@@ -154,9 +153,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $this->c->request(
                 'saybighello'.$i,
                 $content,
-                function ($message) use ($contentLen) {
-                    $this->assertNotNull($message);
-                    $this->assertEquals($message->getBody(), $contentLen);
+                function ($res) {
                 }
             );
 
@@ -177,8 +174,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->request(
             'nonexistantsubject',
             'test',
-            function ($message) {
-                $this->fail('should never have gotten here');
+            function ($res) {
             }
         );
         $timeTaken = (time() - $before);
@@ -186,7 +182,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThan(0, $timeTaken);
         $this->assertLessThan(3, $timeTaken);
 
-        $meta = stream_get_meta_data($this->c->streamSocket());
+        $meta = stream_get_meta_data($this->c->getStreamSocket());
 
         $this->assertTrue($meta['timed_out']);
     }
@@ -225,7 +221,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $options->setHost('localhost');
         $options->setPort(4223);
 
-        $c = new Nats\Connection($options);
+        $c = new Connection($options);
         $c->connect();
         $this->assertFalse($this->c->isConnected());
     }
