@@ -187,7 +187,7 @@ class Connection
      */
     private function isErrorResponse($response)
     {
-        return false !== strpos('-ERR', $response);
+        return substr( $response, 0, 4 ) === "-ERR";
     }
 
 
@@ -388,6 +388,7 @@ class Connection
 
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
+        $infoResponse = $this->receive();
         $connectResponse = $this->receive();
 
         if ($this->isErrorResponse($connectResponse) === true) {
