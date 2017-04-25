@@ -40,7 +40,7 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testAuthToken()
     {
         $options = new ConnectionOptions();
-        $options->setHost('host')->setPort(4222)->setToken("token")->setLang('lang')->setVersion('version')->setVerbose(true)->setPedantic(true)->setReconnect(true);
+        $options->setHost('host')->setPort(4222)->setToken('token')->setLang('lang')->setVersion('version')->setVerbose(true)->setPedantic(true)->setReconnect(true);
 
         $this->assertEquals('host', $options->getHost());
         $this->assertEquals(4222, $options->getPort());

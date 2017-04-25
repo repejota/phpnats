@@ -107,9 +107,11 @@ class ConnectionOptions
         if (empty($this->user) === false) {
             $a['user'] = $this->user;
         }
+
         if (empty($this->pass) === false) {
             $a['pass'] = $this->pass;
         }
+
         if (empty($this->token) === false) {
             $a['auth_token'] = $this->token;
         }
