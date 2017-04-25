@@ -388,7 +388,7 @@ class Connection
 
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
-        $infoResponse = $this->receive();
+        //$infoResponse = $this->receive();
         $connectResponse = $this->receive();
 
         if ($this->isErrorResponse($connectResponse) === true) {
