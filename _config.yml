@@ -1,0 +1,8 @@
+title: Phpnats
+description: A PHP client for the NATSio cloud messaging system.
+google_analytics: UA-50688511-1
+show_downloads: true
+theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
