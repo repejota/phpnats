@@ -2,8 +2,8 @@
 namespace Nats\tests\Unit;
 
 use Nats;
+use Nats\Connection;
 use Nats\ConnectionOptions;
-use Nats\EncodedConnection;
 use Nats\Encoders\JSONEncoder;
 
 /**
@@ -29,7 +29,7 @@ class EncodedConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $encoder = new JSONEncoder();
         $options = new ConnectionOptions();
-        $this->c = new EncodedConnection($options, $encoder);
+        $this->c = new Connection($options, $encoder);
         $this->c->connect();
     }
 
@@ -83,32 +83,6 @@ class EncodedConnectionTest extends \PHPUnit_Framework_TestCase
         $this->c->request(
             'sayhello',
             'McFly',
-            function ($res) {
-                $this->assertEquals('Hello, McFly !!!', $res->getBody());
-            }
-        );
-    }
-
-    /**
-     * Test Request command.
-     *
-     * @return void
-     */
-    public function testRequestArray()
-    {
-        $this->c->subscribe(
-            'sayhello',
-            function ($res) {
-                $res->reply('Hello, '.$res->getBody()[1].' !!!');
-            }
-        );
-
-        $this->c->request(
-            'sayhello',
-            [
-             'foo',
-             'McFly',
-            ],
             function ($res) {
                 $this->assertEquals('Hello, McFly !!!', $res->getBody());
             }
