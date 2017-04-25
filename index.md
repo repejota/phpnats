@@ -3,13 +3,15 @@ phpnats
 
 **Travis**
 
-* Master: [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=master)](https://travis-ci.org/repejota/phpnats)
-* Develop: [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=develop)](https://travis-ci.org/repejota/phpnats)
+| Master  | Develop |
+| ------------- | ------------- |
+| [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=master)](https://travis-ci.org/repejota/phpnats)  | [![Build Status](https://travis-ci.org/repejota/phpnats.png?branch=develop)](https://travis-ci.org/repejota/phpnats)  |
 
 **Coverage**
 
-* Master: [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=master)](https://coveralls.io/r/repejota/phpnats?branch=master)
-* Develop: [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=develop)](https://coveralls.io/r/repejota/phpnats?branch=develop)
+| Master  | Develop |
+| ------------- | ------------- |
+| [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=master)](https://coveralls.io/r/repejota/phpnats?branch=master) | [![Coverage Status](https://coveralls.io/repos/repejota/phpnats/badge.svg?branch=develop)](https://coveralls.io/r/repejota/phpnats?branch=develop)  |
 
 Introduction
 ------------
@@ -19,7 +21,7 @@ A PHP client for the [NATS messaging system](https://nats.io).
 Requirements
 ------------
 
-* php 5.4+
+* php 5.6+
 * [nats](https://github.com/derekcollison/nats) or [gnatsd](https://github.com/apcera/gnatsd)
 
 
@@ -39,7 +41,7 @@ Now let's tell composer about our project's dependancies, in this case, PHPNats.
 ```
 {
   "require": {
-    "repejota/nats": "master"
+    "repejota/nats": "dev-master"
   }
 }
 ```
@@ -56,30 +58,93 @@ Composer will download all the dependencies defined in composer.json, and prepar
 $client = new \Nats\Connection();
 $client->connect();
 
-# Simple Publisher
-$client->publish("foo", "foo bar");
+// Publish Subscribe
 
-# Simple Subscriber
-$callback = function($payload)
-{
-    printf("Data: %s\r\n", $payload);
-};
-$client->subscribe("foo", $callback);
+// Simple Subscriber.
+$client->subscribe(
+    'foo',
+    function ($message) {
+        printf("Data: %s\r\n", $message->getBody());
+    }
+);
 
-# Request
-$c->request('sayhello', 'Marty McFly', function ($response) {
-    echo $response->getBody();
-});
+// Simple Publisher.
+$client->publish('foo', 'Marty McFly');
 
-# Responding to requests
-$sid = $c->subscribe("sayhello", function ($res) {
-    $res->reply("Hello, " . $res->getBody() . " !!!");
-});
-
-
-
-# Wait for 1 message
+// Wait for 1 message.
 $client->wait(1);
+
+// Request Response
+
+// Responding to requests.
+$sid = $client->subscribe(
+    'sayhello',
+    function ($message) {
+        $message->reply('Reply: Hello, '.$message->getBody().' !!!');
+    }
+);
+
+// Request.
+$client->request(
+    'sayhello',
+    'Marty McFly',
+    function ($message) {
+        echo $message->getBody();
+    }
+);
+```
+
+### Encoded Connections
+
+```php
+$encoder = new \Nats\Encoders\JSONEncoder();
+$options = new \Nats\ConnectionOptions();
+$client = new \Nats\EncodedConnection($options, $encoder);
+$client->connect();
+
+// Publish Subscribe
+
+// Simple Subscriber.
+$client->subscribe(
+    'foo',
+    function ($payload) {
+        printf("Data: %s\r\n", $payload->getBody()[1]);
+    }
+);
+
+// Simple Publisher.
+$client->publish(
+    'foo',
+    [
+     'Marty',
+     'McFly',
+    ]
+);
+
+// Wait for 1 message.
+$client->wait(1);
+
+// Request Response
+
+// Responding to requests.
+$sid = $client->subscribe(
+    'sayhello',
+    function ($message) {
+        $message->reply('Reply: Hello, '.$message->getBody()[1].' !!!');
+    }
+);
+
+// Request.
+$client->request(
+    'sayhello',
+    [
+     'Marty',
+     'McFly',
+    ],
+    function ($message) {
+        echo $message->getBody();
+    }
+);
 ```
 
 
@@ -88,21 +153,33 @@ Developer's Information
 
 ### Releases
 
-[Latest stable](https://github.com/repejota/phpnats/tree/master)
-[Latest dev](https://github.com/repejota/phpnats/tree/develop)
+* [Latest stable](https://github.com/repejota/phpnats/tree/master)
+* [Latest dev](https://github.com/repejota/phpnats/tree/develop)
+
+* [PHPNats on Packagist](https://packagist.org/packages/repejota/nats)
 
 ### Tests
 
 Tests are in the `tests` folder.
-To run them, you need `PHPUnit` and execute `make test`.
+To run them, you need `PHPUnit` and execute `make test-tdd`.
 
+We also have a BDD test suite under the `spec` folder.
+To run the suite, you need `PHPSpec` and execute `make test-bdd`.
+
+You can also execute the all suites ( TDD + BDD ) with `make test`.
 
 ### Code Quality
 
 We are using [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer/docs)
 to ensure our code follow an high quality standard.
 
-To perform an analysis of the code execute `make cs`.
+To perform an analysis of the code execute `make lint`.
+
+There is currently three steps when we lint our code:
+
+* First we lint with php itself `php -l`
+* Then we lint with PSR2 standard
+* And finally we lint with a custom [ruleset.xml](https://github.com/repejota/phpnats/blob/feature/lint-squiz/ruleset.xml) that checks dockblocks and different performance tips.
 
 
 Creators
@@ -112,23 +189,6 @@ Creators
 
 - <https://twitter.com/repejota>
 - <https://github.com/repejota>
-
-**Adrià Cidre**
-
-- <https://twitter.com/adriacidre>
-- <https://github.com/adriacidre>
-
-**José Gil**
-
-- <https://twitter.com/josgilmo>
-- <https://github.com/josgilmo>
-
-**Gorka López de Torre**
-
-- <https://twitter.com/glopezdetorre>
-- <https://github.com/glopezdetorre>
-
-
 
 License
 -------
