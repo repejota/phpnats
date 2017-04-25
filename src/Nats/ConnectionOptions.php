@@ -3,6 +3,8 @@ namespace Nats;
 
 /**
  * ConnectionOptions Class.
+ *
+ * @package Nats
  */
 class ConnectionOptions
 {

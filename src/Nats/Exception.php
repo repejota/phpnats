@@ -2,7 +2,9 @@
 namespace Nats;
 
 /**
- * Exception Class.
+ * Class Exception
+ *
+ * @package Nats
  */
 class Exception extends \Exception
 {

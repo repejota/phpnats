@@ -8,6 +8,8 @@ use RandomLib\Generator;
  * Connection Class.
  *
  * Handles the connection to a NATS server or cluster of servers.
+ *
+ * @package Nats
  */
 class Connection
 {
