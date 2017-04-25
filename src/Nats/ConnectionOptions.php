@@ -38,6 +38,13 @@ class ConnectionOptions
     private $pass = null;
 
     /**
+     * Token to connect.
+     *
+     * @var string
+     */
+    private $token = null;
+
+    /**
      * Language of this client.
      *
      * @var string
@@ -100,9 +107,11 @@ class ConnectionOptions
         if (empty($this->user) === false) {
             $a['user'] = $this->user;
         }
-
         if (empty($this->pass) === false) {
             $a['pass'] = $this->pass;
+        }
+        if (empty($this->token) === false) {
+            $a['auth_token'] = $this->token;
         }
 
         return json_encode($a);
@@ -169,7 +178,7 @@ class ConnectionOptions
     public function getUser()
     {
         return $this->user;
-    }//end getUser()
+    }
 
 
     /**
@@ -184,7 +193,7 @@ class ConnectionOptions
         $this->user = $user;
 
         return $this;
-    }//end setUser()
+    }
 
 
     /**
@@ -195,8 +204,7 @@ class ConnectionOptions
     public function getPass()
     {
         return $this->pass;
-    }//end getPass()
-
+    }
 
     /**
      * Set password.
@@ -212,6 +220,29 @@ class ConnectionOptions
         return $this;
     }
 
+    /**
+     * Get token.
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Set token.
+     *
+     * @param string $token Token.
+     *
+     * @return $this
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
 
     /**
      * Get language.
