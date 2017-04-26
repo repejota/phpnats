@@ -4,7 +4,7 @@ vendor
 cover
 *.phar
 /composer.phar
-/phpDocumentor.phar
+/phpdoc.phar
 /composer.lock
 /docs/api
 build
