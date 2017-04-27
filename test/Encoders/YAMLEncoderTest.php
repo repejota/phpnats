@@ -1,5 +1,5 @@
 <?php
-namespace Nats\tests\Unit;
+namespace Nats\tests\Encoders\Unit;
 
 use Nats;
 use Nats\ConnectionOptions;
