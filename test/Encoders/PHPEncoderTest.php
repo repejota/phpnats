@@ -50,8 +50,8 @@ class PHPEncoderTest extends \PHPUnit_Framework_TestCase
         $this->c->request(
             'sayhello',
             [
-                'foo',
-                'McFly',
+             'foo',
+             'McFly',
             ],
             function ($res) {
                 $this->assertEquals('Hello, McFly !!!', $res->getBody());
