@@ -9,3 +9,4 @@ cover
 /docs/api
 build
 .idea
+coverage
