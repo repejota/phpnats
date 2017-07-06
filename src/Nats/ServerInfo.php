@@ -304,7 +304,7 @@ class ServerInfo
      */
     public function setSSLRequired($SSLRequired)
     {
-        $this->TLSRequired = $SSLRequired;
+        $this->SSLRequired = $SSLRequired;
     }
 
     /**

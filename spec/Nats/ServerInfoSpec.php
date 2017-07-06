@@ -15,4 +15,54 @@ class ServerInfoSpec extends ObjectBehavior
     {
         $this->shouldHaveType('Nats\ServerInfo');
     }
+
+    function it_has_server_id()
+    {
+        $this->getServerID()->shouldNotBeNull();
+    }
+
+    function it_has_server_host()
+    {
+        $this->getHost()->shouldBe("0.0.0.0");
+    }
+
+    function it_has_server_port()
+    {
+        $this->getPort()->shouldBe(4222);
+    }
+
+    function it_has_version()
+    {
+        $this->getVersion()->shouldBe("0.9.6");
+    }
+
+    function it_has_go_version()
+    {
+        $this->getGoVersion()->shouldBe("go1.7.3");
+    }
+
+    function it_has_is_auth_required()
+    {
+        $this->isAuthRequired()->shouldBeBoolean();
+    }
+
+    function it_has_is_tls_required()
+    {
+        $this->isTLSRequired()->shouldBeBoolean();
+    }
+
+    function it_has_is_tls_verified()
+    {
+        $this->isTLSVerify()->shouldBeBoolean();
+    }
+
+    function it_has_is_ssl_required()
+    {
+        $this->isSSLRequired()->shouldBeBoolean();
+    }
+
+    function it_has_max_payload()
+    {
+        $this->getMaxPayload()->shouldBe(1048576);
+    }
 }
