@@ -421,11 +421,24 @@ class ConnectionOptions
     }
 
     /**
+     * Set the connection options.
+     *
+     * @param Traversable|array $options The connection options.
+     *
+     * @return void
+     */
+    public function setConnectionOptions($options)
+    {
+        $this->initialize($options);
+    }
+
+    /**
      * Initialize the parameters.
      *
      * @param Traversable|array $options The connection options.
      *
      * @throws Exception When $options are an invalid type.
+     *
      * @return void
      */
     protected function initialize($options)
