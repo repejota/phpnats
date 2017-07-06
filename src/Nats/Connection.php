@@ -238,6 +238,37 @@ class Connection
     }
 
     /**
+     * Server information.
+     *
+     * @var mixed
+     */
+    private $serverInfo;
+
+
+    /**
+     * Process information returned by the server after connection.
+     *
+     * @param string $connectionResponse INFO message.
+     *
+     * @return void
+     */
+    private function processServerInfo($connectionResponse)
+    {
+        var_dump($connectionResponse);
+        $this->serverInfo = new ServerInfo($connectionResponse);
+    }
+
+    /**
+     * Returns current connected server ID.
+     *
+     * @return string Server ID.
+     */
+    public function connectedServerID()
+    {
+        return $this->serverInfo->getServerID();
+    }
+
+    /**
      * Constructor.
      *
      * @param ConnectionOptions $options Connection options object.
@@ -390,11 +421,12 @@ class Connection
 
         $msg = 'CONNECT '.$this->options;
         $this->send($msg);
-        // $infoResponse = $this->receive();
         $connectResponse = $this->receive();
 
         if ($this->isErrorResponse($connectResponse) === true) {
             throw Exception::forFailedConnection($connectResponse);
+        } else {
+            $this->processServerInfo($connectResponse);
         }
 
         $this->ping();
