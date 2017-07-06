@@ -8,6 +8,8 @@ use RandomLib\Generator;
  * Connection Class.
  *
  * Handles the connection to a NATS server or cluster of servers.
+ *
+ * @package Nats
  */
 class Connection
 {
@@ -187,7 +189,7 @@ class Connection
      */
     private function isErrorResponse($response)
     {
-        return false !== strpos('-ERR', $response);
+        return substr($response, 0, 4) === '-ERR';
     }
 
 
@@ -233,6 +235,36 @@ class Connection
         stream_set_timeout($fp, $seconds, $microseconds);
 
         return $fp;
+    }
+
+    /**
+     * Server information.
+     *
+     * @var mixed
+     */
+    private $serverInfo;
+
+
+    /**
+     * Process information returned by the server after connection.
+     *
+     * @param string $connectionResponse INFO message.
+     *
+     * @return void
+     */
+    private function processServerInfo($connectionResponse)
+    {
+        $this->serverInfo = new ServerInfo($connectionResponse);
+    }
+
+    /**
+     * Returns current connected server ID.
+     *
+     * @return string Server ID.
+     */
+    public function connectedServerID()
+    {
+        return $this->serverInfo->getServerID();
     }
 
     /**
@@ -392,6 +424,8 @@ class Connection
 
         if ($this->isErrorResponse($connectResponse) === true) {
             throw Exception::forFailedConnection($connectResponse);
+        } else {
+            $this->processServerInfo($connectResponse);
         }
 
         $this->ping();
@@ -434,7 +468,7 @@ class Connection
         $this->send($msg."\r\n".$payload);
         $this->pubs += 1;
 
-        $this->wait(2);
+        $this->wait(1);
     }
 
     /**

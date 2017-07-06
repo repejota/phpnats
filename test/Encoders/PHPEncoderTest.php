@@ -1,15 +1,15 @@
 <?php
-namespace Nats\tests\Unit;
+namespace Nats\tests\Encoders\Unit;
 
 use Nats;
 use Nats\ConnectionOptions;
 use Nats\EncodedConnection;
-use Nats\Encoders\YAMLEncoder;
+use Nats\Encoders\PHPEncoder;
 
 /**
- * Class YAMLEncoderTest.
+ * Class PHPEncoderTest.
  */
-class YAMLEncoderTest extends \PHPUnit_Framework_TestCase
+class PHPEncoderTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -27,7 +27,7 @@ class YAMLEncoderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $encoder = new YAMLEncoder();
+        $encoder = new PHPEncoder();
         $options = new ConnectionOptions();
         $this->c = new EncodedConnection($options, $encoder);
         $this->c->connect();
@@ -40,10 +40,6 @@ class YAMLEncoderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequestArray()
     {
-        $this->markTestSkipped(
-            'The YAML extension is not available.'
-        );
-
         $this->c->subscribe(
             'sayhello',
             function ($res) {
