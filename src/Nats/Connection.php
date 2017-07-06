@@ -254,7 +254,6 @@ class Connection
      */
     private function processServerInfo($connectionResponse)
     {
-        var_dump($connectionResponse);
         $this->serverInfo = new ServerInfo($connectionResponse);
     }
 
