@@ -1,6 +1,8 @@
 <?php
 namespace Nats;
 
+use Nats\Encoders\Encoder;
+
 /**
  * Class EncodedConnection
  *
@@ -23,7 +25,7 @@ class EncodedConnection extends Connection
      * @param ConnectionOptions           $options Connection options object.
      * @param \Nats\Encoders\Encoder|null $encoder Encoder to use with the payload.
      */
-    public function __construct(ConnectionOptions $options = null, \Nats\Encoders\Encoder $encoder = null)
+    public function __construct(ConnectionOptions $options = null, Encoder $encoder = null)
     {
         $this->encoder = $encoder;
         parent::__construct($options);

@@ -464,6 +464,7 @@ class Connection
             $inbox,
             $callback
         );
+
         $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
         $this->send($msg."\r\n".$payload);
         $this->pubs += 1;
