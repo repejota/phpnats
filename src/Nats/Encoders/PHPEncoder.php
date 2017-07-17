@@ -2,18 +2,18 @@
 namespace Nats\Encoders;
 
 /**
- * Class JSONEncoder
+ * Class PHPEncoder
  *
- * Encodes and decodes messages in JSON format.
+ * Encodes and decodes messages in PHP format.
  *
  * @package Nats
  */
-class JSONEncoder implements Encoder
+class PHPEncoder implements Encoder
 {
 
 
     /**
-     * Encodes a message to JSON.
+     * Encodes a message to PHP.
      *
      * @param string $payload Message to decode.
      *
@@ -21,12 +21,12 @@ class JSONEncoder implements Encoder
      */
     public function encode($payload)
     {
-        $payload = json_encode($payload);
+        $payload = serialize($payload);
         return $payload;
     }
 
     /**
-     * Decodes a message from JSON.
+     * Decodes a message from PHP.
      *
      * @param string $payload Message to decode.
      *
@@ -34,7 +34,7 @@ class JSONEncoder implements Encoder
      */
     public function decode($payload)
     {
-        $payload = json_decode($payload, true);
+        $payload = unserialize($payload);
         return $payload;
     }
 }

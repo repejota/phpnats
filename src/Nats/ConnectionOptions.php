@@ -1,8 +1,12 @@
 <?php
 namespace Nats;
 
+use Traversable;
+
 /**
  * ConnectionOptions Class.
+ *
+ * @package Nats
  */
 class ConnectionOptions
 {
@@ -34,6 +38,13 @@ class ConnectionOptions
      * @var string
      */
     private $pass = null;
+
+    /**
+     * Token to connect.
+     *
+     * @var string
+     */
+    private $token = null;
 
     /**
      * Language of this client.
@@ -70,6 +81,49 @@ class ConnectionOptions
      */
     private $reconnect = true;
 
+    /**
+     * Allows to define parameters which can be set by passing them to the class constructor.
+     *
+     * @var array
+     */
+    private $configurable = [
+                             'host',
+                             'port',
+                             'user',
+                             'pass',
+                             'token',
+                             'lang',
+                             'version',
+                             'verbose',
+                             'pedantic',
+                             'reconnect',
+                            ];
+
+
+    /**
+     * ConnectionOptions constructor.
+     *
+     * <code>
+     * use Nats\ConnectionOptions;
+     *
+     * $options = new ConnectionOptions([
+     *     'host' => '127.0.0.1',
+     *     'port' => 4222,
+     *     'user' => 'nats',
+     *     'pass' => 'nats',
+     *     'lang' => 'php',
+     *      // ...
+     * ]);
+     * </code>
+     *
+     * @param Traversable|array $options The connection options.
+     */
+    public function __construct($options = null)
+    {
+        if (empty($options) === false) {
+            $this->initialize($options);
+        }
+    }
 
     /**
      * Get the URI for a server.
@@ -101,6 +155,10 @@ class ConnectionOptions
 
         if (empty($this->pass) === false) {
             $a['pass'] = $this->pass;
+        }
+
+        if (empty($this->token) === false) {
+            $a['auth_token'] = $this->token;
         }
 
         return json_encode($a);
@@ -167,7 +225,7 @@ class ConnectionOptions
     public function getUser()
     {
         return $this->user;
-    }//end getUser()
+    }
 
 
     /**
@@ -182,7 +240,7 @@ class ConnectionOptions
         $this->user = $user;
 
         return $this;
-    }//end setUser()
+    }
 
 
     /**
@@ -193,8 +251,7 @@ class ConnectionOptions
     public function getPass()
     {
         return $this->pass;
-    }//end getPass()
-
+    }
 
     /**
      * Set password.
@@ -210,6 +267,29 @@ class ConnectionOptions
         return $this;
     }
 
+    /**
+     * Get token.
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Set token.
+     *
+     * @param string $token Token.
+     *
+     * @return $this
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
 
     /**
      * Get language.
@@ -338,5 +418,45 @@ class ConnectionOptions
         $this->reconnect = $reconnect;
 
         return $this;
+    }
+
+    /**
+     * Set the connection options.
+     *
+     * @param Traversable|array $options The connection options.
+     *
+     * @return void
+     */
+    public function setConnectionOptions($options)
+    {
+        $this->initialize($options);
+    }
+
+    /**
+     * Initialize the parameters.
+     *
+     * @param Traversable|array $options The connection options.
+     *
+     * @throws Exception When $options are an invalid type.
+     *
+     * @return void
+     */
+    protected function initialize($options)
+    {
+        if (is_array($options) === false && ($options instanceof Traversable) === false) {
+            throw new Exception('The $options argument must be either an array or Traversable');
+        }
+
+        foreach ($options as $key => $value) {
+            if (in_array($key, $this->configurable, true) === false) {
+                continue;
+            }
+
+            $method = 'set'.ucfirst($key);
+
+            if (method_exists($this, $method) === true) {
+                $this->$method($value);
+            }
+        }
     }
 }

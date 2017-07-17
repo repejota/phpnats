@@ -1,6 +1,8 @@
 <?php
 namespace Nats;
 
+use Nats\Encoders\Encoder;
+
 /**
  * Class EncodedConnection
  *
@@ -23,7 +25,7 @@ class EncodedConnection extends Connection
      * @param ConnectionOptions           $options Connection options object.
      * @param \Nats\Encoders\Encoder|null $encoder Encoder to use with the payload.
      */
-    public function __construct(ConnectionOptions $options = null, \Nats\Encoders\Encoder $encoder = null)
+    public function __construct(ConnectionOptions $options = null, Encoder $encoder = null)
     {
         $this->encoder = $encoder;
         parent::__construct($options);
@@ -49,13 +51,14 @@ class EncodedConnection extends Connection
      *
      * @param string $subject Message topic.
      * @param string $payload Message data.
+     * @param string $inbox   Message inbox.
      *
      * @return void
      */
-    public function publish($subject, $payload = null)
+    public function publish($subject, $payload = null, $inbox = null)
     {
         $payload = $this->encoder->encode($payload);
-        parent::publish($subject, $payload);
+        parent::publish($subject, $payload, $inbox);
     }
 
     /**
