@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__.'/../../vendor/autoload.php';
 
-$client = new \Nats\Connection();
+use Nats\Connection;
+
+$client = new Connection();
 $client->connect();
 
-// Simple Publisher.
 // Request.
 $client->request(
     'foo',
