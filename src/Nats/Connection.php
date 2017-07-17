@@ -3,6 +3,7 @@ namespace Nats;
 
 use RandomLib\Factory;
 use RandomLib\Generator;
+use Symfony\Component\Validator\Constraints\True;
 
 /**
  * Connection Class.
@@ -15,18 +16,31 @@ class Connection
 {
 
     /**
+     * Show DEBUG info?
+     *
+     * @var boolean $debug If debug is enabled.
+     */
+    private $debug = false;
+
+
+    /**
+     * Enable or disable debug mode.
+     *
+     * @param boolean $debug If debug is enabled.
+     *
+     * @return void
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
+    }
+
+    /**
      * Number of PINGs.
      *
      * @var integer number of pings.
      */
     private $pings = 0;
-
-    /**
-     * Chunk size in bytes to use when reading an stream of data.
-     *
-     * @var integer size of chunk.
-     */
-    private $chunkSize = 1500;
 
 
     /**
@@ -38,6 +52,13 @@ class Connection
     {
         return $this->pings;
     }
+
+    /**
+     * Chunk size in bytes to use when reading an stream of data.
+     *
+     * @var integer size of chunk.
+     */
+    private $chunkSize = 1500;
 
     /**
      * Number of messages published.
@@ -319,6 +340,10 @@ class Connection
                 break;
             }
         }
+
+        if ($this->debug === true) {
+            printf('>>>> %s', $msg);
+        }
     }
 
     /**
@@ -346,6 +371,10 @@ class Connection
             }
         } else {
             $line = fgets($this->streamSocket);
+        }
+
+        if ($this->debug === true) {
+            printf('<<<< %s\r\n', $line);
         }
 
         return $line;
@@ -460,15 +489,12 @@ class Connection
     public function request($subject, $payload, \Closure $callback)
     {
         $inbox = uniqid('_INBOX.');
-        $this->subscribe(
+        $sid   = $this->subscribe(
             $inbox,
             $callback
         );
-
-        $msg = 'PUB '.$subject.' '.$inbox.' '.strlen($payload);
-        $this->send($msg."\r\n".$payload);
-        $this->pubs += 1;
-
+        $this->unsubscribe($sid, 1);
+        $this->publish($subject, $payload, $inbox);
         $this->wait(1);
     }
 
@@ -510,15 +536,22 @@ class Connection
     /**
      * Unsubscribe from a event given a subject.
      *
-     * @param string $sid Subscription ID.
+     * @param string  $sid      Subscription ID.
+     * @param integer $quantity Quantity of messages.
      *
      * @return void
      */
-    public function unsubscribe($sid)
+    public function unsubscribe($sid, $quantity = null)
     {
         $msg = 'UNSUB '.$sid;
+        if ($quantity !== null) {
+            $msg = $msg.' '.$quantity;
+        }
+
         $this->send($msg);
-        unset($this->subscriptions[$sid]);
+        if ($quantity === null) {
+            unset($this->subscriptions[$sid]);
+        }
     }
 
     /**
@@ -526,14 +559,20 @@ class Connection
      *
      * @param string $subject Message topic.
      * @param string $payload Message data.
+     * @param string $inbox   Message inbox.
      *
      * @return void
-
+     *
      * @throws Exception If subscription not found.
      */
-    public function publish($subject, $payload = null)
+    public function publish($subject, $payload = null, $inbox = null)
     {
-        $msg = 'PUB '.$subject.' '.strlen($payload);
+        $msg = 'PUB '.$subject;
+        if ($inbox !== null) {
+            $msg = $msg.' '.$inbox;
+        }
+
+        $msg = $msg.' '.strlen($payload);
         $this->send($msg."\r\n".$payload);
         $this->pubs += 1;
     }
