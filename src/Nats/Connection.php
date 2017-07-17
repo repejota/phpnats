@@ -3,7 +3,6 @@ namespace Nats;
 
 use RandomLib\Factory;
 use RandomLib\Generator;
-use Symfony\Component\Validator\Constraints\True;
 
 /**
  * Connection Class.
