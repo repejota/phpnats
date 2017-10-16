@@ -408,7 +408,7 @@ class Connection
         if (count($parts) === 5) {
             $length  = trim($parts[4]);
             $subject = $parts[3];
-        } else if (count($parts) === 4) {
+        } elseif (count($parts) === 4) {
             $length  = trim($parts[3]);
             $subject = $parts[1];
         }
@@ -587,7 +587,7 @@ class Connection
     {
         $count = 0;
         $info  = stream_get_meta_data($this->streamSocket);
-        while (is_resource($this->streamSocket) === true && feof($this->streamSocket) === false && empty($info['timed_out']) === true) {
+        while (is_resource($this->streamSocket) && feof($this->streamSocket) === false && empty($info['timed_out'])) {
             $line = $this->receive();
 
             if ($line === false) {

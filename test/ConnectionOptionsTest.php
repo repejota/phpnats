@@ -18,7 +18,16 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testSettersAndGetters()
     {
         $options = new ConnectionOptions();
-        $options->setHost('host')->setPort(4222)->setUser('user')->setPass('password')->setLang('lang')->setVersion('version')->setVerbose(true)->setPedantic(true)->setReconnect(true);
+        $options
+            ->setHost('host')
+            ->setPort(4222)
+            ->setUser('user')
+            ->setPass('password')
+            ->setLang('lang')
+            ->setVersion('version')
+            ->setVerbose(true)
+            ->setPedantic(true)
+            ->setReconnect(true);
 
         $this->assertEquals('host', $options->getHost());
         $this->assertEquals(4222, $options->getPort());
@@ -40,7 +49,15 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testAuthToken()
     {
         $options = new ConnectionOptions();
-        $options->setHost('host')->setPort(4222)->setToken('token')->setLang('lang')->setVersion('version')->setVerbose(true)->setPedantic(true)->setReconnect(true);
+        $options
+            ->setHost('host')
+            ->setPort(4222)
+            ->setToken('token')
+            ->setLang('lang')
+            ->setVersion('version')
+            ->setVerbose(true)
+            ->setPedantic(true)
+            ->setReconnect(true);
 
         $this->assertEquals('host', $options->getHost());
         $this->assertEquals(4222, $options->getPort());
@@ -63,7 +80,14 @@ class ConnectionOptionsTest extends \PHPUnit_Framework_TestCase
     public function testSettersAndGettersWithoutCredentials()
     {
         $options = new ConnectionOptions();
-        $options->setHost('host')->setPort(4222)->setLang('lang')->setVersion('version')->setVerbose(true)->setPedantic(true)->setReconnect(true);
+        $options
+            ->setHost('host')
+            ->setPort(4222)
+            ->setLang('lang')
+            ->setVersion('version')
+            ->setVerbose(true)
+            ->setPedantic(true)
+            ->setReconnect(true);
 
         $this->assertEquals('host', $options->getHost());
         $this->assertEquals(4222, $options->getPort());
