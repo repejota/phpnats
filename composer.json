@@ -40,8 +40,12 @@
     ],
     "autoload": {
         "psr-0": {
-            "Nats": "src",
-            "Nats\\Test": "src"
+            "Nats": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nats\\tests\\Unit\\": "test/"
         }
     }
 }

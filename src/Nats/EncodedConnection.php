@@ -36,11 +36,11 @@ class EncodedConnection extends Connection
      *
      * @param string   $subject  Message topic.
      * @param string   $payload  Message data.
-     * @param \Closure $callback Closure to be executed as callback.
+     * @param callable $callback Closure to be executed as callback.
      *
      * @return void
      */
-    public function request($subject, $payload, \Closure $callback)
+    public function request($subject, $payload, callable $callback)
     {
         $payload = $this->encoder->encode($payload);
         parent::request($subject, $payload, $callback);
@@ -65,11 +65,11 @@ class EncodedConnection extends Connection
      * Subscribes to an specific event given a subject.
      *
      * @param string   $subject  Message topic.
-     * @param \Closure $callback Closure to be executed as callback.
+     * @param callable $callback Closure to be executed as callback.
      *
      * @return string
      */
-    public function subscribe($subject, \Closure $callback)
+    public function subscribe($subject, callable $callback)
     {
         $c = function ($message) use ($callback) {
             $message->setBody($this->encoder->decode($message->getBody()));
@@ -83,11 +83,11 @@ class EncodedConnection extends Connection
      *
      * @param string   $subject  Message topic.
      * @param string   $queue    Queue name.
-     * @param \Closure $callback Closure to be executed as callback.
+     * @param callable $callback Closure to be executed as callback.
      *
      * @return void
      */
-    public function queueSubscribe($subject, $queue, \Closure $callback)
+    public function queueSubscribe($subject, $queue, callable $callback)
     {
         $c = function ($message) use ($callback) {
             $message->setBody($this->encoder->decode($message->getBody()));
