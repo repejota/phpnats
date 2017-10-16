@@ -225,4 +225,33 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $c->connect();
         $this->assertFalse($this->c->isConnected());
     }
+
+    /**
+     * Test having a class a callable
+     *
+     * @return void
+     */
+    public function testCallableRequest()
+    {
+        $testCallable = new CallableClass();
+
+        $i = 0;
+        do {
+            $this->c->subscribe(
+                'sayhello' . $i,
+                [$testCallable, 'requestSubTest']
+            );
+
+            /* Test __invoke */
+            $this->c->request(
+                'sayhello' . $i,
+                'McFly ' . $i,
+                $testCallable
+            );
+            $testCallable->test($i, function ($msg, $i) {
+                $this->assertEquals('Hello, McFly ' . $i, $msg);
+            });
+            $i++;
+        } while ($i < 100);
+    }
 }

@@ -408,7 +408,7 @@ class Connection
         if (count($parts) === 5) {
             $length  = trim($parts[4]);
             $subject = $parts[3];
-        } else if (count($parts) === 4) {
+        } elseif (count($parts) === 4) {
             $length  = trim($parts[3]);
             $subject = $parts[1];
         }
@@ -481,11 +481,11 @@ class Connection
      *
      * @param string   $subject  Message topic.
      * @param string   $payload  Message data.
-     * @param \Closure $callback Closure to be executed as callback.
+     * @param callable $callback Closure to be executed as callback.
      *
      * @return void
      */
-    public function request($subject, $payload, \Closure $callback)
+    public function request($subject, $payload, callable $callback)
     {
         $inbox = uniqid('_INBOX.');
         $sid   = $this->subscribe(
@@ -501,11 +501,11 @@ class Connection
      * Subscribes to an specific event given a subject.
      *
      * @param string   $subject  Message topic.
-     * @param \Closure $callback Closure to be executed as callback.
+     * @param callable $callback Closure to be executed as callback.
      *
      * @return string
      */
-    public function subscribe($subject, \Closure $callback)
+    public function subscribe($subject, callable $callback)
     {
         $sid = $this->randomGenerator->generateString(16);
         $msg = 'SUB '.$subject.' '.$sid;
@@ -519,11 +519,11 @@ class Connection
      *
      * @param string   $subject  Message topic.
      * @param string   $queue    Queue name.
-     * @param \Closure $callback Closure to be executed as callback.
+     * @param callable $callback Closure to be executed as callback.
      *
      * @return string
      */
-    public function queueSubscribe($subject, $queue, \Closure $callback)
+    public function queueSubscribe($subject, $queue, callable $callback)
     {
         $sid = $this->randomGenerator->generateString(16);
         $msg = 'SUB '.$subject.' '.$queue.' '.$sid;
@@ -587,7 +587,7 @@ class Connection
     {
         $count = 0;
         $info  = stream_get_meta_data($this->streamSocket);
-        while (is_resource($this->streamSocket) === true && feof($this->streamSocket) === false && empty($info['timed_out']) === true) {
+        while (is_resource($this->streamSocket) && feof($this->streamSocket) === false && empty($info['timed_out'])) {
             $line = $this->receive();
 
             if ($line === false) {
