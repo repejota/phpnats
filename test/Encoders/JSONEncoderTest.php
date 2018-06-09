@@ -57,5 +57,7 @@ class JSONEncoderTest extends \PHPUnit_Framework_TestCase
                 $this->assertEquals('Hello, McFly !!!', $res->getBody());
             }
         );
+        
+        $this->c->wait(1);
     }
 }
