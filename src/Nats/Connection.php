@@ -443,12 +443,9 @@ class Connection
             $timeout = intval(ini_get('default_socket_timeout'));
         }
 
-        $context = stream_context_create();
-        stream_context_set_option($context, 'ssl', 'verify_peer', false);
-        //stream_context_set_option($context, 'ssl', 'cafile', '/var/lib/puppet/ssl/certs/ca.pem');
-
         $this->timeout      = $timeout;
-        $this->streamSocket = $this->getStream($this->options->getAddress(), $timeout, $context);
+        $this->streamSocket = $this->getStream(
+            $this->options->getAddress(), $timeout, $this->options->getStreamContext());
         $this->setStreamTimeout($timeout);
 
         $infoResponse = $this->receive();
@@ -458,10 +455,18 @@ class Connection
         } else {
             $this->processServerInfo($infoResponse);
             if ($this->serverInfo->isTLSRequired()) {
-                if (!stream_socket_enable_crypto($this->streamSocket, true,
-                                STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT)) {
-                    throw Exception('Couldnt enable crypto');
+                set_error_handler(
+                    function ($errno, $errstr, $errfile, $errline) {
+                        throw Exception::forFailedConnection($errstr);
+                    });
+
+                if (!stream_socket_enable_crypto(
+                        $this->streamSocket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT)) {
+                    throw Exception::forFailedConnection(
+                        'Error negotiating crypto');
                 }
+
+                restore_error_handler();
             }
         }
 
