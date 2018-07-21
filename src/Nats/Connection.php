@@ -462,8 +462,7 @@ class Connection
 
                 if (!stream_socket_enable_crypto(
                         $this->streamSocket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT)) {
-                    throw Exception::forFailedConnection(
-                        'Error negotiating crypto');
+                    throw Exception::forFailedConnection('Error negotiating crypto');
                 }
 
                 restore_error_handler();
