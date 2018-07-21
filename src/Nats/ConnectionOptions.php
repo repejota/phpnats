@@ -441,7 +441,6 @@ class ConnectionOptions
         return $this->streamContext;
     }
 
-
     /**
      * Set stream context.
      *
