@@ -129,7 +129,7 @@ class ConnectionOptions
     public function __construct($options = null)
     {
         //Default stream context
-        $this->streamContext = stream_context_create();
+        $this->streamContext = stream_context_get_default();
 
         if (empty($options) === false) {
             $this->initialize($options);
