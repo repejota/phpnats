@@ -457,6 +457,7 @@ class Connection
             if ($this->serverInfo->isTLSRequired()) {
                 set_error_handler(
                     function ($errno, $errstr, $errfile, $errline) {
+                        restore_error_handler();
                         throw Exception::forFailedConnection($errstr);
                     });
 
