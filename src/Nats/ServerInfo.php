@@ -102,7 +102,7 @@ class ServerInfo
         $this->setPort($data['port']);
         $this->setVersion($data['version']);
         $this->setGoVersion($data['go']);
-        //  TODO  
+        //  TODO
         if(isset($data['auth_required'])){ $this->setAuthRequired($data['auth_required']); }
         if(isset($data['tls_required'])){ $this->setTLSRequired($data['tls_required']); }
         if(isset($data['tls_verify'])){ $this->setTLSVerify($data['tls_verify']); }
