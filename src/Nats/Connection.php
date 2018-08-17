@@ -457,12 +457,12 @@ class Connection
             if ($this->serverInfo->isTLSRequired()) {
                 set_error_handler(
                     function ($errno, $errstr, $errfile, $errline) {
+                        restore_error_handler();
                         throw Exception::forFailedConnection($errstr);
                     });
 
                 if (!stream_socket_enable_crypto(
                         $this->streamSocket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT)) {
-                    restore_error_handler();
                     throw Exception::forFailedConnection('Error negotiating crypto');
                 }
 
