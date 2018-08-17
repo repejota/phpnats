@@ -102,9 +102,9 @@ class ServerInfo
         $this->setPort($data['port']);
         $this->setVersion($data['version']);
         $this->setGoVersion($data['go']);
-        $this->setAuthRequired($data['auth_required']);
-        $this->setTLSRequired($data['tls_required']);
-        $this->setTLSVerify($data['tls_verify']);
+        $this->setAuthRequired(isset($data['auth_required']) ? $data['auth_required'] : false);
+        $this->setTLSRequired(isset($data['tls_required']) ? $data['tls_required'] : false);
+        $this->setTLSVerify(isset($data['tls_verify']) ? $data['tls_verify'] : false);
         $this->setMaxPayload($data['max_payload']);
 
         if (version_compare($data['version'], '1.1.0') === -1) {
