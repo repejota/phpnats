@@ -62,3 +62,6 @@ phpdoc:
 
 serve-phpdoc:
 	cd $(API_DOCS_PATH) && php -S localhost:8000 && cd ../..
+
+include Makefile.help.mk
+
