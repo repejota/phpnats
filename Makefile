@@ -12,6 +12,7 @@ define require_phar
 	@[ -f ./$(1) ] || wget -q $(2) -O ./$(1) && chmod +x $(1);
 endef
 
+lint:		## Lint source code
 lint: lint-php lint-psr2 lint-squiz
 
 .PHONY: lint-php
@@ -29,6 +30,7 @@ lint-squiz:
 	./phpcs.phar --standard=Squiz,./ruleset.xml --colors -w -s --warning-severity=0 $(SOURCE_CODE_PATHS)
 
 
+test:		## Execute all tests suites TDD and BDD
 test: test-tdd test-bdd
 
 .PHONY: test-tdd
@@ -39,26 +41,29 @@ test-tdd:
 test-bdd:
 	./vendor/bin/phpspec run --format=pretty -v
 
-cover:
+cover:		## Generate coverage report
 	./vendor/bin/phpunit --coverage-html $(COVERAGE_PATH) test
 
-deps:
+deps:		## Install dependencies
 	$(call require_phar,composer.phar,$(COMPOSER_PHAR))
 	./composer.phar install --no-dev
 
-dev-deps:
+dev-deps:	## Install development dependencies
 	$(call require_phar,composer.phar,$(COMPOSER_PHAR))
 	./composer.phar install
 
-dist-clean:
+dist-clean:	## Clean developer files, dependenciers and temporary files
 	rm -rf $(CLEAN_PATHS)
 
-docker-nats:
+docker-nats:	## Start NATS container ( for testing purposes )
 	docker run --rm -p 8222:8222 -p 4222:4222 -d --name nats-main nats
 
-phpdoc:
+phpdoc:		## Generate phpdoc API documentation
 	$(call require_phar,phpdoc.phar,$(PHPDOCUMENTOR_PHAR_URL))
 	./phpdoc.phar -d ./src/ -t $(API_DOCS_PATH) --template=checkstyle --template=responsive-twig
 
-serve-phpdoc:
+serve-phpdoc:	## Serve phpdoc API documentation at http;://localhost:8000
 	cd $(API_DOCS_PATH) && php -S localhost:8000 && cd ../..
+
+include Makefile.help.mk
+
