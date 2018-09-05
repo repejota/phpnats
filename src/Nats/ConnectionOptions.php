@@ -82,6 +82,13 @@ class ConnectionOptions
     private $reconnect = true;
 
     /**
+     * Stream context to use.
+     *
+     * @var resource
+     */
+    private $streamContext = null;
+
+    /**
      * Allows to define parameters which can be set by passing them to the class constructor.
      *
      * @var array
@@ -97,6 +104,7 @@ class ConnectionOptions
                              'verbose',
                              'pedantic',
                              'reconnect',
+                             'streamContext',
                             ];
 
 
@@ -120,6 +128,9 @@ class ConnectionOptions
      */
     public function __construct($options = null)
     {
+        //Default stream context
+        $this->streamContext = stream_context_get_default();
+
         if (empty($options) === false) {
             $this->initialize($options);
         }
@@ -416,6 +427,30 @@ class ConnectionOptions
     public function setReconnect($reconnect)
     {
         $this->reconnect = $reconnect;
+
+        return $this;
+    }
+
+    /**
+     * Get stream context.
+     *
+     * @return resource
+     */
+    public function getStreamContext()
+    {
+        return $this->streamContext;
+    }
+
+    /**
+     * Set stream context.
+     *
+     * @param resource $streamContext Stream context.
+     *
+     * @return $this
+     */
+    public function setStreamContext($streamContext)
+    {
+        $this->streamContext = $streamContext;
 
         return $this;
     }
