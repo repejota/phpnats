@@ -1,5 +1,5 @@
 {
-    "name": "repejota/nats",
+    "name": "smartweb/phpnats",
     "description": "A nats.io client in PHP",
     "type": "library",
     "minimum-stability": "dev",
@@ -36,12 +36,21 @@
             "email": "glopezdetorre@gmail.com",
             "homepage": "http://gorka.io",
             "role": "Developer"
+        },
+        {
+            "name": "Nicolai Agersbæk",
+            "email": "na@zitcom.dk",
+            "role": "Developer"
         }
     ],
     "autoload": {
         "psr-0": {
             "Nats": "src",
             "Nats\\Test": "src"
+        },
+        "psr-4": {
+            "Nats\\": "src",
+            "Nats\\Test\\": "test"
         }
     }
 }
