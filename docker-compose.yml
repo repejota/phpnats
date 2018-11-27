@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+
+    composer:
+        image: composer
+        volumes:
+        - .:/app
+        - composer-cache:/tmp
+
+volumes:
+    composer-cache:
+        driver: local
