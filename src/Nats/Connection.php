@@ -176,14 +176,10 @@ class Connection
     {
         if ($this->isConnected() === true) {
             if (is_numeric($seconds) === true) {
-                try {
-                    $timeout      = number_format($seconds, 3);
-                    $seconds      = floor($timeout);
-                    $microseconds = (($timeout - $seconds) * 1000);
-                    return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
-                } catch (\Exception $e) {
-                    return false;
-                }
+                $timeout      = number_format($seconds, 3);
+                $seconds      = floor($timeout);
+                $microseconds = (($timeout - $seconds) * 1000);
+                return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
             }
         }
 
