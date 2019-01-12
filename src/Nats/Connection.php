@@ -227,12 +227,11 @@ class Connection
      * Returns an stream socket to the desired server.
      *
      * @param string $address Server url string.
-     * @param float  $timeout Number of seconds until the connect() system call should timeout.
      *
      * @throws \Exception Exception raised if connection fails.
      * @return resource
      */
-    private function getStream($address, $timeout, $context)
+    private function getStream($address, $context)
     {
         $errno  = null;
         $errstr = null;
@@ -249,11 +248,6 @@ class Connection
         if ($fp === false) {
             throw Exception::forStreamSocketClientError($errstr, $errno);
         }
-
-        $timeout      = number_format($timeout, 3);
-        $seconds      = floor($timeout);
-        $microseconds = (($timeout - $seconds) * 1000);
-        stream_set_timeout($fp, $seconds, $microseconds);
 
         return $fp;
     }
@@ -444,8 +438,7 @@ class Connection
         }
 
         $this->timeout      = $timeout;
-        $this->streamSocket = $this->getStream(
-            $this->options->getAddress(), $timeout, $this->options->getStreamContext());
+        $this->streamSocket = $this->getStream($this->options->getAddress(), $this->options->getStreamContext());
         $this->setStreamTimeout($timeout);
 
         $infoResponse = $this->receive();
