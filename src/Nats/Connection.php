@@ -168,22 +168,20 @@ class Connection
     /**
      * Set Stream Timeout.
      *
-     * @param float $seconds Before timeout on stream.
+     * @param float $timeout Before timeout on stream.
      *
      * @return boolean
      */
-    public function setStreamTimeout($seconds)
+    public function setStreamTimeout($timeout)
     {
-        if ($this->isConnected() === true) {
-            if (is_numeric($seconds) === true) {
-                $timeout      = number_format($seconds, 3);
-                $seconds      = floor($timeout);
-                $microseconds = (($timeout - $seconds) * 1000);
-                return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
-            }
-        }
+        if ($this->isConnected() === false) return false;
+        if (is_numeric($timeout) === false) return false;
 
-        return false;
+        $seconds = intval($timeout);
+        if ($seconds < 0) return false;
+
+        $microseconds = intval(round($timeout - $seconds, 3) * 1000);
+        return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
     }
 
     /**
