@@ -172,13 +172,12 @@ class Connection
      *
      * @return boolean
      */
-    public function setStreamTimeout($seconds)
+    public function setStreamTimeout($timeout)
     {
         if ($this->isConnected() === true) {
-            if (is_numeric($seconds) === true) {
+            if (is_numeric($timeout) === true) {
                 try {
-                    $timeout      = number_format($seconds, 3);
-                    $seconds      = floor($timeout);
+                    $seconds      = floor(number_format($timeout, 3));
                     $microseconds = (($timeout - $seconds) * 1000);
                     return stream_set_timeout($this->streamSocket, $seconds, $microseconds);
                 } catch (\Exception $e) {
@@ -249,9 +248,8 @@ class Connection
         if ($fp === false) {
             throw Exception::forStreamSocketClientError($errstr, $errno);
         }
-
-        $timeout      = number_format($timeout, 3);
-        $seconds      = floor($timeout);
+        
+        $seconds      = floor(number_format($timeout, 3));
         $microseconds = (($timeout - $seconds) * 1000);
         stream_set_timeout($fp, $seconds, $microseconds);
 
