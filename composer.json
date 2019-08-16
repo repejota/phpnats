@@ -5,7 +5,9 @@
     "minimum-stability": "dev",
     "license": "MIT",
     "require": {
-        "ircmaxell/random-lib": "^1.2"
+        "php": "^7.1",
+        "ircmaxell/random-lib": "^1.2",
+        "ext-openssl": "^7.1"
     },
     "require-dev": {
         "phpunit/phpunit": "5.*",

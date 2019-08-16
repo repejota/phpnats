@@ -14,7 +14,7 @@ class EncodedConnection extends Connection
     /**
      * Encoder for this connection.
      *
-     * @var \Nats\Encoders\Encoder|null
+     * @var Encoder|null
      */
     private $encoder = null;
 
@@ -22,8 +22,8 @@ class EncodedConnection extends Connection
     /**
      * EncodedConnection constructor.
      *
-     * @param ConnectionOptions           $options Connection options object.
-     * @param \Nats\Encoders\Encoder|null $encoder Encoder to use with the payload.
+     * @param ConnectionOptions $options Connection options object.
+     * @param Encoder|null      $encoder Encoder to use with the payload.
      */
     public function __construct(ConnectionOptions $options = null, Encoder $encoder = null)
     {
@@ -40,7 +40,7 @@ class EncodedConnection extends Connection
      *
      * @return void
      */
-    public function publish($subject, $payload = null, $inbox = null)
+    public function publish($subject, $payload = null, $inbox = null) : void
     {
         $payload = $this->encoder->encode($payload);
         parent::publish($subject, $payload, $inbox);
@@ -52,14 +52,15 @@ class EncodedConnection extends Connection
      * @param string   $subject  Message topic.
      * @param \Closure $callback Closure to be executed as callback.
      *
-     * @return string
+     * @return string The SID of the subscription.
      */
-    public function subscribe($subject, \Closure $callback)
+    public function subscribe($subject, \Closure $callback) : string
     {
         $c = function ($message) use ($callback) {
             $message->setBody($this->encoder->decode($message->getBody()));
             $callback($message);
         };
+    
         return parent::subscribe($subject, $c);
     }
 
@@ -70,14 +71,15 @@ class EncodedConnection extends Connection
      * @param string   $queue    Queue name.
      * @param \Closure $callback Closure to be executed as callback.
      *
-     * @return void
+     * @return string The SID of the subscription.
      */
-    public function queueSubscribe($subject, $queue, \Closure $callback)
+    public function queueSubscribe($subject, $queue, \Closure $callback) : string
     {
         $c = function ($message) use ($callback) {
             $message->setBody($this->encoder->decode($message->getBody()));
             $callback($message);
         };
-        parent::queueSubscribe($subject, $queue, $c);
+    
+        return parent::queueSubscribe($subject, $queue, $c);
     }
 }
