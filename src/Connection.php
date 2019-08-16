@@ -166,33 +166,34 @@ class Connection
      *
      * @param float $seconds Before timeout on stream.
      *
-     * @return boolean
+     * @return bool **TRUE** on success or **FALSE** on failure.
      */
     public function setStreamTimeout($seconds) : bool
     {
+        $result = false;
+        
         if (\is_numeric($seconds) === true && $this->isConnected() === true) {
             try {
                 $timeout = \number_format($seconds, 3);
                 $seconds = \floor($timeout);
                 $microseconds = (($timeout - $seconds) * 1000);
-                
-                return \stream_set_timeout($this->streamSocket, $seconds, $microseconds);
+    
+                return \stream_set_timeout($this->streamSocket, (int)$seconds, (int)$microseconds);
             } catch (\Exception $exception) {
-                return false;
+                $result = false;
             }
         }
-        
-        return false;
+    
+        return $result;
     }
     
     /**
      * Returns an stream socket for this connection.
      *
-     * @return resource
+     * @return resource|null
      */
     public function getStreamSocket()
     {
-        // TODO: Return `?resource` (?)
         return $this->streamSocket;
     }
     
