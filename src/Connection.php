@@ -5,6 +5,7 @@ declare(strict_types = 1);
 
 namespace Nats;
 
+use Nats\Error\ConnectionLostException;
 use RandomLib\Factory;
 use RandomLib\Generator;
 
@@ -174,7 +175,7 @@ class Connection
                 $timeout = \number_format($seconds, 3);
                 $seconds = \floor($timeout);
                 $microseconds = (($timeout - $seconds) * 1000);
-            
+                
                 return \stream_set_timeout($this->streamSocket, $seconds, $microseconds);
             } catch (\Exception $exception) {
                 return false;
@@ -232,20 +233,20 @@ class Connection
     {
         $errno = null;
         $errstr = null;
-    
+        
         \set_error_handler(
             static function () {
                 return true;
             }
         );
-    
+        
         $fp = \stream_socket_client($address, $errno, $errstr, $timeout, \STREAM_CLIENT_CONNECT, $context);
         \restore_error_handler();
         
         if ($fp === false) {
             throw Exception::forStreamSocketClientError($errstr, $errno);
         }
-    
+        
         $timeout = \number_format($timeout, 3);
         $seconds = \floor($timeout);
         $microseconds = (($timeout - $seconds) * 1000);
@@ -289,7 +290,7 @@ class Connection
     public function __construct(ConnectionOptions $options = null)
     {
         $this->options = $options;
-    
+        
         // FIXME: Remove this redundancy, as we now require PHP ^7.1 for the package.
         if (\PHP_VERSION_ID > 70000 === true) {
             $this->randomGenerator = new Php71RandomGenerator();
@@ -297,7 +298,7 @@ class Connection
             $randomFactory = new Factory();
             $this->randomGenerator = $randomFactory->getLowStrengthGenerator();
         }
-    
+        
         if ($options === null) {
             $this->options = new ConnectionOptions();
         }
@@ -321,11 +322,11 @@ class Connection
             if ($written === false) {
                 throw new \RuntimeException('Error sending data');
             }
-    
+            
             if ($written === 0) {
                 throw new \RuntimeException('Broken pipe or closed connection');
             }
-    
+            
             $len -= $written;
             
             if ($len > 0) {
@@ -334,7 +335,7 @@ class Connection
                 break;
             }
         }
-    
+        
         if ($this->debug === true) {
             \printf('>>>> %s', $msg);
         }
@@ -353,14 +354,14 @@ class Connection
             $chunkSize = $this->chunkSize;
             $line = null;
             $receivedBytes = 0;
-    
+            
             while ($receivedBytes < $len) {
                 $bytesLeft = ($len - $receivedBytes);
-        
+                
                 if ($bytesLeft < $this->chunkSize) {
                     $chunkSize = $bytesLeft;
                 }
-        
+                
                 $readChunk = \fread($this->streamSocket, $chunkSize);
                 $receivedBytes += \strlen($readChunk);
                 $line .= $readChunk;
@@ -368,11 +369,11 @@ class Connection
         } else {
             $line = \fgets($this->streamSocket);
         }
-    
+        
         if ($this->debug === true) {
             \printf('<<<< %s\r\n', $line);
         }
-    
+        
         return $line;
     }
     
@@ -401,7 +402,7 @@ class Connection
         $subject = null;
         $length = \trim($parts[3]);
         $sid = $parts[2];
-    
+        
         if (\count($parts) === 5) {
             $length = \trim($parts[4]);
             $subject = $parts[3];
@@ -409,16 +410,16 @@ class Connection
             $length = \trim($parts[3]);
             $subject = $parts[1];
         }
-    
+        
         $payload = $this->receive((int)$length);
         $msg = new Message($subject, $payload, $sid, $this);
         
         if (isset($this->subscriptions[$sid]) === false) {
             throw Exception::forSubscriptionNotFound($sid);
         }
-    
+        
         $func = $this->subscriptions[$sid];
-    
+        
         if (\is_callable($func) === true) {
             $func($msg);
         } else {
@@ -439,7 +440,7 @@ class Connection
         if ($timeout === null) {
             $timeout = (int)\ini_get('default_socket_timeout');
         }
-    
+        
         $this->timeout = $timeout;
         
         $this->streamSocket = $this->getStream(
@@ -449,15 +450,15 @@ class Connection
         );
         
         $this->setStreamTimeout($timeout);
-    
+        
         $infoResponse = $this->receive();
-    
+        
         if ($this->isErrorResponse($infoResponse) === true) {
             throw Exception::forFailedConnection($infoResponse);
         }
-    
+        
         $this->processServerInfo($infoResponse);
-    
+        
         if ($this->serverInfo->isTLSRequired()) {
             \set_error_handler(
                 static function ($errNumber, $errString, $errFile, $errLine) {
@@ -465,7 +466,7 @@ class Connection
                     throw Exception::forFailedConnection($errString);
                 }
             );
-        
+            
             if (!\stream_socket_enable_crypto(
                 $this->streamSocket,
                 true,
@@ -473,15 +474,15 @@ class Connection
             )) {
                 throw Exception::forFailedConnection('Error negotiating crypto');
             }
-        
+            
             \restore_error_handler();
         }
-    
+        
         $msg = "CONNECT {$this->options}";
         $this->send($msg);
         $this->ping();
         $pingResponse = $this->receive();
-    
+        
         if ($this->isErrorResponse($pingResponse) === true) {
             throw Exception::forFailedPing($pingResponse);
         }
@@ -496,7 +497,7 @@ class Connection
     {
         $msg = 'PING';
         $this->send($msg);
-    
+        
         ++$this->pings;
     }
     
@@ -514,12 +515,12 @@ class Connection
     {
         /** @noinspection NonSecureUniqidUsageInspection */
         $inbox = \uniqid('_INBOX.');
-    
+        
         $sid = $this->subscribe(
             $inbox,
             $callback
         );
-    
+        
         $this->unsubscribe($sid, 1);
         $this->publish($subject, $payload, $inbox);
         $this->wait(1);
@@ -541,7 +542,7 @@ class Connection
         $msg = "SUB {$subject} {$sid}";
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
-    
+        
         return $sid;
     }
     
@@ -562,7 +563,7 @@ class Connection
         $msg = "SUB {$subject} {$queue} {$sid}";
         $this->send($msg);
         $this->subscriptions[$sid] = $callback;
-    
+        
         return $sid;
     }
     
@@ -582,9 +583,9 @@ class Connection
         if ($quantity !== null) {
             $msg .= " {$quantity}";
         }
-    
+        
         $this->send($msg);
-    
+        
         if ($quantity === null) {
             unset($this->subscriptions[$sid]);
         }
@@ -606,11 +607,11 @@ class Connection
         if ($inbox !== null) {
             $msg .= " {$inbox}";
         }
-    
+        
         $msg .= ' ' . \strlen($payload) . "\r\n" . $payload;
-    
+        
         $this->send($msg);
-    
+        
         ++$this->pubs;
     }
     
@@ -622,43 +623,58 @@ class Connection
      * @return Connection|null $connection Connection object.
      *
      * @throws Exception Occurs if subscription not found.
+     * @throws ConnectionLostException Occurs if the underlying stream disappears.
      * @throws \RuntimeException Occurs if sending data fails.
      */
     public function wait(int $quantity = 0) : ?Connection
     {
         $count = 0;
-        $info = \stream_get_meta_data($this->streamSocket);
-    
+        $info = $this->getStreamMetaData();
+        
         while (
             \is_resource($this->streamSocket) === true
             && \feof($this->streamSocket) === false
             && empty($info['timed_out']) === true
         ) {
             $line = $this->receive();
-        
+            
             if ($line === false) {
                 return null;
             }
-        
+            
             if (\strpos($line, 'PING') === 0) {
                 $this->handlePING();
             }
-        
+            
             if (\strpos($line, 'MSG') === 0) {
                 $count++;
                 $this->handleMSG($line);
-            
+                
                 if (($quantity !== 0) && ($count >= $quantity)) {
                     return $this;
                 }
             }
-        
-            $info = \stream_get_meta_data($this->streamSocket);
+            
+            $info = $this->getStreamMetaData();
         }
-    
+        
         $this->close();
-    
+        
         return $this;
+    }
+    
+    /**
+     * Get the meta-data associated with the underlying stream.
+     *
+     * @return array
+     */
+    private function getStreamMetaData() : array
+    {
+        if ($this->streamSocket === null) {
+            throw new ConnectionLostException();
+        }
+        
+        return \stream_get_meta_data($this->streamSocket);
     }
     
     /**
@@ -683,7 +699,7 @@ class Connection
         if ($this->streamSocket === null) {
             return;
         }
-    
+        
         \fclose($this->streamSocket);
         $this->streamSocket = null;
     }
