@@ -20,4 +20,4 @@ Moved to non-deprecated coverage package.
 Initial release as `smartweb/phpnats`.
 
 [0.9.1]: https://github.com/SmartWebDK/phpnats/compare/v0.9.0...v0.9.1
-[0.9.0]: https://github.com/SmartWebDK/phpnats/compare/v0.8.7...v0.9.0
+[0.9.0]: https://github.com/SmartWebDK/phpnats/releases/tag/v0.9.0
