@@ -249,9 +249,9 @@ class Connection
         }
         
         $timeout = \number_format($timeout, 3);
-        $seconds = (int)\floor($timeout);
+        $seconds = \floor($timeout);
         $microseconds = (($timeout - $seconds) * 1000);
-        \stream_set_timeout($fp, $seconds, $microseconds);
+        \stream_set_timeout($fp, (int)$seconds, (int)$microseconds);
         
         return $fp;
     }
