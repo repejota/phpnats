@@ -347,9 +347,9 @@ class Connection
      *
      * @param int $len Number of bytes to receive.
      *
-     * @return string
+     * @return bool|string
      */
-    private function receive(int $len = 0) : string
+    private function receive(int $len = 0)
     {
         if ($len > 0) {
             $chunkSize = $this->chunkSize;
@@ -608,7 +608,8 @@ class Connection
         if ($inbox !== null) {
             $msg .= " {$inbox}";
         }
-        
+    
+        $payload = (string)$payload;
         $msg .= ' ' . \strlen($payload) . "\r\n" . $payload;
         
         $this->send($msg);
