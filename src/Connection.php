@@ -249,7 +249,7 @@ class Connection
         }
         
         $timeout = \number_format($timeout, 3);
-        $seconds = \floor($timeout);
+        $seconds = (int)\floor($timeout);
         $microseconds = (($timeout - $seconds) * 1000);
         \stream_set_timeout($fp, $seconds, $microseconds);
         
