@@ -96,6 +96,18 @@ class ServerInfo
     {
         $parts = explode(' ', $connectionResponse);
         $data  = json_decode($parts[1], true);
+        
+        if (!isset($data['auth_required'])) {
+            $data['auth_required'] = false;
+        }
+
+        if (!isset($data['tls_required'])) {
+            $data['tls_required'] = false;
+        }
+
+        if (!isset($data['tls_verify'])) {
+            $data['tls_verify'] = false;
+        }
 
         $this->setServerID($data['server_id']);
         $this->setHost($data['host']);
