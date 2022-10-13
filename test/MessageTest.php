@@ -26,12 +26,14 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('body', $msg->getBody());
         $this->assertEquals('sid', $msg->getSid());
         $this->assertEquals($conn, $msg->getConn());
+        $this->assertNull($msg->getReplyTo());
 
-        $msg->setSubject('subject2')->setBody('body2')->setSid('sid2');
+        $msg->setSubject('subject2')->setBody('body2')->setSid('sid2')->setReplyTo('replyTo');
 
         $this->assertEquals('subject2', $msg->getSubject());
         $this->assertEquals('body2', $msg->getBody());
         $this->assertEquals('sid2', $msg->getSid());
+        $this->assertEquals('replyTo', $msg->getReplyTo());
     }
 
 
