@@ -358,7 +358,8 @@ class Connection
             $chunkSize     = $this->chunkSize;
             $line          = null;
             $receivedBytes = 0;
-            while ($receivedBytes < $len) {
+            $isEof = feof($this->streamSocket);
+            while ($receivedBytes < $len && !$isEof) {
                 $bytesLeft = ($len - $receivedBytes);
                 if ($bytesLeft < $this->chunkSize) {
                     $chunkSize = $bytesLeft;
@@ -367,6 +368,16 @@ class Connection
                 $readChunk      = fread($this->streamSocket, $chunkSize);
                 $receivedBytes += strlen($readChunk);
                 $line          .= $readChunk;
+
+                if (!$readChunk) {
+                    $isEof = feof($this->streamSocket);
+                }
+            }
+
+            if ($receivedBytes < $len) {
+                throw new \Exception(
+                    sprintf('Can\'t read message from socket. Got %d bytes from %d.', $receivedBytes, $len)
+                );
             }
         } else {
             $line = fgets($this->streamSocket);
@@ -401,20 +412,24 @@ class Connection
     private function handleMSG($line)
     {
         $parts   = explode(' ', $line);
-        $subject = null;
+        if (count($parts) < 4) {
+            throw new \Exception(sprintf('Invalid MSG data received: %s', $line));
+        }
+
+        $subject = $parts[1];
         $length  = trim($parts[3]);
         $sid     = $parts[2];
+        $replyTo = null;
 
         if (count($parts) === 5) {
             $length  = trim($parts[4]);
-            $subject = $parts[3];
+            $replyTo = $parts[3];
         } else if (count($parts) === 4) {
             $length  = trim($parts[3]);
-            $subject = $parts[1];
         }
 
         $payload = $this->receive($length);
-        $msg     = new Message($subject, $payload, $sid, $this);
+        $msg     = (new Message($subject, $payload, $sid, $this))->setReplyTo($replyTo);
 
         if (isset($this->subscriptions[$sid]) === false) {
             throw Exception::forSubscriptionNotFound($sid);
