@@ -401,20 +401,20 @@ class Connection
     private function handleMSG($line)
     {
         $parts   = explode(' ', $line);
-        $subject = null;
+        $subject = $parts[1];
         $length  = trim($parts[3]);
         $sid     = $parts[2];
+        $replyTo = null;
 
         if (count($parts) === 5) {
             $length  = trim($parts[4]);
-            $subject = $parts[3];
+            $replyTo = $parts[3];
         } else if (count($parts) === 4) {
             $length  = trim($parts[3]);
-            $subject = $parts[1];
         }
 
         $payload = $this->receive($length);
-        $msg     = new Message($subject, $payload, $sid, $this);
+        $msg     = (new Message($subject, $payload, $sid, $this))->setReplyTo($replyTo);
 
         if (isset($this->subscriptions[$sid]) === false) {
             throw Exception::forSubscriptionNotFound($sid);

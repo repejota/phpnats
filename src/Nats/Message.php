@@ -8,13 +8,19 @@ namespace Nats;
  */
 class Message
 {
-
     /**
      * Message Subject.
      *
      * @var string
      */
     private $subject;
+
+    /**
+     * Subject reply to
+     *
+     * @var string|null
+     */
+    private $replyTo = null;
 
     /**
      * Message Body.
@@ -69,7 +75,6 @@ class Message
         return $this;
     }
 
-
     /**
      * Get subject.
      *
@@ -80,6 +85,30 @@ class Message
         return $this->subject;
     }
 
+    /**
+     * Set reply to subject
+     *
+     * @param string $subject
+     * @return $this
+     */
+    public function setReplyTo($subject)
+    {
+        if (!empty($subject) && is_string($subject)) {
+            $this->replyTo = $subject;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get reply to subject
+     *
+     * @return string|null
+     */
+    public function getReplyTo()
+    {
+        return $this->replyTo;
+    }
 
     /**
      * Set body.
@@ -176,8 +205,12 @@ class Message
      */
     public function reply($body)
     {
+        if (empty($this->replyTo)) {
+            throw new \Exception('Can\'t reply to empty subject');
+        }
+
         $this->conn->publish(
-            $this->subject,
+            $this->replyTo,
             $body
         );
     }
