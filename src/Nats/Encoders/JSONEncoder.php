@@ -13,26 +13,28 @@ class JSONEncoder implements Encoder
 
 
     /**
-     * Encodes a message to JSON.
+     * Encodes a message.
      *
      * @param string $payload Message to decode.
+     * @param array $headers
      *
-     * @return mixed
+     * @return array - encoded payload and headers values
      */
-    public function encode($payload)
+    public function encode($payload, $headers = [])
     {
         $payload = json_encode($payload);
-        return $payload;
+        return [$payload, $headers];
     }
 
     /**
-     * Decodes a message from JSON.
+     * Decodes a message.
      *
      * @param string $payload Message to decode.
+     * @param array $headers
      *
      * @return mixed
      */
-    public function decode($payload)
+    public function decode($payload, $headers = [])
     {
         $payload = json_decode($payload, true);
         return $payload;

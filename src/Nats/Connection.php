@@ -573,21 +573,40 @@ class Connection
      *
      * @param string $subject Message topic.
      * @param string $payload Message data.
-     * @param string $inbox   Message inbox.
-     *
+     * @param string $inbox Message inbox.
+     * @param array $headers Message headers.
      * @return void
      *
-     * @throws Exception If subscription not found.
+     * @throws \Exception
      */
-    public function publish($subject, $payload = null, $inbox = null)
+    public function publish($subject, $payload = null, $inbox = null, $headers = [])
     {
-        $msg = 'PUB '.$subject;
-        if ($inbox !== null) {
-            $msg = $msg.' '.$inbox;
+        $hasHeaders = count($headers) > 0;
+
+        $msgLineParts = $hasHeaders ? ['HPUB'] : ['PUB'];
+        $msgLineParts[] = $subject;
+        if ($inbox) {
+            $msgLineParts[] = $inbox;
         }
 
-        $msg = $msg.' '.strlen($payload);
-        $this->send($msg."\r\n".$payload);
+        if ($hasHeaders) {
+            $headersStr = "NATS/1.0\r\n";
+            foreach ($headers as $k => $v) {
+                $headersStr .= "$k: $v\r\n";
+            }
+            $headersStr .= "\r\n";
+
+            # add message CRC to msg line
+            $msgLineParts[] = strlen($headersStr);
+            $msgLineParts[] = strlen($headersStr . $payload);
+
+            # payload is concatenation of headers and actual payload
+            $payload = $headersStr . $payload;
+        } else {
+            $msgLineParts[] = strlen($payload);
+        }
+
+        $this->send(implode(' ', $msgLineParts) . "\r\n" . $payload);
         $this->pubs += 1;
     }
 

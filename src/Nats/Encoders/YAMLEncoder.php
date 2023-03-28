@@ -13,26 +13,28 @@ class YAMLEncoder implements Encoder
 
 
     /**
-     * Encodes a message to YAML.
+     * Encodes a message.
      *
      * @param string $payload Message to decode.
+     * @param array $headers
      *
-     * @return mixed
+     * @return array - encoded payload and headers values
      */
-    public function encode($payload)
+    public function encode($payload, $headers = [])
     {
         $payload = yaml_emit($payload);
-        return $payload;
+        return [$payload, $headers];
     }
 
     /**
-     * Decodes a message from YAML.
+     * Decodes a message.
      *
      * @param string $payload Message to decode.
+     * @param array $headers
      *
      * @return mixed
      */
-    public function decode($payload)
+    public function decode($payload, $headers = [])
     {
         $payload = yaml_parse($payload);
         return $payload;

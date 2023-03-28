@@ -13,26 +13,28 @@ class PHPEncoder implements Encoder
 
 
     /**
-     * Encodes a message to PHP.
+     * Encodes a message.
      *
      * @param string $payload Message to decode.
+     * @param array $headers
      *
-     * @return mixed
+     * @return array - encoded payload and headers values
      */
-    public function encode($payload)
+    public function encode($payload, $headers = [])
     {
         $payload = serialize($payload);
-        return $payload;
+        return [$payload, $headers];
     }
 
     /**
-     * Decodes a message from PHP.
+     * Decodes a message.
      *
      * @param string $payload Message to decode.
+     * @param array $headers
      *
      * @return mixed
      */
-    public function decode($payload)
+    public function decode($payload, $headers = [])
     {
         $payload = unserialize($payload);
         return $payload;

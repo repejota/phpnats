@@ -36,14 +36,15 @@ class EncodedConnection extends Connection
      *
      * @param string $subject Message topic.
      * @param string $payload Message data.
-     * @param string $inbox   Message inbox.
-     *
+     * @param string $inbox Message inbox.
+     * @param array $headers Message headers.
      * @return void
+     * @throws \Exception
      */
-    public function publish($subject, $payload = null, $inbox = null)
+    public function publish($subject, $payload = null, $inbox = null, $headers = [])
     {
-        $payload = $this->encoder->encode($payload);
-        parent::publish($subject, $payload, $inbox);
+        list($payload, $headers) = $this->encoder->encode($payload, $headers);
+        parent::publish($subject, $payload, $inbox, $headers);
     }
 
     /**
